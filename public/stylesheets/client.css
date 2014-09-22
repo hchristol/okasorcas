@@ -1,0 +1,144 @@
+body { background-color: rgb(172, 172, 172); }
+
+/* mobile device   float:left;     position:absolute; 					top:0rem;   left:0rem; 	*/
+
+#menuOpen		{ position:fixed;  		bottom:1rem; right:4rem ;	z-index:200; }
+#menuParent 	{ 
+	position:fixed; 	top:0rem;	left:0rem;	width:7rem; height:auto;   
+	font-size:100%; z-index:100; 
+	visibility:hidden;  
+	
+	/* transition */
+		-webkit-transition-property: color;
+		-webkit-transition-duration: 2s;
+		
+		/* Bientôt supporté par Firefox */
+		-moz-transition-property: color;
+		-moz-transition-duration: 2s;
+		
+		/* … et lorsque ce sera standardisé */
+		transition-property: color;
+		transition-duration: 1s;
+		
+}
+
+#viewIncomes, #viewTerrainRules, #menuChooseSupport 	{ 
+	position:absolute; 	top:0rem; width:auto;	left:7rem;	 height:auto;   
+	font-size:100%; z-index:100; 
+	padding:0rem 0rem 0rem 0rem ; 
+	visibility:hidden;  
+}
+#viewIncomes table, #viewTerrainRules table, #menuChooseSupport table
+{
+border-collapse:collapse;
+box-shadow: 5px 5px 8px #aaa; 
+}
+#viewIncomes { min-width:20rem; }   	
+#viewTerrainRules{ min-width:50rem; }
+#menuChooseSupport{ min-width:30rem; }
+
+td,th 
+{
+font-size:1em;
+border:1px solid hsl(45,30%,85%);
+padding:3px 7px 2px 7px;
+}
+th 
+{
+font-size:1em;
+text-align:left;
+padding-top:5px;
+padding-bottom:4px;
+background-color:hsl(45,30%,70%);
+color:#ffffff;
+}
+
+tr td 
+{
+background-color:hsl(45,30%,97%);
+}
+
+.incomeLow 			{  color:green;  }
+.incomeHigh 		{  color:green;  font-weight:bold;  }
+.incomeNegative 		{  color:orange;    }
+.incomeBankrupcy  	{  color:red;    font-weight:bold;  }
+
+
+/* floating menus */
+#menuFloating, #menuChooseWizard  { 
+	position:absolute; 	top:0rem;	left:0rem;	width:7rem; height:auto;   
+	font-size:100%; z-index:100; 
+	visibility:hidden;  
+	
+	box-shadow: 5px 5px 8px #aaa;
+	
+	/* transition */
+		-webkit-transition-property: color;
+		-webkit-transition-duration: 2s;
+		
+		/* Bientôt supporté par Firefox */
+		-moz-transition-property: color;
+		-moz-transition-duration: 2s;
+		
+		/* … et lorsque ce sera standardisé */
+		transition-property: color;
+		transition-duration: 1s;
+		
+}
+
+/* deprecated #menuUnitType { width:auto; } */
+
+.menu, .selectedMenu { 	position:static; 		width:auto;		height:auto;  		padding:0rem 0rem 0rem 0rem ;  box-shadow: 5px 5px 8px #aaa;	}  
+.mapParent 		{ 	position:absolute; 	top:0rem;	left:0rem; }
+
+
+/* large screen device */
+@media all and (min-width: 75em) { /* easiest way to suppress shadow */
+	/* .menu, .selectedMenu {  	box-shadow:none;  }   unwanted behavior with floating menu */
+} 
+
+.menu, .selectedMenu,.menuNavigate  {
+	text-align:left;
+	vertical-align:middle;
+	border:solid; 
+	border-width:1px;
+	border-color: hsl(45,30%,60%); 
+	color: hsl(45,30%,26%) ; 
+	background-color: hsl(45,30%,89%);
+	cursor: pointer;
+	z-index:100;
+}
+.selectedMenu { 	
+	border-color: hsl(45,90%,60%); 
+	color: hsl(45,90%,26%) ; 
+	background-color: hsl(45,90%,89%); 
+	z-index:1000;
+}
+.menuNavigate { 
+	display: inline;
+	padding:.7rem 1rem .7rem 1rem ; 
+	height:2rem; width:2rem ;
+	box-shadow: 5px 5px 8px #aaa; 
+}
+
+a { color: purple; background-color: #d8da3d }
+
+.unit {
+	height:48px;
+	width:48px;
+	background-image:url('images/units.png'); 
+	z-index:50;
+}
+
+/* non selectable elements */
+img, div {
+   -moz-user-select: -moz-none;
+   -ms-user-select: none;
+   -khtml-user-select: none;
+   -webkit-touch-callout: none;
+   -webkit-user-select: none;
+   -o-user-select: none;
+   user-select: none;
+}
+
+.noClick { pointer-events:none; }

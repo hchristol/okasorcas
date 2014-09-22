@@ -1,0 +1,29 @@
+doctype html
+html
+	head
+		meta(name='viewport', content="width=device-width, initial-scale=1.0, maximum-scale=1.3, minimum-scale=0.5, user-scalable=yes")
+		meta(name='apple-mobile-web-app-capable', content="yes")
+		title= title
+		link(rel='stylesheet', href='/stylesheets/client.css')
+		script(src='/javascripts/kinetic-v4.4.1.min.js')
+		script(src='/javascripts/Util.js')
+		script(src='/javascripts/Map.js')
+	body(  onload="init()", style="background-color: rgb(209, 172, 85);" )
+		br
+		br
+		a#editMap(href="adminMapEdit"  )
+			span Editer une nouvelle carte 
+		br
+		br
+		a(href="backup.zip")
+			span Sauvegarder ZIP de la partie courante
+		br
+		br
+		br
+		span 
+			b Restaurer une sauvegarde dans cette partie (Danger !) :
+		form#formadmin(action="restore", method="post", enctype="multipart/form-data", autocomplete="off")
+			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
+			input(type="hidden", id="gameId", value= gameId, name='gameId')
+			input(type='file', accept='.zip', name='zipbackup')
+			input(type="submit", value="Envoyer !", name="ok")

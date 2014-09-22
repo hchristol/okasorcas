@@ -1,0 +1,7 @@
+body { background-color: hsl(45,30%,85%); }
+
+span {
+  display: inline-block;
+  width: 78px;
+  padding:3px 7px 2px 7px;
+}

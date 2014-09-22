@@ -1,0 +1,1 @@
+okasorcas is a strategic game in developpment

@@ -1,0 +1,24 @@
+﻿doctype html
+html
+	head
+		meta(name='viewport', content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes")
+		meta(name='apple-mobile-web-app-capable', content="yes")
+		title L8S 2014
+		link(rel='stylesheet', href='/stylesheets/login.css')
+		script(src='/javascripts/Util.js')
+		script(src='/javascripts/Map.js')
+		script(src='/javascripts/Messages.js')
+	body
+		h1 Le 8ème Sortilège - Edition 2014
+		each wizard, i in users
+			div
+				form(action="/" + game + "/login", method="post")
+					image(src='/images/color' + wizard.id + '.png')
+					//mask username : associated with wizard id :
+					input(type="hidden", name="username" value=wizard.username)
+					span=wizard.wizardname
+					//value=wizard.password to ignore password, value="" to force password
+					input(type="password", name="password" value=wizard.password) 
+					input(type="submit", name="Submit")
+					//a(href='/login/user' + u.id) #{post.author} - #{post.title}
+		div= messages
