@@ -1,0 +1,7 @@
+{
+  "name": "Okasorcas",
+  "description": "Strategic game",
+  "repository": "https://github.com/hchristol/okasorcas",
+  "logo": "https://raw.githubusercontent.com/hchristol/okasorcas/master/public/images/tower.png",
+  "keywords": ["node", "strategy", "game"]
+}
