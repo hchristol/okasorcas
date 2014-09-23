@@ -29,6 +29,25 @@ var path = require('path');
 
 var app = express();
 
+// TESTING redist
+var redis = require("redis"),
+client = redis.createClient();
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
+client.on("connect", function () {
+	client.set("foo_rand000000000000", "some fantastic value", redis.print);
+	client.get("foo_rand000000000000", redis.print);
+});
+app.get('/redistest', 
+	function(req,res) { 
+		client.get("foo_rand000000000000",  function(err, reply) {
+			res.writeHead(200, {'Content-Type': 'text/plain' }); 
+			if (err) res.end( "REDIS TEST ERROR : " + err ); 
+			else res.end( "REDIS TEST : " + reply ); 
+		}); 
+	}
+);
 //authentication : an array of users 
 
 var defaultUsers =
