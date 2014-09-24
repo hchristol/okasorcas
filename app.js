@@ -29,27 +29,32 @@ var path = require('path');
 
 var app = express();
 
-// TESTING redist
-var redis = require("redis"),
-client = redis.createClient();
-client.on("error", function (err) {
+// redis init (persistent data game)
+var redis = require("redis");
+redisclient = redis.createClient();
+redisclient.on("error", function (err) {
     console.log("Error " + err);
 });
-client.on("connect", function () {
-	client.set("foo_rand000000000000", "some fantastic value", redis.print);
-	client.get("foo_rand000000000000", redis.print);
+
+/* simple test on redis
+redisclient.on("connect", function () {
+	redisclient.set("foo_rand000000000000", "some fantastic value", redis.print);
+	redisclient.get("foo_rand000000000000", redis.print);
 });
 app.get('/redistest', 
 	function(req,res) { 
-		client.get("foo_rand000000000000",  function(err, reply) {
+		redisclient.get("foo_rand000000000000",  function(err, reply) {
 			res.writeHead(200, {'Content-Type': 'text/plain' }); 
 			if (err) res.end( "REDIS TEST ERROR : " + err ); 
 			else res.end( "REDIS TEST : " + reply ); 
 		}); 
 	}
 );
-//authentication : an array of users 
+*/
 
+
+
+//authentication : an array of users 
 var defaultUsers =
 [
 	{ id: 0, username: 'j0', password: 'todo', email: 'todo' }
@@ -63,18 +68,8 @@ var defaultUsers =
   , { id: 8, username: 'j8', password: 'todo', email: 'todo' }
 ];
 
-var users=null; //users that will be read in users.json file
-adminReadUserFile = function() {
-	var usersFile="./games/users.json";
-	console.log(usersFile + " exists ? " + fs.existsSync(usersFile)); 
-	if (!fs.existsSync(usersFile)) { //first init of admin map
-		fs.writeFileSync(usersFile, JSON.stringify(defaultUsers, null, '\t')); //in plain readable json
-		console.log("user file has been initialized !");
-	} 
-	users =  JSON.parse( fs.readFileSync(usersFile) );
-	console.log("user.json file has been read.");
-}
-adminReadUserFile(); //reading of user at first start of application
+//defaut games name availlable
+var defaultGames = [ 'test', 'partie1', 'partie2' ] ;
 
 //default link between authenticated users and a given game. Password is here only to permit an accerated acces in debug
 //this array is saved in each game dir an can be changed
@@ -91,19 +86,62 @@ var defaultWizardUser =
   , { id: 8, username: 'j8', password: ''  }
 ];
 
-//associate user to different games : create default for each existing game (if required)
-var games = fs.readdirSync("./games");
-for (var i=0; i<games.length; i++) {
-	//console.log(games[i]);
-	if (games[i]=="users.json") continue; //ignore user file
+var users=null; //users that will be read in users.json file
+var games=null; //games existing in database
+
+adminReadUserFile = function() {
+	//var usersFile="./games/users.json";
 	
-	var fileAdmin="./games/"+ games[i] + "/admin.json";
-	console.log(fileAdmin + " exists ? " + fs.existsSync(fileAdmin)); 
-	if (!fs.existsSync(fileAdmin)) { //first init of admin map
-		fs.writeFile(fileAdmin, JSON.stringify(defaultWizardUser, null, '\t'), function(err) { if(err) console.log(err); else console.log("The admin file was saved!"); }); 
-	} 
+	//read user file in redis
+	redisclient.get("users.json",  function(err, reply) {
 		
+		
+		if (err) { console.log( "REDIS TEST ERROR : " + err ); return;}
+		
+		//first init of users data
+		if (reply==null) {
+			redisclient.set("users.json", JSON.stringify(defaultUsers, null, '\t'))
+			console.log("user file has been initialized !");		
+			users=defaultUsers;
+		} else {
+			//read existing users parameters :
+			users =  JSON.parse( reply );
+			console.log("user.json file has been read.");
+		}
+		
+		//reread games
+		redisclient.get("games",  function(err, reply) {
+			if (reply==null) {
+				redisclient.set("games", JSON.stringify(defaultGames, null, '\t'))
+				console.log("games list has been initialized!");	
+				games=defaultGames;
+			} else {
+				//read existing users parameters :
+				games =  JSON.parse( reply );
+				console.log("games list has been read.");
+			}
+
+			//associate user to different games : create default for each existing game (if required)
+			for (var i=0; i<games.length; i++) {
+
+				var fileAdmin= games[i] + ".admin.json";
+				redisclient.get(fileAdmin, function(err, reply) {
+					if (reply==null) { //first init of admin map
+						redisclient.set(fileAdmin, JSON.stringify(defaultWizardUser, null, '\t'), function(err) { if(err) console.log(err); else console.log("The admin file was initialized !"); }); 
+					} 
+				});
+	
+			}
+		
+		});
+		
+
+	}); 	
+	
+	
 }
+adminReadUserFile(); //reading of user at first start of application
+
 /* search username in a array */
 function findByUsernameInArray(myArray, username) {
   for (var i = 0, len = myArray.length; i < len; i++) {
@@ -337,7 +375,8 @@ app.get('/:game/backup.zip',
 		var zip = new require('node-zip')();
 		
 		//users file (in common with all games)
-		zip.file('users.json', fs.readFileSync("./games/users.json") );		
+		redisclient.get("users.json",  function(err, reply) { zip.file('users.json', reply ) });
+		//zip.file('users.json', fs.readFileSync("./games/users.json") );		
 		//admin file
 		zip.file('admin.json', fs.readFileSync("./games/" + req.params.game + "/admin.json") );
 		//map image file
@@ -401,7 +440,8 @@ app.post('/:game/restore',
 			var file = zip.files['users.json']; 			
 			if (file != null ) {
 				msg += "\n Restoring " + file.name;
-				fs.writeFile("./games/" + file.name, file._data, function(err) {
+				
+				redisclient.set("users.json", file._data, function(err, reply) {
 					file_count++;
 					if(err) msg += "\n game/restore ERREUR : " + err; 
 					else adminReadUserFile(); //read user file again to update authentification
