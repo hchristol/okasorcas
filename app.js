@@ -55,7 +55,7 @@ app.get('/redistest',
 
 
 //authentication : an array of users 
-var defaultUsers =
+defaultUsers =
 [
 	{ id: 0, username: 'j0', password: 'todo', email: 'todo' }
   , { id: 1, username: 'j1', password: 'todo', email: 'todo' }
@@ -69,11 +69,11 @@ var defaultUsers =
 ];
 
 //defaut games name availlable
-var defaultGames = [ 'test', 'partie1', 'partie2' ] ;
+defaultGames = [ 'test', 'partie1', 'partie2' ] ;
 
 //default link between authenticated users and a given game. Password is here only to permit an accerated acces in debug
 //this array is saved in each game dir an can be changed
-var defaultWizardUser = 
+defaultWizardUser = 
 [
 	{ id: 0, username: 'j0', password: '' }
   , { id: 1, username: 'j1', password: ''  }
@@ -86,8 +86,8 @@ var defaultWizardUser =
   , { id: 8, username: 'j8', password: ''  }
 ];
 
-var users=null; //users that will be read in users.json file
-var games=null; //games existing in database
+users=null; //users that will be read in users.json file
+games=null; //games existing in database
 
 adminReadUserFile = function() {
 	//var usersFile="./games/users.json";
@@ -122,25 +122,36 @@ adminReadUserFile = function() {
 			}
 
 			//associate user to different games : create default for each existing game (if required)
-			for (var i=0; i<games.length; i++) {
-
-				var fileAdmin= games[i] + ".admin.json";
-				redisclient.get(fileAdmin, function(err, reply) {
-					if (reply==null) { //first init of admin map
-						redisclient.set(fileAdmin, JSON.stringify(defaultWizardUser, null, '\t'), function(err) { if(err) console.log(err); else console.log("The admin file was initialized !"); }); 
-					} 
-				});
-	
+			i=-1;
+			var adminGameName= function(i) { return games[i] + ".admin.json" } //name of the key in redis of the admin game parameters
+			var nextGameName = function() {
+				i++;
+				if (i<games.length) return adminGameName(i);
+				else return null; //no more games
 			}
+			var nextGameReadAndInit = function(err, reply) {
+				if (reply==null) { //first init of admin map
+					redisclient.set(adminGameName(i), JSON.stringify(defaultWizardUser, null, '\t'), function(err) { 
+						if(err) console.log(err); else console.log("The admin file " + adminGameName(i) + " was initialized !"); 
+						if (nextGameName()!=null) redisclient.get(adminGameName(i), nextGameReadAndInit); //recursive call						
+					}); 
+				} else {		
+					console.log("Adminfile " + i + " exists : " + adminGameName(i));
+					if (nextGameName()!=null) redisclient.get(adminGameName(i), nextGameReadAndInit); //recursive call	
+				}
+			};
+			redisclient.get(nextGameName(), nextGameReadAndInit); //first call
+	
 		
 		});
 		
 
-	}); 	
-	
-	
+	}); 		
 }
+
 adminReadUserFile(); //reading of user at first start of application
+
+
 
 /* search username in a array */
 function findByUsernameInArray(myArray, username) {
@@ -251,13 +262,19 @@ app.get('/:game/login', function(req, res) {
 		
 	nextturn.proceedNextTurn(req.params.game, false);
 	
-	var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
-	console.log(wizardToUser.length);
+	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 
-	//add wizard name
-	var okas= require('./public/javascripts/Map.js');
-	for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
-	res.render('login', { game: req.params.game, users: wizardToUser, user: req.user, messages: req.flash('error') }); 
+		var wizardToUser =  JSON.parse( reply );
+		//console.log("DEBUG login : wizardToUser.length=" + wizardToUser.length);
+
+		//add wizard name
+		var okas= require('./public/javascripts/Map.js');
+		for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
+		res.render('login', { game: req.params.game, users: wizardToUser, user: req.user, messages: req.flash('error') }); 
+	
+	});
+	
+
 });
 
 app.post('/:game/login', 
@@ -274,44 +291,50 @@ app.post('/:game/login',
 app.get('/:game/client', //client.index);
 	function(req, res) {
 
-	var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
+	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
-	if (! req.isAuthenticated() ) 
-		res.render('client', { title: '!!!!8!!!!  guest - ' + req.params.game , wizard: -1 });
-	else  {
-		console.log("connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
+		var wizardToUser =  JSON.parse( reply ) ;
 		
-		var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
-		//authenticated admin
-		if (idWizard==0) 
-			//authenticated player
-			res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game });
-		else
-			//authenticated player
-			res.render('client', { title: '!!!!8!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard });
-	}
+		if (! req.isAuthenticated() ) 
+			res.render('client', { title: '!!!!8!!!!  guest - ' + req.params.game , wizard: -1 });
+		else  {
+			console.log("connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
+			
+			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			//authenticated admin
+			if (idWizard==0) 
+				//authenticated player
+				res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game });
+			else
+				//authenticated player
+				res.render('client', { title: '!!!!8!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard });
+		}
+		
+	});
 	
 });
 //map editing
-app.get('/:game/adminMapEdit',
-	function(req, res) {
+app.get('/:game/adminMapEdit', function(req, res) {
 
-	var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
+	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
-	if (! req.isAuthenticated() ) 
-		{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-	else  {
-		console.log("adminMapEdit : connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
+		var wizardToUser =  JSON.parse( reply );
 		
-		var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
-		//authenticated admin
-		if (idWizard==0) 
-			//authenticated player
-			res.render('adminMapEdit', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game });
-		else
+		if (! req.isAuthenticated() ) 
 			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-	}
-	
+		else  {
+			console.log("adminMapEdit : connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
+			
+			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			//authenticated admin
+			if (idWizard==0) 
+				//authenticated player
+				res.render('adminMapEdit', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game });
+			else
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+		}
+		
+	});
 });
 
 
@@ -327,35 +350,42 @@ app.post('/:game/mapwriteimage', map.write);
 app.get('/:game/orders/:idWizard', 
 	function(req, res) {
 		
-		//allowed ?
-		var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
-		
-		if (! req.isAuthenticated() ) 
-			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-		else  {
-			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+			//allowed ?
+			var wizardToUser =  JSON.parse( reply );
 			
-			if ( (idWizard==0) || ( idWizard==req.params.idWizard ) ) order.read(req,res); //allowed, ok 
-			
-			else { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-		}
+			if (! req.isAuthenticated() ) 
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+			else  {
+				var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+				
+				if ( (idWizard==0) || ( idWizard==req.params.idWizard ) ) order.read(req,res); //allowed, ok 
+				
+				else { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+			}
+		});
 	
 	}
 ); //read current order of wizard, or old ones
 app.post('/:game/orders/:idWizard', 
 	function(req,res) {
-		//allowed ?
-		var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
+	
+		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		
+			//allowed ?
+			var wizardToUser =  JSON.parse( reply );
 
-		if (! req.isAuthenticated() ) 
-			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-		else  {
-			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			if (! req.isAuthenticated() ) 
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+			else  {
+				var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+				
+				if ( (idWizard==0) || ( idWizard==req.params.idWizard ) ) order.write(req,res); //allowed, ok 
+				
+				else { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+			}	
 			
-			if ( (idWizard==0) || ( idWizard==req.params.idWizard ) ) order.write(req,res); //allowed, ok 
-			
-			else { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-		}	
+		});
 	
 	}
 ); //write order of current wizard
@@ -363,42 +393,47 @@ app.post('/:game/orders/:idWizard',
 //backup zip of the game
 app.get('/:game/backup.zip',
 	function(req, res) {
-		//allowed ?
-		var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
-		if (! req.isAuthenticated() ) 
-			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-
-		var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
-		if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
-
-		//zip files init
-		var zip = new require('node-zip')();
+	
+		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 		
-		//users file (in common with all games)
-		redisclient.get("users.json",  function(err, reply) { zip.file('users.json', reply ) });
-		//zip.file('users.json', fs.readFileSync("./games/users.json") );		
-		//admin file
-		zip.file('admin.json', fs.readFileSync("./games/" + req.params.game + "/admin.json") );
-		//map image file
-		zip.file('map.jpg', map.imagefile( req.params.game  )  );
-		//map json file
-		zip.file('map.json', map.jsonfile( req.params.game, 0  )  );
-		if (fs.existsSync(  map.jsonfilepath( req.params.game, 1  )  )) { //may not exists at the beginning of the game
-			zip.file('map_previous.json', map.jsonfile( req.params.game, 1  )  );
-		}
-		//current order files
-		var okas= require('./public/javascripts/Map.js'); 
-		for ( var i=1; i<okas.People.WizardName.length; i++) {
-			var orderFile = order.getFileNameCurrentOrder( req.params.game, i); //current
-			//console.log(orderFile);
-			if (fs.existsSync(orderFile)) { 
-				zip.file('orders' + i + '.json', fs.readFileSync(orderFile)) ; 
+			//allowed ?
+			var wizardToUser =  JSON.parse( reply );
+			if (! req.isAuthenticated() ) 
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+
+			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
+			if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
+
+			//zip files init
+			var zip = new require('node-zip')();
+			
+			//users file (in common with all games)
+			redisclient.get("users.json",  function(err, reply) { zip.file('users.json', reply ) });
+			//zip.file('users.json', fs.readFileSync("./games/users.json") );		
+			//admin file
+			zip.file('admin.json', fs.readFileSync("./games/" + req.params.game + "/admin.json") );
+			//map image file
+			zip.file('map.jpg', map.imagefile( req.params.game  )  );
+			//map json file
+			zip.file('map.json', map.jsonfile( req.params.game, 0  )  );
+			if (fs.existsSync(  map.jsonfilepath( req.params.game, 1  )  )) { //may not exists at the beginning of the game
+				zip.file('map_previous.json', map.jsonfile( req.params.game, 1  )  );
 			}
-		}
-		//send zip
-		var data = zip.generate({base64:false,compression:'DEFLATE'});
-		res.writeHead(200, {'Content-Type': 'application/zip' });
-		res.end(data, 'binary');
+			//current order files
+			var okas= require('./public/javascripts/Map.js'); 
+			for ( var i=1; i<okas.People.WizardName.length; i++) {
+				var orderFile = order.getFileNameCurrentOrder( req.params.game, i); //current
+				//console.log(orderFile);
+				if (fs.existsSync(orderFile)) { 
+					zip.file('orders' + i + '.json', fs.readFileSync(orderFile)) ; 
+				}
+			}
+			//send zip
+			var data = zip.generate({base64:false,compression:'DEFLATE'});
+			res.writeHead(200, {'Content-Type': 'application/zip' });
+			res.end(data, 'binary');
+			
+		});
 	}
 );
 
@@ -406,110 +441,58 @@ app.get('/:game/backup.zip',
 app.post('/:game/restore', 
 	function(req,res) { 
 	
-		//allowed ?
-		var wizardToUser =  JSON.parse( fs.readFileSync("./games/"+ req.params.game + "/admin.json") );
-		if (! req.isAuthenticated() ) 
-			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
-
-		var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
-		if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
-		
-		
-		//data transferred ?
-		if ( req.files.zipbackup.size <= 0 ) {
-			res.setHeader('Content-Type', 'text/plain');
-			res.send("NO FILE RECEIVED ! YOU HAVE TO CHOOSE A zip FILE \n", 200);			
-			return;
-		}
-		
-		//read uploaded zip file 
-		fs.readFile(req.files.zipbackup.path, function (err, data) {
-			
-			//uploaded zip
-			var zip = new require('node-zip')(data, {base64: false, checkCRC32: true});
+		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
-			//restore each file
+			//allowed ?
+			var wizardToUser =  JSON.parse( reply );
 			
 			
-			var file_count=0; //to inform that uploading is ok
-			var okas= require('./public/javascripts/Map.js'); 
-			var file_count_complete=4+okas.People.WizardName.length;
-			var msg = ""; //displayed message
+			if (! req.isAuthenticated() ) 
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+
+			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
+			if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
 			
-			//users file
-			var file = zip.files['users.json']; 			
-			if (file != null ) {
-				msg += "\n Restoring " + file.name;
+			
+			//data transferred ?
+			if ( req.files.zipbackup.size <= 0 ) {
+				res.setHeader('Content-Type', 'text/plain');
+				res.send("NO FILE RECEIVED ! YOU HAVE TO CHOOSE A zip FILE \n", 200);			
+				return;
+			}
+			
+			//read uploaded zip file 
+			fs.readFile(req.files.zipbackup.path, function (err, data) {
 				
-				redisclient.set("users.json", file._data, function(err, reply) {
-					file_count++;
-					if(err) msg += "\n game/restore ERREUR : " + err; 
-					else adminReadUserFile(); //read user file again to update authentification
-					uploadComplete(res, file_count, file_count_complete, msg); 
-				}); 
-			}
-			else file_count++;
-			
-			var file = zip.files['admin.json']; 			
-			if (file != null ) {
-				msg += "\n Restoring " + file.name;
-				fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
-					file_count++;
-					if(err) msg += "\n game/restore ERREUR : " + err; 
-					uploadComplete(res, file_count, file_count_complete, msg); 
-				}); 
-			}
-			else file_count++;
-			
-			var file = zip.files['map.json']; 			
-			if (file != null ) {
-				msg += "\n Restoring " + file.name;
-				fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
-					file_count++;
-					if(err) msg += "\n game/restore ERREUR : " + err; 
-					uploadComplete(res, file_count, file_count_complete, msg); 
-				}); 	
-			}
-			else file_count++;
-			
-			//delete old map_previous file (not to have inconsistent data)...
-			oldfile="./games/" + req.params.game + "/" + "map_previous.json";
-			if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) 
-			//...and restore new one (if exists)
-			var file = zip.files['map_previous.json']; 
-			if (file != null ) {
-				msg += "\n Restoring " + file.name;
-				fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
-					file_count++;
-					if(err) msg += "\n game/restore ERREUR : " + err; 
-					uploadComplete(res, file_count, file_count_complete, msg); 
-				}); 
-			}
-			else file_count++;
-			
-			var file = zip.files['map.jpg']; 
-			if (file != null ) {
-				msg += "\n Restoring " + file.name;
-				fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, 'binary', function(err) {
-					file_count++;
-					if(err) msg += "\n game/restore ERREUR : " + err; 
-					uploadComplete(res, file_count, file_count_complete, msg); 
-				}); 
-			}
-			else file_count++;
-			
-			//current order files
-			for ( var i=1; i<okas.People.WizardName.length; i++) {
-			
-				//delete all old orders...
-				oldfile=order.getFileNameCurrentOrder( req.params.game, i);
-				if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) //delete old file (not to have inconsistent data)
-			
-				//and restore new ones if they exist
-				var file = zip.files['orders' + i + '.json']; 
+				//uploaded zip
+				var zip = new require('node-zip')(data, {base64: false, checkCRC32: true});
+		
+				//restore each file
+				
+				
+				var file_count=0; //to inform that uploading is ok
+				var okas= require('./public/javascripts/Map.js'); 
+				var file_count_complete=4+okas.People.WizardName.length;
+				var msg = ""; //displayed message
+				
+				//users file
+				var file = zip.files['users.json']; 			
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
-					fs.writeFile(order.getFileNameCurrentOrder( req.params.game, i), file._data, function(err) {
+					
+					redisclient.set("users.json", file._data, function(err, reply) {
+						file_count++;
+						if(err) msg += "\n game/restore ERREUR : " + err; 
+						else adminReadUserFile(); //read user file again to update authentification
+						uploadComplete(res, file_count, file_count_complete, msg); 
+					}); 
+				}
+				else file_count++;
+				
+				var file = zip.files['admin.json']; 			
+				if (file != null ) {
+					msg += "\n Restoring " + file.name;
+					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
@@ -517,13 +500,69 @@ app.post('/:game/restore',
 				}
 				else file_count++;
 				
-			}
-		
+				var file = zip.files['map.json']; 			
+				if (file != null ) {
+					msg += "\n Restoring " + file.name;
+					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
+						file_count++;
+						if(err) msg += "\n game/restore ERREUR : " + err; 
+						uploadComplete(res, file_count, file_count_complete, msg); 
+					}); 	
+				}
+				else file_count++;
+				
+				//delete old map_previous file (not to have inconsistent data)...
+				oldfile="./games/" + req.params.game + "/" + "map_previous.json";
+				if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) 
+				//...and restore new one (if exists)
+				var file = zip.files['map_previous.json']; 
+				if (file != null ) {
+					msg += "\n Restoring " + file.name;
+					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
+						file_count++;
+						if(err) msg += "\n game/restore ERREUR : " + err; 
+						uploadComplete(res, file_count, file_count_complete, msg); 
+					}); 
+				}
+				else file_count++;
+				
+				var file = zip.files['map.jpg']; 
+				if (file != null ) {
+					msg += "\n Restoring " + file.name;
+					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, 'binary', function(err) {
+						file_count++;
+						if(err) msg += "\n game/restore ERREUR : " + err; 
+						uploadComplete(res, file_count, file_count_complete, msg); 
+					}); 
+				}
+				else file_count++;
+				
+				//current order files
+				for ( var i=1; i<okas.People.WizardName.length; i++) {
+				
+					//delete all old orders...
+					oldfile=order.getFileNameCurrentOrder( req.params.game, i);
+					if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) //delete old file (not to have inconsistent data)
+				
+					//and restore new ones if they exist
+					var file = zip.files['orders' + i + '.json']; 
+					if (file != null ) {
+						msg += "\n Restoring " + file.name;
+						fs.writeFile(order.getFileNameCurrentOrder( req.params.game, i), file._data, function(err) {
+							file_count++;
+							if(err) msg += "\n game/restore ERREUR : " + err; 
+							uploadComplete(res, file_count, file_count_complete, msg); 
+						}); 
+					}
+					else file_count++;
+					
+				}
 			
-			uploadComplete(res, file_count, file_count_complete, msg); 
-		});
+				
+				uploadComplete(res, file_count, file_count_complete, msg); 
+			});
 
-		
+		});
 	
 	}
 ); //write order of current wizard

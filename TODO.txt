@@ -1,4 +1,6 @@
 
+- Passer données dans base redis
+
 - victory wizard fun image
 
 - controlling order reading in order.js
@@ -7,8 +9,4 @@
 - Messages : voir dans MapDisplay.js : People.prototype.draw et Map.InsertCommentInCanvas
 
 
-- Passer données dans base ? MongoDb ? : installé en local, package npm installé
-reste à : insérer le code spécifique appfog
-https://docs.appfog.com/services/mongodb#walkthrough
-et tester l'ajout de collections (table). Faire une collection partie dans laquelle sont stockées les cartes et les paramètres admin et le fichier de la carte
-http://docs.mongodb.org/manual/tutorial/getting-started/
+
