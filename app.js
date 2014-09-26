@@ -29,30 +29,7 @@ var path = require('path');
 
 var app = express();
 
-// redis init (persistent data game)
-var redis = require("redis");
-redisclient = redis.createClient();
-redisclient.on("error", function (err) {
-    console.log("Error " + err);
-});
-
-/* simple test on redis
-redisclient.on("connect", function () {
-	redisclient.set("foo_rand000000000000", "some fantastic value", redis.print);
-	redisclient.get("foo_rand000000000000", redis.print);
-});
-app.get('/redistest', 
-	function(req,res) { 
-		redisclient.get("foo_rand000000000000",  function(err, reply) {
-			res.writeHead(200, {'Content-Type': 'text/plain' }); 
-			if (err) res.end( "REDIS TEST ERROR : " + err ); 
-			else res.end( "REDIS TEST : " + reply ); 
-		}); 
-	}
-);
-*/
-
-
+var redis = require('./routes/redis');
 
 //authentication : an array of users 
 defaultUsers =
@@ -93,14 +70,14 @@ adminReadUserFile = function() {
 	//var usersFile="./games/users.json";
 	
 	//read user file in redis
-	redisclient.get("users.json",  function(err, reply) {
+	redis.client.get("users.json",  function(err, reply) {
 		
 		
 		if (err) { console.log( "REDIS TEST ERROR : " + err ); return;}
 		
 		//first init of users data
 		if (reply==null) {
-			redisclient.set("users.json", JSON.stringify(defaultUsers, null, '\t'))
+			redis.client.set("users.json", JSON.stringify(defaultUsers, null, '\t'))
 			console.log("user file has been initialized !");		
 			users=defaultUsers;
 		} else {
@@ -110,9 +87,9 @@ adminReadUserFile = function() {
 		}
 		
 		//reread games
-		redisclient.get("games",  function(err, reply) {
+		redis.client.get("games",  function(err, reply) {
 			if (reply==null) {
-				redisclient.set("games", JSON.stringify(defaultGames, null, '\t'))
+				redis.client.set("games", JSON.stringify(defaultGames, null, '\t'))
 				console.log("games list has been initialized!");	
 				games=defaultGames;
 			} else {
@@ -131,16 +108,16 @@ adminReadUserFile = function() {
 			}
 			var nextGameReadAndInit = function(err, reply) {
 				if (reply==null) { //first init of admin map
-					redisclient.set(adminGameName(i), JSON.stringify(defaultWizardUser, null, '\t'), function(err) { 
+					redis.client.set(adminGameName(i), JSON.stringify(defaultWizardUser, null, '\t'), function(err) { 
 						if(err) console.log(err); else console.log("The admin file " + adminGameName(i) + " was initialized !"); 
-						if (nextGameName()!=null) redisclient.get(adminGameName(i), nextGameReadAndInit); //recursive call						
+						if (nextGameName()!=null) redis.client.get(adminGameName(i), nextGameReadAndInit); //recursive call						
 					}); 
 				} else {		
 					console.log("Adminfile " + i + " exists : " + adminGameName(i));
-					if (nextGameName()!=null) redisclient.get(adminGameName(i), nextGameReadAndInit); //recursive call	
+					if (nextGameName()!=null) redis.client.get(adminGameName(i), nextGameReadAndInit); //recursive call	
 				}
 			};
-			redisclient.get(nextGameName(), nextGameReadAndInit); //first call
+			redis.client.get(nextGameName(), nextGameReadAndInit); //first call
 	
 		
 		});
@@ -262,7 +239,7 @@ app.get('/:game/login', function(req, res) {
 		
 	nextturn.proceedNextTurn(req.params.game, false);
 	
-	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 
 		var wizardToUser =  JSON.parse( reply );
 		//console.log("DEBUG login : wizardToUser.length=" + wizardToUser.length);
@@ -291,7 +268,7 @@ app.post('/:game/login',
 app.get('/:game/client', //client.index);
 	function(req, res) {
 
-	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
 		var wizardToUser =  JSON.parse( reply ) ;
 		
@@ -316,7 +293,7 @@ app.get('/:game/client', //client.index);
 //map editing
 app.get('/:game/adminMapEdit', function(req, res) {
 
-	redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
 		var wizardToUser =  JSON.parse( reply );
 		
@@ -350,7 +327,7 @@ app.post('/:game/mapwriteimage', map.write);
 app.get('/:game/orders/:idWizard', 
 	function(req, res) {
 		
-		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 			//allowed ?
 			var wizardToUser =  JSON.parse( reply );
 			
@@ -370,7 +347,7 @@ app.get('/:game/orders/:idWizard',
 app.post('/:game/orders/:idWizard', 
 	function(req,res) {
 	
-		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 		
 			//allowed ?
 			var wizardToUser =  JSON.parse( reply );
@@ -394,7 +371,7 @@ app.post('/:game/orders/:idWizard',
 app.get('/:game/backup.zip',
 	function(req, res) {
 	
-		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 		
 			//allowed ?
 			var wizardToUser =  JSON.parse( reply );
@@ -407,31 +384,44 @@ app.get('/:game/backup.zip',
 			//zip files init
 			var zip = new require('node-zip')();
 			
-			//users file (in common with all games)
-			redisclient.get("users.json",  function(err, reply) { zip.file('users.json', reply ) });
-			//zip.file('users.json', fs.readFileSync("./games/users.json") );		
-			//admin file
-			zip.file('admin.json', fs.readFileSync("./games/" + req.params.game + "/admin.json") );
-			//map image file
-			zip.file('map.jpg', map.imagefile( req.params.game  )  );
-			//map json file
-			zip.file('map.json', map.jsonfile( req.params.game, 0  )  );
-			if (fs.existsSync(  map.jsonfilepath( req.params.game, 1  )  )) { //may not exists at the beginning of the game
-				zip.file('map_previous.json', map.jsonfile( req.params.game, 1  )  );
-			}
-			//current order files
+			//files to be saved
+			var tobesaved = [ "users.json", "admin.json", "map.json", "map_previous.json", "map.jpg" ];
+			//current order files to be saved 
 			var okas= require('./public/javascripts/Map.js'); 
 			for ( var i=1; i<okas.People.WizardName.length; i++) {
-				var orderFile = order.getFileNameCurrentOrder( req.params.game, i); //current
-				//console.log(orderFile);
-				if (fs.existsSync(orderFile)) { 
-					zip.file('orders' + i + '.json', fs.readFileSync(orderFile)) ; 
-				}
+				tobesaved.push('orders' + i + '.json')
 			}
-			//send zip
-			var data = zip.generate({base64:false,compression:'DEFLATE'});
-			res.writeHead(200, {'Content-Type': 'application/zip' });
-			res.end(data, 'binary');
+			
+			//callback for redis get
+			var i=-1;
+			var zipNextFile = function() {
+				i++;
+				
+				//end ?
+				if (i>=tobesaved.length) { 
+					//send zip
+					var data = zip.generate({base64:false,compression:'DEFLATE'});
+					res.writeHead(200, {'Content-Type': 'application/zip' });
+					res.end(data, 'binary');
+					return;
+				}
+				
+				//save current file to zip :
+				if (tobesaved[i]!="users.json")
+					rediskey=req.params.game + "." + tobesaved[i]; //file date rely on a given game
+				else rediskey = tobesaved[i];  //file for all games
+				redis.client.get(rediskey,  function(err, reply) { 
+					if (reply==null) { 
+						//no data to be saved
+						console.log("backup : nothing found for : " + tobesaved[i]); 
+					} else {
+						console.log("backup : save date of " + tobesaved[i]); zip.file( tobesaved[i], reply ) 
+					}
+					zipNextFile(); //and continue with next file to be saved
+				});
+				
+			};
+			zipNextFile(); //start backup in zip
 			
 		});
 	}
@@ -441,7 +431,7 @@ app.get('/:game/backup.zip',
 app.post('/:game/restore', 
 	function(req,res) { 
 	
-		redisclient.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
 			//allowed ?
 			var wizardToUser =  JSON.parse( reply );
@@ -480,7 +470,7 @@ app.post('/:game/restore',
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
 					
-					redisclient.set("users.json", file._data, function(err, reply) {
+					redis.client.set("users.json", file._data, function(err, reply) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR : " + err; 
 						else adminReadUserFile(); //read user file again to update authentification
@@ -492,7 +482,8 @@ app.post('/:game/restore',
 				var file = zip.files['admin.json']; 			
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
-					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
+					redis.client.set(req.params.game + "." + file.name, file._data, function(err, reply) {
+					//fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
