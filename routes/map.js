@@ -3,9 +3,9 @@
  */
 
 var fs = require('fs');
-//client shared lib
+//client shared lib :
 var okas= require('./../public/javascripts/Map.js');
-
+//database access :
 var redis = require('./../routes/redis');
 
 //return the current json map for the wizard

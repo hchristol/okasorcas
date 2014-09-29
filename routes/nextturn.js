@@ -4,6 +4,9 @@ var fs = require('fs');
 var okas= require('./../public/javascripts/Map.js');
 var bots= require('./../public/javascripts/Bots.js');
 
+//database access :
+var redis = require('./../routes/redis');
+
 /**
  * Init objects and solve current turn
  */
