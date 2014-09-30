@@ -14,74 +14,90 @@ var redis = require('./../routes/redis');
 exports.index = function(req, res) {	
 	var forceNextTurn = false;
 	if (req.query.forced != null ) forceNextTurn = true; //next turn forced in GET parameter
-	res.render('nextturn', { title: '!!!!8!!!! NEXT TURN', message: exports.proceedNextTurn(req.params.game, forceNextTurn ) });
+	exports.proceedNextTurn(req.params.game, forceNextTurn, res );
+	
 };
 
-exports.proceedNextTurn = function(game, forceNextTurn) {
-	var init=readJsonObjects(game);
-	if (init==null) return "new game, map not initialized, no nextturn. Log as admin to create new map";
-	return nextturn(game, init.map, init.orders, forceNextTurn);
-}
-
-//return orders and map from json
-readJsonObjects = function(game) {
-	var init=new Object(); //store map and orders
-
-	//use sync reading coz i can't deal with no sync reading. To be improved !
-
+//res : response wanted, null if no res parameter
+exports.proceedNextTurn = function(game, forceNextTurn, res) {
+	
 	//get the current map
-	//console.log("Lecture map : " + "./games/" + game + "/map.json");
-	var ficname="./games/" + game + "/map.json";
+	var ficname= game + ".map.json";
 	
-	if (!fs.existsSync(ficname)) return null; //new game
-	
-	init.map= new okas.Map(JSON.parse(fs.readFileSync(ficname)));
-	//console.log("   map.land.spatialIndex.length=" + init.map.land.spatialIndex.length);
-	
-	//get the current orders : group all tactics orders of different wizards in one tactic object
-	init.orders = new okas.Tactic(new Array(), init.map.turnNumber);
-	
-	var ia = new bots.Bots(okas, init.map); //used to generate ia order
-	
-	for (var i=1; i<okas.People.WIZARD_COUNT; i++) {
-		var filename = "./games/" + game + "/orders" + i + ".json";
-		console.log("Lecture orders : " + filename);
-		
-		var iaToPlay=true;
-		
-		if (fs.existsSync(filename)) {
-			console.log("filename=" + filename  + "    fs=" + fs);
-			
-			var tactic = okas.Tactic.fromJSON( JSON.parse(fs.readFileSync (filename)), init.map );
-						
-			//orders for current map or deprecated orders (may happends if not updated by player)
-			if ( tactic.turnNumber != init.map.turnNumber) { //ignored ! Too old !
-				console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
-				tactic = null; 
-			} 
-			else {
-				init.orders.acts = init.orders.acts.concat( tactic.acts );
-				console.log("nombre ordres du magicien " + i + " = " + tactic.acts.length);
-				iaToPlay=false;
-			}
-		} 
-		
-		if (iaToPlay) { //no human orders, ia replace it
-		
-			//bot enter its orders	
-			var tactic = ia.getOrders(i);
-			init.orders.acts = init.orders.acts.concat( tactic.acts );
-			console.log("nombre ordres du bot " + i + " = " + tactic.acts.length);		
-		
+	redis.client.get( ficname, function(err,reply) {
+
+		if (reply==null) {
+			if (res != null) res.render('nextturn', { title: '!!!!8!!!! NEXT TURN', message: "new game, map not initialized, no nextturn. Log as admin to create new map" });
+			return;
 		}
 		
-	}
+		var init=new Object(); //store map and orders
+		init.map= new okas.Map(JSON.parse(reply));
+		//console.log("   map.land.spatialIndex.length=" + init.map.land.spatialIndex.length);
 	
-	//save orders into history of map
-	if (init.map.history==null) init.map.history=new Object();
-	init.map.history.orders=init.orders;
+		//get the current orders : group all tactics orders of different wizards in one tactic object
+		init.orders = new okas.Tactic(new Array(), init.map.turnNumber);
+		
+		var ia = new bots.Bots(okas, init.map); //used to generate ia order
+		
+		//read each wizard order
+		iOrder=0;
+		var readNextOrder = function() {
+			iOrder++; //start to wizard 1, 0 is neutral
+			
+			if (iOrder>=okas.People.WIZARD_COUNT) { //END OF READING ALL ORDER.
+				
+				//save orders into history of map
+				if (init.map.history==null) init.map.history=new Object();
+				init.map.history.orders=init.orders;
+				
+				nextturnMessage=nextturn(game, init.map, init.orders, forceNextTurn);
+				if (res != null) res.render('nextturn', { title: '!!!!8!!!! NEXT TURN', message: nextturnMessage});
+				return;
+			}
+			
+			//READ NEXT ORDER
+			var redisorder = game + ".orders" + iOrder + ".json";
+			//console.log("proceedNextTurn : read orders : " + redisorder);
+			redis.client.get( redisorder, function(err,reply) { //read orders
+
+				var iaToPlay=true;
+				
+				if (reply!=null) {
+					
+					var tactic = okas.Tactic.fromJSON( JSON.parse(reply), init.map );
+								
+					//orders for current map or deprecated orders (may happends if not updated by player)
+					if ( tactic.turnNumber != init.map.turnNumber) { //ignored ! Too old !
+						console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
+						tactic = null; 
+					} 
+					else {
+						init.orders.acts = init.orders.acts.concat( tactic.acts );
+						console.log("nombre ordres du magicien " + iOrder + " = " + tactic.acts.length);
+						iaToPlay=false;
+					}
+				} 
+				
+				if (iaToPlay) { //no human orders, ia replace it
+				
+					//bot enter its orders	
+					var tactic = ia.getOrders(iOrder);
+					init.orders.acts = init.orders.acts.concat( tactic.acts );
+					console.log("nombre ordres du bot " + iOrder + " = " + tactic.acts.length);		
+				
+				}
+				
+				readNextOrder(); 
+		
+			}); //end reading order		
+		};
+		readNextOrder(); //start reading orders
+
 	
-	return init;
+	});
+	
+
 }
 
 /**
@@ -100,6 +116,7 @@ nextturn = function (game, map, orders, forceNextTurn) {
 	}
 	
 	
+	
 	//saveMap(map, "map" + leftPad(map.turnNumber, 4) + ".json"); //save map before solving its orders, as an archive file
 	saveToJson(game, map, "map_previous" + ".json"); //save map before solving its orders, as an archive file
 	
@@ -112,6 +129,8 @@ nextturn = function (game, map, orders, forceNextTurn) {
 	
 	saveToJson(game, map, "map.json"); //saved as new current map
 	
+	console.log("nextturn : " + message);
+	
 	return message;
 }
 
@@ -119,13 +138,9 @@ nextturn = function (game, map, orders, forceNextTurn) {
 
 /** save an object of the game on server */
 saveToJson = function(game, object, filename) {
-	var path = "./games/" + game + "/" + filename
-	fs.writeFile(path, JSON.stringify(object), function(err) {
-		if(err) {
-			console.log(err);
-		} else {
-			console.log("The json was saved : " + path);
-		}
+	var path = game + "." + filename
+	redis.client.set(path, JSON.stringify(object), function(err) { 
+		if(err) console.log(err);
 	}); 	
 }
 

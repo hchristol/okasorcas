@@ -1905,8 +1905,8 @@ Unit.prototype.cost = function() {
 Unit.costOfType = function(type) {
 
 	if (type == Unit.WIZARD ) return 0;
-	var cost = 0;
-	var mediumCost=0; //to normalize value
+	var cost = 200;
+	var mediumCost=200; //to normalize value
 	for (var i=0; i<Place.TERRAIN_COUNT; i++)  {
 		cost += 
 			Unit.strengthOfType(type, i, Fighting.ATTACK) + Unit.strengthOfType(type, i, Fighting.DEFENSE) + Unit.strengthOfType(type, i, Fighting.SUPPORT) +
@@ -1917,7 +1917,7 @@ Unit.costOfType = function(type) {
 	}
 		
 	
-	averageNumberOfTerrainForOneUnit = 3;
+	averageNumberOfTerrainForOneUnit = 5;
 	cost = cost * ( Place.incomeOfTerrain(null) * averageNumberOfTerrainForOneUnit ) / mediumCost;
 	
 	//flying unit bonus

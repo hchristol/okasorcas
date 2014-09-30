@@ -53,7 +53,7 @@ exports.write = function(req, res){
 					console.log("The file map.json was saved!");
 					
 					//remove old files
-					redis.client.set(req.params.game + ".map_previous.json", null);
+					redis.client.del(req.params.game + ".map_previous.json");
 					deleteFile("./games/"+ req.params.game  + "/map_previous.json");
 					for( var i=1; i<=8; i++) redis.client.set(req.params.game + ".orders" + i + ".json", null); 
 			
