@@ -494,7 +494,8 @@ app.post('/:game/restore',
 				var file = zip.files['map.json']; 			
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
-					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
+					redis.client.set(req.params.game + "." + file.name, file._data, function(err, reply) {
+					//fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
@@ -502,25 +503,27 @@ app.post('/:game/restore',
 				}
 				else file_count++;
 				
-				//delete old map_previous file (not to have inconsistent data)...
-				oldfile="./games/" + req.params.game + "/" + "map_previous.json";
-				if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) 
-				//...and restore new one (if exists)
 				var file = zip.files['map_previous.json']; 
-				if (file != null ) {
-					msg += "\n Restoring " + file.name;
-					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
+				msg += "\n Restoring (if exists) " + 'map_previous.json';
+				if (file!=null) { 
+					redis.client.set(req.params.game + "." + file.name, file._data, function(err, reply) {  
 						file_count++;
-						if(err) msg += "\n game/restore ERREUR : " + err; 
+						if(err) msg += "\n game/restore ERREUR map_previous : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 
+				} else { //if no file, erase old data to avoid inconsistent data
+					redis.client.del(req.params.game + "." + 'map_previous.json', function(err, reply) {  
+						file_count++;
+						if(err) msg += "\n game/delete ERREUR map_previous : " + err; 
+						uploadComplete(res, file_count, file_count_complete, msg); 					
+					});
 				}
-				else file_count++;
 				
 				var file = zip.files['map.jpg']; 
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
-					fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, 'binary', function(err) {
+					var decodedImage = new Buffer( file._data, 'binary'); //buffer required for binary data
+					redis.client.set(req.params.game + "." + file.name, decodedImage, function(err, reply) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
@@ -530,22 +533,22 @@ app.post('/:game/restore',
 				
 				//current order files
 				for ( var i=1; i<okas.People.WizardName.length; i++) {
-				
-					//delete all old orders...
-					oldfile=order.getFileNameCurrentOrder( req.params.game, i);
-					if (fs.existsSync( oldfile) ) fs.unlinkSync(oldfile) //delete old file (not to have inconsistent data)
-				
-					//and restore new ones if they exist
+							
 					var file = zip.files['orders' + i + '.json']; 
-					if (file != null ) {
-						msg += "\n Restoring " + file.name;
-						fs.writeFile(order.getFileNameCurrentOrder( req.params.game, i), file._data, function(err) {
+					msg += "\n Restoring (if exists) " + order.getFileNameCurrentOrder( req.params.game, i);
+					if (file!=null) { 
+						redis.client.set(order.getFileNameCurrentOrder( req.params.game, i), file.data, function(err, reply) {  
 							file_count++;
 							if(err) msg += "\n game/restore ERREUR : " + err; 
 							uploadComplete(res, file_count, file_count_complete, msg); 
 						}); 
+					} else { //if no file, erase old data to avoid inconsistent data
+						redis.client.del(order.getFileNameCurrentOrder( req.params.game, i), function(err, reply) {  
+							file_count++;
+							if(err) msg += "\n game/delete ERREUR : " + err; 
+							uploadComplete(res, file_count, file_count_complete, msg); 
+						}); 					
 					}
-					else file_count++;
 					
 				}
 			
