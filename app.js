@@ -472,7 +472,7 @@ app.post('/:game/restore',
 					
 					redis.client.set("users.json", file._data, function(err, reply) {
 						file_count++;
-						if(err) msg += "\n game/restore ERREUR : " + err; 
+						if(err) msg += "\n game/restore users.json ERREUR : " + err; 
 						else adminReadUserFile(); //read user file again to update authentification
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 
@@ -485,7 +485,7 @@ app.post('/:game/restore',
 					redis.client.set(req.params.game + "." + file.name, file._data, function(err, reply) {
 					//fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
 						file_count++;
-						if(err) msg += "\n game/restore ERREUR : " + err; 
+						if(err) msg += "\n game/restore admin.json ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 
 				}
@@ -497,7 +497,7 @@ app.post('/:game/restore',
 					redis.client.set(req.params.game + "." + file.name, file._data, function(err, reply) {
 					//fs.writeFile("./games/" + req.params.game + "/" + file.name, file._data, function(err) {
 						file_count++;
-						if(err) msg += "\n game/restore ERREUR : " + err; 
+						if(err) msg += "\n game/restore map.json ERREUR : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 	
 				}
@@ -525,7 +525,7 @@ app.post('/:game/restore',
 					var decodedImage = new Buffer( file._data, 'binary'); //buffer required for binary data
 					redis.client.set(req.params.game + "." + file.name, decodedImage, function(err, reply) {
 						file_count++;
-						if(err) msg += "\n game/restore ERREUR : " + err; 
+						if(err) msg += "\n game/restore ERREUR map.jpg : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 
 				}
@@ -537,15 +537,15 @@ app.post('/:game/restore',
 					var file = zip.files['orders' + i + '.json']; 
 					msg += "\n Restoring (if exists) " + order.getFileNameCurrentOrder( req.params.game, i);
 					if (file!=null) { 
-						redis.client.set(order.getFileNameCurrentOrder( req.params.game, i), file.data, function(err, reply) {  
+						redis.client.set(order.getFileNameCurrentOrder( req.params.game, i), file._data, function(err, reply) {  
 							file_count++;
-							if(err) msg += "\n game/restore ERREUR : " + err; 
+							if(err) msg += "\n game/restore orders ERREUR : " + err; 
 							uploadComplete(res, file_count, file_count_complete, msg); 
 						}); 
 					} else { //if no file, erase old data to avoid inconsistent data
 						redis.client.del(order.getFileNameCurrentOrder( req.params.game, i), function(err, reply) {  
 							file_count++;
-							if(err) msg += "\n game/delete ERREUR : " + err; 
+							if(err) msg += "\n game/delete orders ERREUR : " + err; 
 							uploadComplete(res, file_count, file_count_complete, msg); 
 						}); 					
 					}
