@@ -26,8 +26,8 @@ exports.jsonfilepath = function(game, previous) {
 exports.readimage = function(req, res){	
 
 	redis.client.get(req.params.game + ".map.jpg", function(err,reply) {
-		res.writeHead(200, {'Content-Type': 'image/jpg' });
-		res.end(reply, 'binary');	
+		res.writeHead(200, {'Content-Type': 'image/jpg' });	
+		res.end( reply, 'base64');	 
 	});
 
 }
