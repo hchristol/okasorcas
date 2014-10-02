@@ -51,6 +51,7 @@ function RequestJson(url, callbackFunction, dataPost, mimeType) {
 TESTING PURPOSE    
 */
 function RequestImageUpload(url, callbackFunction, imageDataUrl, mimeType) {
+
 	var request= new XMLHttpRequest();
 	
     request.onload = function() {
@@ -58,15 +59,17 @@ function RequestImageUpload(url, callbackFunction, imageDataUrl, mimeType) {
     };
 	
 	// Upload
-	var form = new FormData();
+	var form = document.createElement('form');
     var input = document.createElement('input');
     input.type = 'file';
     input.name = 'displayImage';
+	input.href=imageDataUrl;
     form.appendChild(input);
 	
     request.open('POST', url); // Rappelons qu'il est obligatoire d'utiliser la méthode POST quand on souhaite utiliser un FormData
 	request.setRequestHeader("Content-Type", mimeType ); //  multipart/form-data
 	request.send(form);
+
 }
 
 /**

@@ -95,6 +95,7 @@ var init = function () {
 			myData.imageFile=dataUrl;
             //same way as json : it's only a data send  
 			RequestJson("mapwriteimage", function(json) { saveBoth++; if (saveBoth==2) alert("Map saved !");  }, JSON.stringify( myData ) );
+			//try direct form upload : does not work (2014-10): RequestImageUpload("mapwriteimage", function(json) { saveBoth++; if (saveBoth==2) alert("Map saved !");  }, myData.imageFile, 'multipart/form-data' );
           }
 		  ,mimeType:"image/jpeg"
 		  ,quality:0.85

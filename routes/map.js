@@ -27,21 +27,17 @@ exports.readimage = function(req, res){
 
 	redis.client.get(req.params.game + ".map.jpg", function(err,reply) {
 		res.writeHead(200, {'Content-Type': 'image/jpg' });	
-		res.end( reply, 'base64');	 
+		res.end( new Buffer(reply, 'base64') ); //convert image string into binary
 	});
 
 }
 
 //save the map on server
 exports.write = function(req, res){
-	//content = new Object();
-	//res.send("Requete sur les ordres, methode : " + req.method + "  magicien : " + req.params.idWizard );
-	//res.send(JSON.stringify(content)+"\n", 200);
-	console.log("Requete sur la carte, methode : " + req.method + "  partie : " + req.params.game + "   is json ?" + req.is('application/json') );
-	
+
 	//save map json object
 	if ( req.is('application/json') ) {
-		for(var key in req.body ) console.log( "body propertie : " + key);
+		//for(var key in req.body ) console.log( "body propertie : " + key);
 		
 		//map file object 
 		if ( 'land' in req.body ) {
@@ -69,7 +65,6 @@ exports.write = function(req, res){
 				}
 			}); 
 			*/
-			
 
 		}
 		
@@ -77,29 +72,22 @@ exports.write = function(req, res){
 		//http://stackoverflow.com/questions/8110294/nodejs-base64-image-encoding-decoding-not-quite-working
 		if ( 'imageFile' in req.body ) {
 			
-			var decodedImage = new Buffer( req.body.imageFile.substring("data:image/png;base64,".length+1), 'base64');
+			decodedImage = new Buffer( req.body.imageFile.substring("data:image/png;base64,".length+1), 'base64');
 			
-			redis.client.set(req.params.game + ".map.jpg", decodedImage, function(err) { 
+			//image has to be converted into string to be read successfully by all redis client (buffer option to true in redis client seems not to work on all redis server)
+			redis.client.set(req.params.game + ".map.jpg", decodedImage.toString('base64'), function(err) { 
 				if(err) {
 					console.log(err);
 				} else {
 					console.log("The file map.jpg was saved!");
 				}			
 			});
-			/*
-			fs.writeFile("./games/"+ req.params.game  + "/map.jpg", decodedImage , function(err) { // remove "data:image/png;base64,", that's why we remove this
-				if(err) {
-					console.log(err);
-				} else {
-					console.log("The file was saved!");
-				}
-			}); 
-			*/
 			
 			
-		}
+		}	
 		
 	}
+	
 	
 	//to read file, see  : http://www.sitepoint.com/accessing-the-file-system-in-node-js/
 	
