@@ -410,15 +410,23 @@ app.get('/:game/backup.zip',
 				if (tobesaved[i]!="users.json")
 					rediskey=req.params.game + "." + tobesaved[i]; //file date rely on a given game
 				else rediskey = tobesaved[i];  //file for all games
+				
 				redis.client.get(rediskey,  function(err, reply) { 
 					if (reply==null) { 
 						//no data to be saved
 						console.log("backup : nothing found for : " + tobesaved[i]); 
 					} else {
-						console.log("backup : save date of " + tobesaved[i]); zip.file( tobesaved[i], reply ) 
+						if (tobesaved[i]=="map.jpg") { //binary image
+							console.log("backup : save binary data of " + tobesaved[i]); 
+							zip.file( tobesaved[i], new Buffer(reply, 'base64') ); //convert image string into binary 
+						} else { //other json file
+							console.log("backup : save data of " + tobesaved[i]);
+							zip.file( tobesaved[i], reply ) 
+						}
 					}
 					zipNextFile(); //and continue with next file to be saved
 				});
+				
 				
 			};
 			zipNextFile(); //start backup in zip
@@ -522,8 +530,8 @@ app.post('/:game/restore',
 				var file = zip.files['map.jpg']; 
 				if (file != null ) {
 					msg += "\n Restoring " + file.name;
-					var decodedImage = new Buffer( file._data, 'binary'); //buffer required for binary data
-					redis.client.set(req.params.game + "." + file.name, decodedImage, function(err, reply) {
+					var decodedImage = new Buffer(file._data, 'binary');  //binary data
+					redis.client.set(req.params.game + "." + file.name, decodedImage.toString('base64'), function(err, reply) {
 						file_count++;
 						if(err) msg += "\n game/restore ERREUR map.jpg : " + err; 
 						uploadComplete(res, file_count, file_count_complete, msg); 
