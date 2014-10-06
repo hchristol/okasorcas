@@ -259,6 +259,7 @@ Point.prototype.showEnlightedCircle = function ( ctx, color, size ) {
 	ctx.closePath();
 	ctx.shadowBlur = 5; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.shadowColor=color;  //blur option 
 	ctx.strokeStyle = color;  ctx.lineWidth=1.3; ctx.stroke();	
+	ctx.shadowBlur = 0;
 }
 /** Enlight a point with a rounding ray **/
 Point.prototype.showEnlightedRay = function ( ctx, color, size ) {
@@ -270,6 +271,7 @@ Point.prototype.showEnlightedRay = function ( ctx, color, size ) {
 	ctx.closePath();
 	ctx.shadowBlur = 5; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.shadowColor=color;  //blur option 
 	ctx.strokeStyle = color;  ctx.lineWidth=1.3; ctx.stroke();	
+	ctx.shadowBlur = 0;
 }
 
 /** (added)

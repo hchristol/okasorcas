@@ -334,23 +334,23 @@ Act.prototype.displayOrder = function( ctx, halo) {
 		if (this.parameters.places.length==0) return;
 		var place = this.parameters.places[0];
 		
+		if (color == null) color = Unit.ColorOf(this.owner);
+		ctx.shadowBlur = 7; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.shadowColor="red";  //blur option (differenciate from other orders)
+		ctx.strokeStyle = color; ctx.fillStyle = color;	 ctx.lineWidth = 1;
+		
 		//movement or distant attack ?
 		if (LearnedSpells.isSpellAMovement(place.terrain)) { //magic movement
-			
-			//arrow from spell launcher
-			if (color == null) color = Unit.ColorOf(this.owner);
-			color="red";
-			ctx.strokeStyle = color; ctx.fillStyle = color;	 ctx.lineWidth = 1;
+			//arrow from spell launcher	
 			CanvasDrawArrow (ctx, this.parameters.startGraphicPosition, place.position, 0, 1, 0.25, 13, 0.2 );
+			
 			
 		} else { //distant attack
 			Map.InsertImageInCanvas("images/unit59.png", place.position.add(0,-25), ctx);
 			//arrow from spell launcher
-			if (color == null) color = Unit.ColorOf(this.owner);
-			color="red";
-			ctx.strokeStyle = color; ctx.fillStyle = color;	 ctx.lineWidth = 1;
 			CanvasDrawArrow (ctx, this.parameters.startGraphicPosition, place.position.add(16,-16), 0, 1, 0  , 4, 0.2 );	
 		}
+		
+		ctx.shadowBlur = 0; //end blur for next draw
 		
 	}
 	

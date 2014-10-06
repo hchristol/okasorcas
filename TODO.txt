@@ -1,6 +1,4 @@
 
-- Passer données dans base redis
-
 - victory wizard fun image
 
 - controlling order reading in order.js
