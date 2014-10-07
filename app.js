@@ -314,7 +314,6 @@ app.get('/:game/adminMapEdit', function(req, res) {
 	});
 });
 
-
 app.get('/:game/images/:img', function(req, res){ res.redirect('/images/' + req.params.img ); } ); //image redirect
 
 //map client reading/writing  
@@ -581,6 +580,14 @@ uploadComplete=function(res, file_count, file_count_complete, msg) {
 
 //end of turn : solving order
 app.get('/:game/nextturn', nextturn.index);
+
+
+//tutorial main page (map)
+app.get('/tutorial', //client.index);
+	function(req, res) {
+	res.render('tutorial', { title: '!!!!8!!!! TUTORIAL' });
+});
+
 
 //TEST
 //app.get('/test', test01.index);

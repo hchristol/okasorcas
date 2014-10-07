@@ -19,18 +19,20 @@ var SIMULATE_VIEW=0; //simulated orders : 1 for only movements, 2 for movements+
 var LAND_IMAGE_ELEMENT; //image element of land map, stored to avoid reloading when replay
 var REPLAY_CACHE=new Array(); //array of object of loaded objects (map.json and orders). To avoid reloading when replay. Indexes : TURN_REPLAY, and object.map and object.orders
 
+var CANVAS_TUTORIAL; //extra info tuto
+
 var init = function () {
 
 	//if( isMobile.any() ) alert('Mobile :-))'); else alert('Pas mobile :-(');
 	
-	CURRENT_WIZARD= parseInt(document.getElementById('wizardId').value);
+	CURRENT_WIZARD= 1; //wizard for tutorial
 
 	loadMap();
 	
 	//menu display for mobile device :
 	menuParent=document.getElementById('menuParent');
 	
-	if( !isMobile.any() ) {  //set UI for desktop client
+	if( true ) {  //set UI for desktop client
 		document.getElementById('menuOpen').style.visibility='hidden';
 		document.getElementById('menuParent').style.visibility='visible'; 
 		document.getElementById('menuParent').style.position='absolute';  
@@ -39,37 +41,6 @@ var init = function () {
 		document.getElementById('menuParent').style.top='0px';
 	};
 
-	document.getElementById('menuOpenClose').onclick = function(evt) {	
-		if ( (menuParent.style.visibility == "") || (menuParent.style.visibility == "hidden")   ) { 
-			menuParent.style.visibility="visible";
-			document.getElementById('menuOpenClose').innerHTML="-";
-		}
-		else {
-			menuParent.style.visibility="hidden";
-			document.getElementById('menuOpenClose').innerHTML="+";
-		}
-	};
-	
-	//moving menu (for mobile devices)
-	var movYStart; var movYEnd;
-	if( isMobile.any() ) { 
-		menuParent.ontouchstart = function(evt) {
-			movYStart = evt.pageY;
-			menuParent.ontouchmove = function(evt) {
-				movYEnd=evt.pageY;
-				//move menu :
-				if (menuParent.style.top=="") menuParent.style.top="0px";
-				//convert to numeric
-				var hpos = parseInt( menuParent.style.top.substring(0,menuParent.style.top.indexOf('px')) ) ;
-				hpos+=(movYEnd-movYStart);
-				movYStart=movYEnd;
-				menuParent.style.top=hpos + "px";			
-			}
-		};
-		menuParent.ontouchend = function(evt) {
-			menuParent.ontouchmove = null;
-		};	
-	}
 	
 	//Menu actions
 	var item; var img;
@@ -79,6 +50,7 @@ var init = function () {
 
 	
 	item = AddMenuItem(menuParent, InfoMessages["MenuReincarnation"] , "menu", function(evt) { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu");
 		var posMenu = MenuFloatingPosition( 
 			Point.mouseCoordinates( evt, mapContainer ) , 
@@ -91,7 +63,7 @@ var init = function () {
 	
 	//DIPLOMACY
 	item = AddMenuItem(menuParent, InfoMessages["MenuDiplo"] , "menu", function(evt) { 
-	
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (INPUT_ORDER.map!=null) {
 			var menuChooseSupport=document.getElementById('menuChooseSupport');
@@ -108,6 +80,7 @@ var init = function () {
 	} );
 	
 	item = AddMenuItem(menuParent, InfoMessages["MenuRevenue"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (CURRENT_MAP!=null) {
 			var htmlViewIncomes=document.getElementById('viewIncomes');
@@ -124,6 +97,8 @@ var init = function () {
 	} );
 	
 	itemValidate = AddMenuItem(menuParent, "<b>" + InfoMessages["MenuValidateOrders"] + "</b>" , "menu", function() {
+	
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
 		//save json orders
@@ -142,6 +117,7 @@ var init = function () {
 	//simulate orders
 	//after resolution
 	var itemSimulate = AddMenuItem(menuParent, InfoMessages["MenuNextTurn"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 	
 		//see attacks 
@@ -161,40 +137,11 @@ var init = function () {
 			loadMap();	
 			return;			
 		}
-		
-	/*
-		//see movements
-		if (SIMULATE_VIEW==0) { 
-			saveMapInCache();
-			SIMULATE_VIEW=1;	
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurn"];	
-			loadMap();	
-			return;
-		}
-		
-		//see attacks 
-		if (SIMULATE_VIEW==1) {  
-			SIMULATE_VIEW=0; loadMap(false); //required for reloading orders
-			saveMapInCache();
-			SIMULATE_VIEW=2;	
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurnCancel"];	
-			loadMap();	
-			return;
-		}
-
-		//no more simulation available : back to actual map
-		if (SIMULATE_VIEW==2) {
-			SIMULATE_VIEW=0;
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurnBeforeAttack"];
-			loadMap();	
-			return;			
-		}
-		
-	*/
 	
 	} );
 	
 	AddMenuItem(menuParent, InfoMessages["MenuCancelOrders"] , "menu", function() {
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
 		//save json orders
@@ -203,6 +150,7 @@ var init = function () {
 	
 	//previous map and orders
 	var itemHistory = AddMenuItem(menuParent, InfoMessages["MenuReplay"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		
 		if (SIMULATE_VIEW!=0) {  //quit simulated view before changing turn
@@ -228,6 +176,7 @@ var init = function () {
 	
 	//display rules for all existing terrains
 	AddMenuItem(menuParent, InfoMessages["MenuTerainArray"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		
 		if (document.getElementById('viewTerrainRules').style.visibility=="visible") document.getElementById('viewTerrainRules').style.visibility="hidden";
@@ -242,6 +191,7 @@ var init = function () {
 	
 	//display strengths option
 	item = AddMenuItem(menuParent, InfoMessages["MenuStrengthDisplayNo"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if ( ClientOrders.DISPLAY_STRENGTH ) {
 			ClientOrders.DISPLAY_STRENGTH=false;
@@ -258,12 +208,14 @@ var init = function () {
 	//floating menu orders -----------------------	
 	var menuFloating=document.getElementById('menuFloating');
 	item = AddMenuItem(menuFloating, InfoMessages["MenuMovement"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.MOVEMENT;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);  
 		menuFloating.unitTarget=null; menuFloating.style.visibility="hidden";
 	} );
 	item = AddMenuItem(menuFloating, InfoMessages["MenuRecruit"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.RECRUIT;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);
@@ -278,12 +230,14 @@ var init = function () {
 	} );
 	*/
 	item = AddMenuItem(menuFloating, InfoMessages["MenuSpellThrow"] , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.SPELL_THROW;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);
 		menuFloating.unitTarget=null; menuFloating.style.visibility="hidden";
 	} );
-	item = AddMenuItem(menuFloating, InfoMessages["MenuLearnedSpells"]  , "menu", function() {  
+	item = AddMenuItem(menuFloating, InfoMessages["MenuLearnedSpells"]  , "menu", function() { 
+		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.showLearnedSpellOf(menuFloating.unitTarget);  		
 		menuFloating.style.visibility="hidden";
@@ -294,6 +248,7 @@ var init = function () {
 	//floating menu to choose a wizard
 	var menuChooseWizard = document.getElementById('menuChooseWizard');
 	for (var i=1; i<People.WIZARD_COUNT; i++ ) {
+		return;
 		var item = AddMenuItem(menuChooseWizard, People.WizardName[i] , "menu", function() { 
 			MenuSelectItem(this,"menu", "selectedMenu"); 
 			menuChooseWizard.wizardId=this.wizardId; 
@@ -353,7 +308,7 @@ var loadMap = function(redrawMap) {
 	} 
 	else 
 	{ //first loading of map
-		var request="mapjson";
+		var request="tutorial/map.json";
 		if (TURN_REPLAY>0) request+="?previous=" + TURN_REPLAY; //optional historic map
 		RequestJson(request, function(json) {  //load map object
 			var map = new Map( JSON.parse(json) );
@@ -364,7 +319,11 @@ var loadMap = function(redrawMap) {
 				return;
 			}
 			
+			
+			initMap(map,null,redrawMap);
+			
 			//request for possible current order of wizard
+			/*
 			var requestOrder = "orders/" + CURRENT_WIZARD;
 			RequestJson(requestOrder, function(jsonOrders) {  //load orders object
 
@@ -377,7 +336,7 @@ var loadMap = function(redrawMap) {
 				}
 				
 			});
-			
+			*/
 			
 		} );
 	}
@@ -393,10 +352,10 @@ var initMap = function(map, orders, redrawMap) {
 	
 	mapContainer=document.getElementById('map');
 	mapContainer.textContent =""; //delete old canvas and image objects
-		
+	
 	//load the image of land
 	if (LAND_IMAGE_ELEMENT==null) //first reading of land image
-		LAND_IMAGE_ELEMENT = Map.InsertImage('mapimage',new Point(0,0));
+		LAND_IMAGE_ELEMENT = Map.InsertImage('tutorial/map.jpg',new Point(0,0));
 	else document.getElementById('map').appendChild(LAND_IMAGE_ELEMENT.cloneNode(true)); //reload clone of image element, to ensure that no image will be reloaded throught network
 	
 	//layers for drawing
@@ -422,9 +381,10 @@ var initMap = function(map, orders, redrawMap) {
 	//draw units on map, and link them to order input
 	if (redrawMap!=false) map.people.draw( canvas_tower, canvas_unitsFlag, canvas_units, canvas_places_to_go, map); //, function(ev) {  Act.UnitClick( this.mapUnit ); } );
 	
-	
 	//order input
 	INPUT_ORDER=new ClientOrders(map, CURRENT_WIZARD);
+	
+	/*
 	INPUT_ORDER.initClick(mapContainer, function(coordinate) { //to be done before an event click is raised
 		//hide all panel once clicked on map
 		if( isMobile.any() ) {
@@ -435,12 +395,17 @@ var initMap = function(map, orders, redrawMap) {
 		document.getElementById('viewTerrainRules').style.visibility="hidden";
 		document.getElementById('menuChooseSupport').style.visibility="hidden";
 	} );
+	*/
+	
 	INPUT_ORDER.initCanvas(canvas_order, canvas_orderStrength, canvas_selected_unit, canvas_places_to_go);
 	if (CURRENT_ORDERS != null) { //show pre existing orders
 		INPUT_ORDER.map.addOrdersTactic( Tactic.fromJSON(JSON.parse(JSON.stringify(CURRENT_ORDERS)), INPUT_ORDER.map ) ); //clone orders to apply them on the right map
 		if (INPUT_ORDER.map.planning!=null) if (redrawMap!=false) INPUT_ORDER.map.planning.orderRefresh(INPUT_ORDER.ctxOrders, INPUT_ORDER.ctxOrdersStrength, INPUT_ORDER.map);
 	}
 	
+	//tutorial info
+	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size(),null,"noClick").getContext("2d");
+	Map.InsertCommentInCanvas( CANVAS_TUTORIAL, "BIENVENUE DANS LE TUTORIEL\nDU HUITIEMME SORTILEGE !", new Point(400, 400), 20 )
 }
 
 //save current map in cache

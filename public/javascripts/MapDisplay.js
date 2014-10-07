@@ -103,17 +103,23 @@ Map.MoveObject = function( htmlObject, position ) {
 Map.RemoveElement = function(element) { element.parentNode.removeChild(element); }
 
 
-Map.InsertCommentInCanvas = function(ctx, text, pos) {
+Map.InsertCommentInCanvas = function(ctx, text, pos, fontHeigth) {
 	
-	var fontHeigth=11;
+	if (fontHeigth==null) fontHeigth=11;
 	ctx.font="normal " + fontHeigth + "px Arial"; 
 	
+	lines = text.split("\n"); //multiline ?
 	
 	pos=pos.add(Place.SIZE/8, -Place.SIZE/2 - fontHeigth );
 	
+	maxwidth=ctx.measureText(lines[0]).width;
+	for (var i = 1; i < lines.length; ++i) {
+		if (ctx.measureText(lines[1]).width > maxwidth) maxwidth=ctx.measureText(lines[1]).width;
+	}
+	
 	ctx.strokeStyle = "brown"; ctx.fillStyle = "white"	;
-	ctx.fillRect(pos.x,pos.y, ctx.measureText(text).width, fontHeigth + 4);
-	ctx.strokeRect(pos.x,pos.y, ctx.measureText(text).width, fontHeigth + 4 );
+	ctx.fillRect(pos.x,pos.y, maxwidth, (fontHeigth * lines.length) + 4);
+	ctx.strokeRect(pos.x,pos.y, maxwidth, (fontHeigth * lines.length) + 4 );
 	/*
 	ctx.lineWidth=7; ctx.strokeStyle = "brown";
 	ctx.strokeText(text,pos.x,pos.y);   
@@ -123,7 +129,12 @@ Map.InsertCommentInCanvas = function(ctx, text, pos) {
 	
 	pos=pos.add(0, fontHeigth);
 	ctx.fillStyle = "brown"	;
-	ctx.fillText(text,pos.x,pos.y);
+	
+	
+	for (var i = 0; i < lines.length; ++i) {
+		ctx.fillText(lines[i],pos.x,pos.y + ( fontHeigth * i ) );
+	}
+	
 }
 
 /** Clear canvas of the size of the map**/
