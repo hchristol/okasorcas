@@ -20,6 +20,7 @@ var LAND_IMAGE_ELEMENT; //image element of land map, stored to avoid reloading w
 var REPLAY_CACHE=new Array(); //array of object of loaded objects (map.json and orders). To avoid reloading when replay. Indexes : TURN_REPLAY, and object.map and object.orders
 
 var CANVAS_TUTORIAL; //extra info tuto
+var CANVAS_TIMER; //timer for tutorial sequence
 
 var init = function () {
 
@@ -308,7 +309,7 @@ var loadMap = function(redrawMap) {
 	} 
 	else 
 	{ //first loading of map
-		var request="tutorial/map.json";
+		var request="tutorial/map0.json";
 		if (TURN_REPLAY>0) request+="?previous=" + TURN_REPLAY; //optional historic map
 		RequestJson(request, function(json) {  //load map object
 			var map = new Map( JSON.parse(json) );
@@ -405,7 +406,10 @@ var initMap = function(map, orders, redrawMap) {
 	
 	//tutorial info
 	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size(),null,"noClick").getContext("2d");
-	Map.InsertCommentInCanvas( CANVAS_TUTORIAL, "BIENVENUE DANS LE TUTORIEL\nDU HUITIEMME SORTILEGE !", new Point(400, 400), 20 )
+	if (CANVAS_TIMER==null) {
+		CANVAS_TIMER = setInterval( tutorialNextTimer, 1000);
+	}
+
 }
 
 //save current map in cache

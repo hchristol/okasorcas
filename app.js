@@ -275,9 +275,10 @@ app.get('/:game/client', //client.index);
 		if (! req.isAuthenticated() ) 
 			res.render('client', { title: '!!!!8!!!!  guest - ' + req.params.game , wizard: -1 });
 		else  {
-			console.log("connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
-			
 			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			
+			console.log("player " + req.user.username + " is logged as wizard " + idWizard );	
+			
 			//authenticated admin
 			if (idWizard==0) 
 				//authenticated player

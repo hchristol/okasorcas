@@ -897,13 +897,13 @@ function Land(json) {
 
 		//put towers!! (spatialindex must have been made)
 		var towerCount=0;
-		var towerMaxCount=8 + Math.random()*2;
+		var towerMaxCount=8 ;
 		while( towerCount<towerMaxCount) {
-			var bounding=0.6;
-			var randomX=(1-bounding)*0.5*this.width + towerCount * this.width*bounding / towerMaxCount + 5 * Place.SIZE * (0.5-Math.random());
+			var bounding=0.7;
+			var randomX=(1-bounding)*0.5*this.width + towerCount * this.width*bounding / towerMaxCount + 6 * Place.SIZE * (0.5-Math.random());
 			if (randomX<0) randomX=0; if (randomX>this.width) randomX=this.width;
 
-			var randomY=(1-bounding)*0.5*this.height + towerCount * this.height*bounding / towerMaxCount + 5 * Place.SIZE * (0.5-Math.random());
+			var randomY=(1-bounding)*0.5*this.height + towerCount * this.height*bounding / towerMaxCount + 6 * Place.SIZE * (0.5-Math.random());
 			if (randomY<0) randomY=0; if (randomY>this.height) randomY=this.height;
 
 			var randomPlace = this.nearestPlace( new Point(randomX, randomY) );
