@@ -19,6 +19,8 @@ var SIMULATE_VIEW=0; //simulated orders : 1 for only movements, 2 for movements+
 var LAND_IMAGE_ELEMENT; //image element of land map, stored to avoid reloading when replay
 var REPLAY_CACHE=new Array(); //array of object of loaded objects (map.json and orders). To avoid reloading when replay. Indexes : TURN_REPLAY, and object.map and object.orders
 
+var MENU_TUTORIAL=null; //real game, not tutorial
+
 var init = function () {
 
 	//if( isMobile.any() ) alert('Mobile :-))'); else alert('Pas mobile :-(');

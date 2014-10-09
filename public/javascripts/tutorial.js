@@ -20,7 +20,8 @@ var LAND_IMAGE_ELEMENT; //image element of land map, stored to avoid reloading w
 var REPLAY_CACHE=new Array(); //array of object of loaded objects (map.json and orders). To avoid reloading when replay. Indexes : TURN_REPLAY, and object.map and object.orders
 
 var CANVAS_TUTORIAL; //extra info tuto
-var CANVAS_TIMER; //timer for tutorial sequence
+var TIMER_TUTORIAL; //timer for tutorial sequence
+var MENU_TUTORIAL={}; //menu functions lists
 
 var init = function () {
 
@@ -50,11 +51,10 @@ var init = function () {
 	var owner=CURRENT_WIZARD; 
 
 	
-	item = AddMenuItem(menuParent, InfoMessages["MenuReincarnation"] , "menu", function(evt) { 
-		return;
-		MenuSelectItem(this,"menu", "selectedMenu");
+	item = AddMenuItem(menuParent, InfoMessages["MenuReincarnation"] , "menu", function() { 
+		MenuSelectItem(this, "menu", "selectedMenu");
 		var posMenu = MenuFloatingPosition( 
-			Point.mouseCoordinates( evt, mapContainer ) , 
+			new Point(993,15), 
 			new Point( menuChooseWizard.clientWidth, menuChooseWizard.clientHeight), 
 			new Point(0,0), CURRENT_MAP.land.size() )
 		menuChooseWizard.style.left=posMenu.x + 'px';
@@ -63,8 +63,7 @@ var init = function () {
 	} );
 	
 	//DIPLOMACY
-	item = AddMenuItem(menuParent, InfoMessages["MenuDiplo"] , "menu", function(evt) { 
-		return;
+	item = AddMenuItem(menuParent, InfoMessages["MenuDiplo"] , "menu", function() { 
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (INPUT_ORDER.map!=null) {
 			var menuChooseSupport=document.getElementById('menuChooseSupport');
@@ -81,8 +80,7 @@ var init = function () {
 	} );
 	
 	item = AddMenuItem(menuParent, InfoMessages["MenuRevenue"] , "menu", function() { 
-		return;
-		MenuSelectItem(this,"menu", "selectedMenu"); 
+		MenuSelectItem(this, "menu", "selectedMenu"); 
 		if (CURRENT_MAP!=null) {
 			var htmlViewIncomes=document.getElementById('viewIncomes');
 			if (htmlViewIncomes.style.visibility=="visible") { htmlViewIncomes.style.visibility="hidden"; }
@@ -98,8 +96,6 @@ var init = function () {
 	} );
 	
 	itemValidate = AddMenuItem(menuParent, "<b>" + InfoMessages["MenuValidateOrders"] + "</b>" , "menu", function() {
-	
-		return;
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
 		//save json orders
@@ -118,7 +114,6 @@ var init = function () {
 	//simulate orders
 	//after resolution
 	var itemSimulate = AddMenuItem(menuParent, InfoMessages["MenuNextTurn"] , "menu", function() { 
-		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 	
 		//see attacks 
@@ -141,8 +136,7 @@ var init = function () {
 	
 	} );
 	
-	AddMenuItem(menuParent, InfoMessages["MenuCancelOrders"] , "menu", function() {
-		return;
+	var itemCancelOrder = AddMenuItem(menuParent, InfoMessages["MenuCancelOrders"] , "menu", function() {
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
 		//save json orders
@@ -151,7 +145,6 @@ var init = function () {
 	
 	//previous map and orders
 	var itemHistory = AddMenuItem(menuParent, InfoMessages["MenuReplay"] , "menu", function() { 
-		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		
 		if (SIMULATE_VIEW!=0) {  //quit simulated view before changing turn
@@ -176,9 +169,8 @@ var init = function () {
 	} );
 	
 	//display rules for all existing terrains
-	AddMenuItem(menuParent, InfoMessages["MenuTerainArray"] , "menu", function() { 
-		return;
-		MenuSelectItem(this,"menu", "selectedMenu"); 
+	var itemMenuTerrainArray = AddMenuItem(menuParent, InfoMessages["MenuTerainArray"] , "menu", function() { 
+		MenuSelectItem(itemMenuTerrainArray,"menu", "selectedMenu"); 
 		
 		if (document.getElementById('viewTerrainRules').style.visibility=="visible") document.getElementById('viewTerrainRules').style.visibility="hidden";
 		else {
@@ -191,15 +183,14 @@ var init = function () {
 	} );	
 	
 	//display strengths option
-	item = AddMenuItem(menuParent, InfoMessages["MenuStrengthDisplayNo"] , "menu", function() { 
-		return;
-		MenuSelectItem(this,"menu", "selectedMenu"); 
+	var itemStrengthDisplay = AddMenuItem(menuParent, InfoMessages["MenuStrengthDisplayNo"] , "menu", function() { 
+		MenuSelectItem(itemStrengthDisplay,"menu", "selectedMenu"); 
 		if ( ClientOrders.DISPLAY_STRENGTH ) {
 			ClientOrders.DISPLAY_STRENGTH=false;
-			this.innerHTML=InfoMessages["MenuStrengthDisplayYes"];
+			itemStrengthDisplay.innerHTML=InfoMessages["MenuStrengthDisplayYes"];
 		} else {
 			ClientOrders.DISPLAY_STRENGTH=true;
-			this.innerHTML=InfoMessages["MenuStrengthDisplayNo"];		
+			itemStrengthDisplay.innerHTML=InfoMessages["MenuStrengthDisplayNo"];		
 		}
 		if ( INPUT_ORDER != null ) INPUT_ORDER.map.planning.orderRefresh(INPUT_ORDER.ctxOrders, INPUT_ORDER.ctxOrdersStrength, INPUT_ORDER.map);
 				
@@ -208,15 +199,13 @@ var init = function () {
 	
 	//floating menu orders -----------------------	
 	var menuFloating=document.getElementById('menuFloating');
-	item = AddMenuItem(menuFloating, InfoMessages["MenuMovement"] , "menu", function() { 
-		return;
+	var itemMovement = AddMenuItem(menuFloating, InfoMessages["MenuMovement"] , "menu", function() { 
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.MOVEMENT;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);  
 		menuFloating.unitTarget=null; menuFloating.style.visibility="hidden";
 	} );
-	item = AddMenuItem(menuFloating, InfoMessages["MenuRecruit"] , "menu", function() { 
-		return;
+	var itemRecruit = AddMenuItem(menuFloating, InfoMessages["MenuRecruit"] , "menu", function() { 
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.RECRUIT;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);
@@ -230,15 +219,13 @@ var init = function () {
 		menuFloating.unitTarget=null; menuFloating.style.visibility="hidden";
 	} );
 	*/
-	item = AddMenuItem(menuFloating, InfoMessages["MenuSpellThrow"] , "menu", function() { 
-		return;
+	itemSpellThrow = AddMenuItem(menuFloating, InfoMessages["MenuSpellThrow"] , "menu", function() { 
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		menuFloating.typeOfOrder=Act.SPELL_THROW;
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.selectUnit(menuFloating.unitTarget);
 		menuFloating.unitTarget=null; menuFloating.style.visibility="hidden";
 	} );
 	item = AddMenuItem(menuFloating, InfoMessages["MenuLearnedSpells"]  , "menu", function() { 
-		return;
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.showLearnedSpellOf(menuFloating.unitTarget);  		
 		menuFloating.style.visibility="hidden";
@@ -248,8 +235,8 @@ var init = function () {
 	
 	//floating menu to choose a wizard
 	var menuChooseWizard = document.getElementById('menuChooseWizard');
+	var item;
 	for (var i=1; i<People.WIZARD_COUNT; i++ ) {
-		return;
 		var item = AddMenuItem(menuChooseWizard, People.WizardName[i] , "menu", function() { 
 			MenuSelectItem(this,"menu", "selectedMenu"); 
 			menuChooseWizard.wizardId=this.wizardId; 
@@ -406,8 +393,8 @@ var initMap = function(map, orders, redrawMap) {
 	
 	//tutorial info
 	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size(),null,"noClick").getContext("2d");
-	if (CANVAS_TIMER==null) {
-		CANVAS_TIMER = setInterval( tutorialNextTimer, 1000);
+	if (TIMER_TUTORIAL==null) {
+		TIMER_TUTORIAL = setInterval( tutorialNextTimer, 1000);
 	}
 
 }

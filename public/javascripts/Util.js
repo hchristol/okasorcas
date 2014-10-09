@@ -88,13 +88,21 @@ function AddMenuItem(htmlElementParent, name, cssClass, functionOnClick, element
 	htmlElementParent.appendChild(item);
 	//MenuSetPosition(item);
 	if (functionOnClick!=null) { //ignore inactive menu
-		item.onclick=functionOnClick;
+		if (MENU_TUTORIAL == null) item.onclick=functionOnClick; //in game
+		else {
+			MENU_TUTORIAL[name] = item; //in tuto only
+			item.fakeClick = functionOnClick;
+		}
 		MENU_ITEMS.push(item);
+		//console.log("DEBUG Util.AddMenuItem  : item = " + item + "  " + name);
 	}
 	return item;
 }
 //Add this function to your onclik event : menu item will be selected, and other menu unselected
 function MenuSelectItem(item, classUnselectedMenu, classSelectedMenu) {
+
+console.log("DEBUG Util.MenuSelectItem  : item = " + item );
+
 	//remove class from all menu
 	for( var i=0; i<MENU_ITEMS.length;i++) {
 		if (MENU_ITEMS[i].tagName.toLowerCase() == "div") 	MENU_ITEMS[i].className=classUnselectedMenu;
