@@ -2287,6 +2287,8 @@ Act.fromJSON = function(json, map) {
 	
 	// !!! JSON -> TO PARAMETERS !!!!!
 	
+	if (json==null) { console.log("ERREUR Act.fromJSON : json is null ! " ); return; }
+	
 	var jsonParameters=json.p;
 	var linkedParameters= new Object();
 	

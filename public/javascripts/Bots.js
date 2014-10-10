@@ -106,35 +106,34 @@ Bots.prototype.getOrders= function( idWizard ) {
 	for (var idWizard2=1; idWizard2<this.okas.People.WIZARD_COUNT; idWizard2++) {
 		
 	
-		if ( ( idWizard2 != idWizard ) && ( Math.random() < 0.2 ) ) { //try diplomacy with this guy ?
+		if ( ( idWizard2 != idWizard ) && ( Math.random() < 0.5 ) ) { //try diplomacy with this guy ?
 		
 			var nbOfSpells=this.map.spells.count(idWizard2);
-			var isThisGuyMayBeAnAlly = Math.random() * 20 >  ( nbOfSpells * nbOfSpells );
+			var isThisGuyMayBeAnAlly = (Math.random() * 20) -  ( nbOfSpells * nbOfSpells );
 			
-			//no yet supporting ?
-			if (this.map.diplomacy.supports[idWizard][idWizard2] == this.okas.Diplomacy.SUPPORT_NO) {
+			console.log("bots isThisGuyMayBeAnAlly : " + isThisGuyMayBeAnAlly );
 			
+			//war ?
+			if ( isThisGuyMayBeAnAlly < -10 ) {
+				order = new this.okas.Act(idWizard, this.okas.Act.DIPLOMATIC_SUPPORT) ;
+				order.parameters.idWizard2=idWizard2;
+				order.parameters.support=this.okas.Diplomacy.WAR;
+				tactic.addOrder(order);					
+			}
+			else 
 				//should wizard support this guy ?
-				if ( isThisGuyMayBeAnAlly ) {
+				if ( isThisGuyMayBeAnAlly > 18 ) {
 					order = new this.okas.Act(idWizard, this.okas.Act.DIPLOMATIC_SUPPORT) ;
 					order.parameters.idWizard2=idWizard2;
 					order.parameters.support=this.okas.Diplomacy.SUPPORT_YES;
 					tactic.addOrder(order);					
 				}
-				
-			} 
-			//...or already supporting : is it still a good deal ?
-			else { 
-			
-				//should wizard support again guy ?
-				if ( ! isThisGuyMayBeAnAlly ) {
+				else {
 					order = new this.okas.Act(idWizard, this.okas.Act.DIPLOMATIC_SUPPORT) ;
 					order.parameters.idWizard2=idWizard2;
 					order.parameters.support=this.okas.Diplomacy.SUPPORT_NO;
-					tactic.addOrder(order);					
-				}			
-				
-			}
+					tactic.addOrder(order);						
+				}
 			
 		}
 		
