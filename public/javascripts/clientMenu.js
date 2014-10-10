@@ -36,12 +36,30 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 		for( var j=1; j<People.WIZARD_COUNT; j++) {
 		
 			var htmlCell= document.createElement("td");
-			htmlCell.idWizard1=i; htmlCell.idWizard2=j; htmlCell.typeOfSupport=Diplomacy.SUPPORT_YES;  //to send param on click event
+			htmlCell.idWizard1=i; htmlCell.idWizard2=j; htmlCell.typeOfSupport=Diplomacy.WAR;  //to send param on click event
 			htmlRow.appendChild(htmlCell);
-			if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_YES) {
-				Map.InsertImage("./images/support.png", null, htmlCell,24,24);
-				htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
+			
+			if (diplomacy.supports[i][j]==Diplomacy.WAR) {
+				Map.InsertImage("./images/dead.png", null, htmlCell,32,32);
+				htmlCell.typeOfSupport=Diplomacy.SUPPORT_YES;
 			}
+			
+			
+			if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_YES) {
+				
+				if (i==j) {  
+					htmlCell.className="grayCell";
+					Map.InsertImage("./images/support.png", null, htmlCell,32,32, 0.5);
+				}
+				else {
+					Map.InsertImage("./images/support.png", null, htmlCell,32,32);
+					htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
+				}
+				
+				
+			}
+
+
 			
 			if (j!=i) { //change support on different wizard
 				htmlCell.onclick = function() { //order for changing diplomatic status
@@ -65,18 +83,7 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 	
 	
 	return;
-	//deprecated :
-	for (var i=1; i<People.WIZARD_COUNT; i++ ) {
-		var item = AddMenuItem(menuChooseSupport, "", "menu", function() { 
-			MenuSelectItem(this,"menu", "selectedMenu"); 
-			menuChooseSupport.wizardId=this.wizardId; 
-			//if (INPUT_ORDER!=null) INPUT_ORDER.newReincarnationOrder(this.wizardId);
-		} );
-		item.wizardId=i;
-		Map.InsertImage("./images/support.png", null, item, 20, 20);
-		item.innerHTML+=People.WizardName[i];
-		Map.InsertImage("./images/color" + i + ".png", null, item);
-	}
+
 }
 
 //display incomes

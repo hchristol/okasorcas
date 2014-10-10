@@ -101,8 +101,6 @@ function AddMenuItem(htmlElementParent, name, cssClass, functionOnClick, element
 //Add this function to your onclik event : menu item will be selected, and other menu unselected
 function MenuSelectItem(item, classUnselectedMenu, classSelectedMenu) {
 
-console.log("DEBUG Util.MenuSelectItem  : item = " + item );
-
 	//remove class from all menu
 	for( var i=0; i<MENU_ITEMS.length;i++) {
 		if (MENU_ITEMS[i].tagName.toLowerCase() == "div") 	MENU_ITEMS[i].className=classUnselectedMenu;

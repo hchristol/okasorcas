@@ -1,4 +1,7 @@
 
+- bots desactivated
+- subscribe form
+- tutorial
 - victory wizard fun image
 
 - controlling order reading in order.js

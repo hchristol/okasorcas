@@ -454,6 +454,7 @@ function Diplomacy(json) {
 /** Value for support **/
 Diplomacy.SUPPORT_YES=1;
 Diplomacy.SUPPORT_NO=0;
+Diplomacy.WAR=-1;
 
 /**
 * @property {Number} support between wizard : array i of array j of idwizard (j>i)
@@ -2656,42 +2657,57 @@ Fighting.prototype.addStaticUnit = function(unit, isSupporting, diplomacy) {
 	
 	//support ?
 	var anotherUnitTerrain = null;
-	if (isSupporting) { 
+	
+	var idWizardSupported=null; //opponent that unit support
+	if (!isSupporting) {
+		//wizard directly implicated in conflict
+		idWizardSupported = this.createOpponent(unit.owner);
+	} else { //wizard may be implicated due to diplomacy
 		typeOfFight = Fighting.SUPPORT;
 		anotherUnitTerrain = this.place.terrain;
+		idWizardSupported=this.idWizardSupportedBy(unit.owner,diplomacy); 
 	}
-	this.createOpponent(unit.owner, isSupporting);
-	var idWizardSupported=this.idWizardSupportedBy(unit.owner,diplomacy); //potential diplomatic support
-	if (this.strengths[idWizardSupported]!=null) this.strengths[idWizardSupported]+=unit.strength(null, null, anotherUnitTerrain, typeOfFight);
+	
+	if (idWizardSupported==null) return; //no diplomatic support
+	
+	//potential diplomatic support
+	if (this.strengths[idWizardSupported]!=null) 
+		this.strengths[idWizardSupported]+=unit.strength(null, null, anotherUnitTerrain, typeOfFight);
 }
 
 /** add strength of a moving unit **/
 Fighting.prototype.addMovement = function(order, map, isSupporting) {
 	var typeOfFight = Fighting.ATTACK;
 	
-	//if unit return on its own terrain (loop), it's a defense
+	//if unit returns on its own terrain (loop), it's a defense
 	if ( !order.isMovementAnAttack() ) typeOfFight = Fighting.DEFENSE;	
 	
-	//support ?
+	
 	var anotherUnitTerrain = null;
-	if (isSupporting) { 
+	var unit = order.parameters.unit;
+	
+	var idWizardSupported=null; //opponent that unit support
+	
+	if (!isSupporting) {
+		//wizard directly implicated in conflict
+		idWizardSupported = this.createOpponent(unit.owner);
+	} else { //wizard may be implicated due to diplomacy
 		typeOfFight = Fighting.SUPPORT;
 		anotherUnitTerrain = this.place.terrain;
+		//choose opponent that is supported due to diplomacy :
+		idWizardSupported=this.idWizardSupportedBy(unit.owner,map.diplomacy); 
 	} 
 	
-	var unit = order.parameters.unit;
-	this.createOpponent(unit.owner, isSupporting);
-	var idWizardSupported=this.idWizardSupportedBy(unit.owner,map.diplomacy); //potential diplomatic support
-	if (this.strengths[idWizardSupported]!=null) this.strengths[idWizardSupported]+=unit.strength(map, order, anotherUnitTerrain, typeOfFight);
+	if (idWizardSupported==null) return; //no diplomatic support
+	
+	//increase strength
+	if (this.strengths[idWizardSupported]!=null) 
+		this.strengths[idWizardSupported]+=unit.strength(map, order, anotherUnitTerrain, typeOfFight);
 }
 
 /** Create a side **/
-Fighting.prototype.createOpponent = function(wizardId, isSupporting) {
-	if (this.strengths[wizardId]==null) { 
-	
-		//if wizard is not implicated in conflict, he doesn't support 
-		if (isSupporting) return;
-		
+Fighting.prototype.createOpponent = function(wizardId) {
+	if (this.strengths[wizardId]==null) { 		
 		this.strengths[wizardId]=0; //initialize strength on this place
 		this.opponents.push(wizardId);
 		return wizardId;
@@ -2702,10 +2718,30 @@ Fighting.prototype.createOpponent = function(wizardId, isSupporting) {
 Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 	//support himself first
 	if ( this.opponents.indexOf( wizardId ) >= 0 ) return wizardId;
+	
+	//is there an opponent that wizard is at war with ?
+	var hatedOpponent=null
+	for (var o=0; o<this.opponents.length; o++) {
+		var i=this.opponents[o];
+		if (diplomacy.supports[wizardId][i]==Diplomacy.WAR) {
+			hatedOpponent=i;
+		}
+	}
+	
 	//no part of fighting, but can be involved coz of diplomacy, if only he support ONE opponent (no less, no more)
 	var supportedOpponent=null;
 	for (var o=0; o<this.opponents.length; o++) {
 		var i=this.opponents[o];
+		
+		//no support : can be supported if only wizard is at war with other opponent
+		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_NO) {
+			if (hatedOpponent!=null) {
+				if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
+				supportedOpponent=i;
+			}
+		}
+		
+		//simple support
 		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_YES) {
 			if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
 			supportedOpponent=i;

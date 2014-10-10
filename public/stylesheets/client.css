@@ -57,6 +57,9 @@ tr td
 {
 background-color:hsl(45,30%,97%);
 }
+.grayCell {
+	background-color:rgb(220,220,220);
+}
 
 .incomeLow 			{  color:green;  }
 .incomeHigh 		{  color:green;  font-weight:bold;  }

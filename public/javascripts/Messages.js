@@ -2,7 +2,7 @@
 
 /** French translatation of game messages **/
 InfoMessages["MenuReincarnation"] = "Réincarner<br>un magicien";
-InfoMessages["MenuDiplo"] = "Définir<br>Soutiens";
+InfoMessages["MenuDiplo"] = "Diplomacie<br>Guerre/Soutien";
 InfoMessages["MenuRevenue"] = "Info<br>Revenus";
 InfoMessages["MenuReplay"] = "Carte<br>précédente";
 InfoMessages["MenuReplayCancel"] = "Réafficher<br>carte actuelle";
@@ -65,7 +65,7 @@ InfoMessages["TerrainCol5"] = "Attaque magique <br> lancée par le mage";
 InfoMessages["MagicAttackDistant"] = "Distante";
 InfoMessages["MagicAttackMovement"] = "Mouvement";
 
-InfoMessages["Support"]="Supporte ? ->"
+InfoMessages["Support"]="Envers : ->"
 
 InfoMessages["IncomesCol1"] = "Mage";
 InfoMessages["IncomesCol2"] = "En caisse";
