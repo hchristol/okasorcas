@@ -242,10 +242,17 @@ Map.prototype.getOrder = function( unit ) {
 
 /** use a tactic with unlinked act and link those act to map **/
 Map.prototype.addOrdersTactic = function( tactic ) {
+	
 	for (var i=0; i<tactic.acts.length; i++) {
 		var order=tactic.acts[i];
 		this.addOrder(order);
 	}
+	
+	//fraud detection for too crowded places. TODO : return an array of hacker wizard and desactivate their orders
+	for (idWizard=1; idWizard<People.WIZARD_COUNT; idWizard++)
+		if (this.land.placesTooCrowdedFor(idWizard).length>0)
+			console.log("ALERT !!! wizard " + idWizard + " (" + People.WizardName[idWizard] + ") PUT too much UNITS ! HE's a hacker !");
+	
 }
 
 /** Return an array of Fightings, due to places in conflict.  **/
@@ -1085,6 +1092,22 @@ Land.prototype.placesWithinDistance = function(position, distance, placesToAdd, 
 	return places;
 }
 
+/** return an array of too crowded places with units that belongs to the given wizard.  **/
+Land.prototype.placesTooCrowdedFor =  function(idWizard) {
+	var tooCrowded = new Array();
+	for (var i=0; i<this.places.length; i++) {
+		if (this.places[i].units==null) continue;
+		if (this.places[i].units.length<=People.MAX_UNIT_PER_PLACE) continue;
+		
+		//too crowded place. Same wizard ?
+		var unitsOfWizard=this.places[i].unitsOf(idWizard);
+		if (unitsOfWizard.length>People.MAX_UNIT_PER_PLACE)
+			tooCrowded.push(this.places[i]);
+			
+	}
+	return tooCrowded;
+}
+
 /**
 * useful ?
 * @function {Point} size - coordinate of the relative bottom right corner of the map in pixels
@@ -1544,6 +1567,21 @@ Place.prototype.isEmpty = function() {
 	if (this.units.length==0) return true;
 	return false;
 }
+
+/**  array of units that belongs to wizard **/
+Place.prototype.unitsOf = function(idWizard) {
+	var unitsOf=new Array();
+	if (this.units==null) return unitsOf;
+	
+	for (var j=0; j<this.units.length;j++) {
+		if (this.units[j].owner==idWizard)
+			unitsOf.push(this.units[j]);
+	}
+	
+	return unitsOf;
+}
+
+
 
 
 /**

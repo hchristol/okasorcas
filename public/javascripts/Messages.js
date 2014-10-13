@@ -22,6 +22,7 @@ InfoMessages["MenuStrengthDisplayNo"] = "Masquer<br>Forces";
 InfoMessages["AlertClickOnYourUnit"] = "Cliquez sur une unité vous appartenant !";
 InfoMessages["InfoOrdersValidated"] = "Bien Maître, vos ordres ont été envoyés !";
 InfoMessages["InfoOrdersEmpty"] = "Aucun ordre passé, maître. Un peu surmené, peut-être ?";
+InfoMessages["InfoOrdersThereAreStillTooCrowdedPlaces"]="Pas plus de deux unités par territoire, modifiez vos ordres !";
 InfoMessages["AlertOutOfRange"] = "Territoire hors de portée !";
 
 InfoMessages["Terrain" + Place.PLAIN ] = "Plaine";

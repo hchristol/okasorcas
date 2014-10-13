@@ -23,6 +23,9 @@ var MENU_TUTORIAL=null; //real game, not tutorial
 
 var init = function () {
 
+
+	//alert( "client.js DEBUG : window.devicePixelRatio=" + window.devicePixelRatio );
+	
 	//if( isMobile.any() ) alert('Mobile :-))'); else alert('Pas mobile :-(');
 	
 	CURRENT_WIZARD= parseInt(document.getElementById('wizardId').value);
@@ -130,13 +133,32 @@ var init = function () {
 		
 		//save json orders
 		var myTactic = INPUT_ORDER.map.planning.tacticOf(CURRENT_WIZARD);
-		if (myTactic!=null) {
-			str_json = JSON.stringify(myTactic);
-			RequestJson("orders/" + owner, function(json) { 
-				alert(InfoMessages["InfoOrdersValidated"]  );  
-				itemValidate.innerHTML = InfoMessages["MenuValidateOrders"]; //unbold text when orders has been sent
-			}, str_json); 
-		} else alert(InfoMessages["InfoOrdersEmpty"]); 
+		
+		if (myTactic==null) { alert(InfoMessages["InfoOrdersEmpty"]); return; }
+		
+		//Are some places too crowded ? 
+		tooCrowded = INPUT_ORDER.map.land.placesTooCrowdedFor(CURRENT_WIZARD)
+		if (tooCrowded.length>1000) { //invalidate orders !!
+			alert(InfoMessages["InfoOrdersThereAreStillTooCrowdedPlaces"]); 
+			
+			//show wrong places 
+			for( var i=0; i<tooCrowded.length; i++) {
+				tooCrowded[i].position.add(0,-10).showEnlightedCircle(INPUT_ORDER.ctxPlacesToGo, Unit.ColorOf(CURRENT_WIZARD) , 25);
+				tooCrowded[i].position.add(0,-10).showEnlightedCircle(INPUT_ORDER.ctxPlacesToGo, Unit.ColorOf(CURRENT_WIZARD) , 30);
+			}
+	
+			return;
+		}
+		
+		//ok, orders good enough to be send
+		str_json = JSON.stringify(myTactic);
+		RequestJson("orders/" + owner, function(json) { 
+			alert(InfoMessages["InfoOrdersValidated"]  );  
+			itemValidate.innerHTML = InfoMessages["MenuValidateOrders"]; //unbold text when orders has been sent
+		}, str_json); 
+			
+			
+		
 	} );
 
 

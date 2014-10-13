@@ -50,14 +50,18 @@ Bots.prototype.getOrders= function( idWizard ) {
 			order.parameters.unit=wizard;
 			order.parameters.places=new Array();
 			
-			while ( (incomesAfter>=0)  && (order.parameters.places.length<this.okas.Act.MAX_RECRUIT_PER_TURN ) ) {
+			var tryRecruitCount=0;
+			while ( (incomesAfter>=0)  && (order.parameters.places.length<this.okas.Act.MAX_RECRUIT_PER_TURN ) && (tryRecruitCount<20) ) {
+				tryRecruitCount++;
 				var place = this.randomPlace(wizard.place, true);
 				var typeOfRecruit=this.okas.Unit.typeRecruitedOn(place.terrain); //place to recruit
 				incomesAfter-=this.okas.Unit.costOfType(typeOfRecruit) - ( stocksAfter * Math.random() * .12 ) ; //if many stock of money, take more risk for recruiting
-				if (incomesAfter>=0) order.parameters.places.push(place);
+				if ( (incomesAfter>=0) && (place.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) ) { 
+					order.parameters.places.push(place);
+				}
 			}
 			
-			tactic.addOrder(order);
+			if (order.parameters.places.length>0) tactic.addOrder(order);
 		} 
 
 		//movement if nothing else to do
@@ -98,7 +102,13 @@ Bots.prototype.getOrders= function( idWizard ) {
 				order = this.randomDestination( unit, this.nearestPlaceForIncomes(unit.place, unit.owner) ); 
 			}
 			
-			if (order!=null) tactic.addOrder(order);		
+			if (order!=null) {
+				var destination = order.destination();
+				if (destination!=null)
+					if (destination.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) //enough place here to move
+						tactic.addOrder(order);		
+			}
+			
 		}
 	}
 	
@@ -111,7 +121,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 			var nbOfSpells=this.map.spells.count(idWizard2);
 			var isThisGuyMayBeAnAlly = (Math.random() * 20) -  ( nbOfSpells * nbOfSpells );
 			
-			console.log("bots isThisGuyMayBeAnAlly : " + isThisGuyMayBeAnAlly );
+			//console.log("bots isThisGuyMayBeAnAlly : " + isThisGuyMayBeAnAlly );
 			
 			//war ?
 			if ( isThisGuyMayBeAnAlly < -10 ) {
