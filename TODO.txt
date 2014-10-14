@@ -1,8 +1,12 @@
-
+- bug android
+- max unit 2 when validate orders
 - bots desactivated
 - subscribe form
 - tutorial
 - victory wizard fun image
+
+
+- return an array of hacker wizard and desactivate their orders maps. See Map.prototype.addOrdersTactic
 
 - controlling order reading in order.js
 - controlling order (security) : in updateOrder

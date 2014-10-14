@@ -317,8 +317,23 @@ Point.pathTo = function(ctx,path,closing, resolution) {
 /**
 * from mouse event : return a point in the relative DOMelement system of the mouse event
 */
-Point.mouseCoordinates= function(mouseEvent, DOMelement) {
-//console.log("Point.mouseCoordinates : "  + mouseEvent.clientX  + " ; " + mouseEvent.clientY + "    -    " + DOMelement.getBoundingClientRect().left + " ; " + DOMelement.getBoundingClientRect().top  );
-	return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
+Point.mouseCoordinates= function(evt, DOMelement) {
+
+	Point.containerX = document.getElementById('map').offsetLeft;
+	Point.containerY = document.getElementById('map').offsetTop;
+
+	//old return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
+	var isTouchSupported = 'ontouchstart' in window;
+	if(isTouchSupported){                     // for touch devices
+		return new Point(evt.clientX-Point.containerX, evt.clientY-Point.containerY);
+	}
+
+	else if(evt.offsetX || evt.offsetX == 0){    //for webkit browser like safari and chrome
+		return new Point( evt.offsetX, evt.offsetY);
+	}
+
+	else if(evt.layerX || evt.layerX == 0){      // for mozilla firefox
+		return new Point( evt.layerX, evt.layerY);
+	}	
 };
 

@@ -25,6 +25,7 @@ var init = function () {
 
 
 	//alert( "client.js DEBUG : window.devicePixelRatio=" + window.devicePixelRatio );
+	//document.getElementById('debugtext').innerHTML="client.js DEBUG : window.devicePixelRatio=" + window.devicePixelRatio ;
 	
 	//if( isMobile.any() ) alert('Mobile :-))'); else alert('Pas mobile :-(');
 	
