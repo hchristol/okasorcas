@@ -2759,34 +2759,46 @@ Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 	//support himself first
 	if ( this.opponents.indexOf( wizardId ) >= 0 ) return wizardId;
 	
-	//is there an opponent that wizard is at war with ?
-	var hatedOpponent=null
-	for (var o=0; o<this.opponents.length; o++) {
-		var i=this.opponents[o];
-		if (diplomacy.supports[wizardId][i]==Diplomacy.WAR) {
-			hatedOpponent=i;
-		}
-	}
-	
 	//no part of fighting, but can be involved coz of diplomacy, if only he support ONE opponent (no less, no more)
 	var supportedOpponent=null;
+	
+	//one supported ally ?
 	for (var o=0; o<this.opponents.length; o++) {
 		var i=this.opponents[o];
-		
-		//no support : can be supported if only wizard is at war with other opponent
-		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_NO) {
-			if (hatedOpponent!=null) {
-				if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
-				supportedOpponent=i;
-			}
-		}
-		
 		//simple support
 		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_YES) {
 			if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
 			supportedOpponent=i;
 		}
 	}
+	
+	if (supportedOpponent!=null) return supportedOpponent; //one ally
+	
+	//one neutral opponent against a hatred ennemy ?
+	//is there an opponent that wizard is at war with ?
+	var hatedOpponent=null
+	
+	//search an ennemy at war with
+	for (var o=0; o<this.opponents.length; o++) {
+		var i=this.opponents[o];
+		if (diplomacy.supports[wizardId][i]==Diplomacy.WAR) {
+			hatedOpponent=i;
+		}
+	}
+	if (hatedOpponent!=null) return null; //no war, no support
+	
+	//search potential neutral ally
+	for (var o=0; o<this.opponents.length; o++) {
+		var i=this.opponents[o];
+		
+		//no support : can be supported if only wizard is at war with other opponent
+		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_NO) {
+			if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
+			supportedOpponent=i;
+		}
+
+	}
+	
 	return supportedOpponent;
 }
 
