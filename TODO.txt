@@ -1,5 +1,3 @@
-- bug android
-- max unit 2 when validate orders
 - bots desactivated
 - subscribe form
 - tutorial

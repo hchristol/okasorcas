@@ -27,3 +27,14 @@ html
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
 			input(type='file', accept='.zip', name='zipbackup')
 			input(type="submit", value="Envoyer !", name="ok")
+		each wizard, i in users
+			div
+				form(action="/" + gameId + "/changeUsers", method="post")
+					image(src='/images/color' + wizard.id + '.png')
+					input(type="text", name="username" value=wizard.username)
+					span=wizard.wizardname
+					//value=wizard.password to ignore password, value="" to force password
+					input(type="text", name="password" value=wizard.password) 
+					input(type="submit", name="Submit")
+					a(href="mailto:" + wizard.email + "?subject=L8S " + gameId + "&body=user=" + wizard.wizardname + "    password=" + wizard.password)
+						span mailto

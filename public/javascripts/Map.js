@@ -2745,13 +2745,13 @@ Fighting.prototype.addMovement = function(order, map, isSupporting) {
 		this.strengths[idWizardSupported]+=unit.strength(map, order, anotherUnitTerrain, typeOfFight);
 }
 
-/** Create a side **/
+/** Create a side if not exists and return idwizard **/
 Fighting.prototype.createOpponent = function(wizardId) {
 	if (this.strengths[wizardId]==null) { 		
 		this.strengths[wizardId]=0; //initialize strength on this place
 		this.opponents.push(wizardId);
-		return wizardId;
 	};
+	return wizardId;
 }
 
 /** diplomatic support : return the id of wizard that a given wizard may support. Return -1 if there's no diplomatic support  **/

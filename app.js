@@ -280,10 +280,21 @@ app.get('/:game/client', //client.index);
 			console.log("player " + req.user.username + " is logged as wizard " + idWizard );	
 			
 			//authenticated admin
-			if (idWizard==0) 
-				//authenticated player
-				res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game });
-			else
+			if (idWizard==0) {
+				//authenticated administrator
+				
+				//push passwords and email of global users to the rendered page
+				for (var i=0; i<wizardToUser.length; i++) {
+					var globaluser=findByUsernameInArray(users, wizardToUser[i].username);
+					wizardToUser[i].password=globaluser.password; 
+					wizardToUser[i].email=globaluser.email; 
+				}
+				//add wizard name
+				var okas= require('./public/javascripts/Map.js');
+				for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
+		
+				res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser });
+			} else
 				//authenticated player
 				res.render('client', { title: '!!!!8!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard });
 		}
@@ -576,7 +587,6 @@ uploadComplete=function(res, file_count, file_count_complete, msg) {
 		res.send("Upload OK !! \n" + msg, 200);			
 	}
 }
-
 
 
 //end of turn : solving order

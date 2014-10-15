@@ -139,7 +139,7 @@ var init = function () {
 		
 		//Are some places too crowded ? 
 		tooCrowded = INPUT_ORDER.map.land.placesTooCrowdedFor(CURRENT_WIZARD)
-		if (tooCrowded.length>1000) { //invalidate orders !!
+		if (tooCrowded.length>0) { //invalidate orders !!
 			alert(InfoMessages["InfoOrdersThereAreStillTooCrowdedPlaces"]); 
 			
 			//show wrong places 
