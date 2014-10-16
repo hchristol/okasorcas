@@ -118,8 +118,9 @@ Map.InsertCommentInCanvas = function(ctx, text, pos, fontHeigth) {
 	}
 	
 	ctx.strokeStyle = "brown"; ctx.fillStyle = "white"	;
-	ctx.fillRect(pos.x,pos.y, maxwidth, (fontHeigth * lines.length) + 4);
-	ctx.strokeRect(pos.x,pos.y, maxwidth, (fontHeigth * lines.length) + 4 );
+	var margin=5;
+	ctx.fillRect(pos.x-margin,pos.y-margin, maxwidth+ (margin*2), (fontHeigth * lines.length) + 4 + (margin*2));
+	ctx.strokeRect(pos.x-margin,pos.y-margin, maxwidth+ (margin*2), (fontHeigth * lines.length) + 4 + (margin*2));
 	/*
 	ctx.lineWidth=7; ctx.strokeStyle = "brown";
 	ctx.strokeText(text,pos.x,pos.y);   
@@ -319,13 +320,13 @@ Point.pathTo = function(ctx,path,closing, resolution) {
 */
 Point.mouseCoordinates= function(evt, DOMelement) {
 
-	Point.containerX = document.getElementById('map').offsetLeft;
-	Point.containerY = document.getElementById('map').offsetTop;
+	var containerX = DOMelement.offsetLeft;
+	var containerY = DOMelement.offsetTop;
 
 	//old return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
 	var isTouchSupported = 'ontouchstart' in window;
 	if(isTouchSupported){                     // for touch devices
-		return new Point(evt.clientX-Point.containerX, evt.clientY-Point.containerY);
+		return new Point(evt.clientX-containerX, evt.clientY-containerY);
 	}
 
 	else if(evt.offsetX || evt.offsetX == 0){    //for webkit browser like safari and chrome

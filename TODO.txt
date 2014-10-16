@@ -1,8 +1,8 @@
-- diplomacy : war after support in status
-- bots desactivated
-- tutorial
-- victory wizard fun image
 
+- tutorial
+- issue : menu reincarnation at the wrong position
+- change admin parameters : next date turn, bot activated/desactivated
+- victory wizard fun image
 
 - return an array of hacker wizard and desactivate their orders maps. See Map.prototype.addOrdersTactic
 

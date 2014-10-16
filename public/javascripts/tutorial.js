@@ -97,6 +97,8 @@ var init = function () {
 	
 	itemValidate = AddMenuItem(menuParent, "<b>" + InfoMessages["MenuValidateOrders"] + "</b>" , "menu", function() {
 		MenuSelectItem(this,"menu", "selectedMenu");
+		nextMessage(InfoMessages["InfoOrdersValidated"]  );  //tutorial response
+		return; 
 		
 		//save json orders
 		var myTactic = INPUT_ORDER.map.planning.tacticOf(CURRENT_WIZARD);
@@ -296,7 +298,7 @@ var loadMap = function(redrawMap) {
 	} 
 	else 
 	{ //first loading of map
-		var request="tutorial/map0.json";
+		var request="tutorial/map" + TUTO_MAP_COUNT + ".json";
 		if (TURN_REPLAY>0) request+="?previous=" + TURN_REPLAY; //optional historic map
 		RequestJson(request, function(json) {  //load map object
 			var map = new Map( JSON.parse(json) );
@@ -394,7 +396,7 @@ var initMap = function(map, orders, redrawMap) {
 	//tutorial info
 	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size(),null,"noClick").getContext("2d");
 	if (TIMER_TUTORIAL==null) {
-		TIMER_TUTORIAL = setInterval( tutorialNextTimer, 1000);
+		TIMER_TUTORIAL = setInterval( tutorialNextTimer, TIMER_BASE_DURATION_MS);
 	}
 
 }

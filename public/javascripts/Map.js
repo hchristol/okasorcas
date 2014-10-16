@@ -1570,15 +1570,15 @@ Place.prototype.isEmpty = function() {
 
 /**  array of units that belongs to wizard **/
 Place.prototype.unitsOf = function(idWizard) {
-	var unitsOf=new Array();
-	if (this.units==null) return unitsOf;
+	var u=new Array();
+	if (this.units==null) return u;
 	
 	for (var j=0; j<this.units.length;j++) {
 		if (this.units[j].owner==idWizard)
-			unitsOf.push(this.units[j]);
+			u.push(this.units[j]);
 	}
 	
-	return unitsOf;
+	return u;
 }
 
 
@@ -2785,7 +2785,7 @@ Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 			hatedOpponent=i;
 		}
 	}
-	if (hatedOpponent!=null) return null; //no war, no support
+	if (hatedOpponent==null) return null; //no war, no support
 	
 	//search potential neutral ally
 	for (var o=0; o<this.opponents.length; o++) {
