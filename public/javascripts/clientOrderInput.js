@@ -64,7 +64,8 @@ ClientOrders.prototype.onClick = function( pos ) {
 
 	//debug tutorial
 	//console.log( "ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")" );
-	//document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")";
+	if (document.getElementById('debugtext') != null)
+		document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")";
 	
 	//search nearest place on the present map, because client see it
 	var place=this.presentMap.land.nearestPlace( pos, ClientOrders.MAX_CLICK_DISTANCE );

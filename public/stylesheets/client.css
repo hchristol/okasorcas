@@ -146,4 +146,4 @@ img, div {
 
 .noClick { pointer-events:none; }
 
-#debugtext { position:absolute; 	top:0rem; width:auto;	left:1rem;	 height:auto;   z-index:10000; background-color:white }
+#debugtext { position:absolute; 	top:0rem; width:auto;	left:0rem;	 height:auto;   z-index:10000; background-color:white }

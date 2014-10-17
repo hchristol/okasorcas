@@ -14,7 +14,7 @@ var tutorialNextTimer = function() {
 	
 	timer_match=0; //to match with TIMER_COUNT
 
-	//reincarnation
+	//reincarnation	
 	nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !");
 	nextMessage( "Au début, je choisi un endroit\noù faire apparaitre mon mage");
 	nextMessage( "Je sélectionne le menu réincarnation");
@@ -27,42 +27,70 @@ var tutorialNextTimer = function() {
 	nextMessage( "Je ne peux rien faire d'autre\npour le moment\nJe VALIDE MES ORDRES !");
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
 	nextMessage( "Plus qu'à attendre le lendemain !" );
-	
-	
-	
+
+	//recruiting
 	nextMap();
-	nextMessage( "Et voici la carte\ndu jour d'après");
+	nextMessage( "Et voici la carte\ndu jour d'après\n\nMes copains sont là aussi\nOn va pouvoir se mettre\nsur la figure !");
+	nextMessage( "Je vais recruter\nde nouvelles armées");
+	nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
+	nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage");
+	nextClick(528,190); nextClick(513,238); 
+	nextMessage( "Je peux recruter jusqu'à\n4 UNITES à la fois");
+
+	nextMessage( "L'unité recruté dépend du terrain\nPour plus d'info, consulter l'aide sur les terrains", 450, 50);
+	nextMenu(InfoMessages["MenuTerainArray"]);
+	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
+
+	nextMessage( "Je suis limité par mon argent (cristaux)\nLe coût est indiqué à côté");
+	nextMessage( "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir du menu Info Revenu", 450, 50);
+	nextMenu(InfoMessages["MenuRevenue"]);
+	timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
+	
+	nextMessage( "Hop ! Je valide mes ordres\net j'attends le lendemain !" );
+	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
+	
+	//learning spell
+	nextMap();
+	nextMessage( "Le lendemain, mes copains\naussi ont recruté\n\nLes têtes de morts indiquent\nqu'il y a eu des combats");
 	
 	TIMER_COUNT++;
 	
 }
 
 var nextMessage = function (txt, x, y, clear) {
-	if (x==null) { x=400; y=300;};
+	if (x==null) { x=50; y=100;};
 	if (clear==null) clear=true;
 	if (TIMER_COUNT == timer_match) {
 		if (clear) clearMessage();
 		Map.InsertCommentInCanvas( CANVAS_TUTORIAL, txt, new Point(x, y), 20 );
 	}
-	timer_match+= Math.round(txt.length / 20); //wait more when text is longer
+	timer_match+= Math.round(txt.length / 18); //wait more when text is longer
 }
 
 var nextMenu = function( menuName, clearMessage ) {
 	
 	if (clearMessage==null) clear=false;
+	
+	//select menu first
 	if (TIMER_COUNT == timer_match) {
 		if (clearMessage) clearMessage();
-		MENU_TUTORIAL[ menuName].fakeClick();
+		MenuSelectItem(MENU_TUTORIAL[ menuName ], "menu", "selectedMenu");
 	}
 	
-	timer_match+=2; //wait more
+	//...then send click on it
+	if (TIMER_COUNT == timer_match + 2) {
+		MENU_TUTORIAL[ menuName].fakeClick();
+		MENU_TUTORIAL[ menuName].className="menu"; //unselect menu
+	}
+	
+	timer_match+=3; //wait more
 }
 
 var nextClick = function( x, y, clearMessage) {
 	if (clearMessage==null) clear=false;
 	if (TIMER_COUNT == timer_match) {
 		if (clearMessage) clearMessage();
-		INPUT_ORDER.onClick( new Point(581,226) );
+		INPUT_ORDER.onClick( new Point(x, y) );
 	}
 	timer_match+=2;
 }

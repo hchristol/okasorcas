@@ -114,7 +114,7 @@ Map.InsertCommentInCanvas = function(ctx, text, pos, fontHeigth) {
 	
 	maxwidth=ctx.measureText(lines[0]).width;
 	for (var i = 1; i < lines.length; ++i) {
-		if (ctx.measureText(lines[1]).width > maxwidth) maxwidth=ctx.measureText(lines[1]).width;
+		if (ctx.measureText(lines[i]).width > maxwidth) maxwidth=ctx.measureText(lines[i]).width;
 	}
 	
 	ctx.strokeStyle = "brown"; ctx.fillStyle = "white"	;
