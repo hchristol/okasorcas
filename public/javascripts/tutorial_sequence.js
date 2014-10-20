@@ -7,13 +7,14 @@ TIMER_BASE_DURATION_MS = 800;
 TIMER_COUNT=0; //number of event
 timer_match=0;
 
-TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
+TUTO_MAP_COUNT=2; //index N of mapN.json file to be loaded during tutorial
 
 //sequence of tutorial info
 var tutorialNextTimer = function() {
 	
 	timer_match=0; //to match with TIMER_COUNT
 
+	/*
 	//reincarnation	
 	nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !");
 	nextMessage( "Au début, je choisi un endroit\noù faire apparaitre mon mage");
@@ -30,12 +31,11 @@ var tutorialNextTimer = function() {
 
 	//recruiting
 	nextMap();
-	nextMessage( "Et voici la carte\ndu jour d'après\n\nMes copains sont là aussi\nOn va pouvoir se mettre\nsur la figure !");
+	nextMessage( "Et voici la carte\ndu jour d'après");
 	nextMessage( "Je vais recruter\nde nouvelles armées");
 	nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
-	nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage");
+	nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage\n\nJe peux recruter jusqu'à\n4 UNITES à la fois");
 	nextClick(528,190); nextClick(513,238); 
-	nextMessage( "Je peux recruter jusqu'à\n4 UNITES à la fois");
 
 	nextMessage( "L'unité recruté dépend du terrain\nPour plus d'info, consulter l'aide sur les terrains", 450, 50);
 	nextMenu(InfoMessages["MenuTerainArray"]);
@@ -49,16 +49,61 @@ var tutorialNextTimer = function() {
 	nextMessage( "Hop ! Je valide mes ordres\net j'attends le lendemain !" );
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
 	
-	//learning spell
+	*/
+	
+	/*
+	//moving 
 	nextMap();
-	nextMessage( "Le lendemain, mes copains\naussi ont recruté\n\nLes têtes de morts indiquent\nqu'il y a eu des combats");
+	//nextMessage( "Le lendemain, mes copains\naussi ont recruté\n\nLes têtes de morts indiquent\nqu'il y a eu des combats");
+	nextClick(534,188);
+	nextMessage("Je veux déplacer\nmon cavalier", 500,100);
+	nextClick(597,167);nextClick(646,212);nextClick(706,204);
+	nextMessage("Plus il se déplace,\nplus sa force diminue.");
+	nextClick(754,162);nextClick(798,126);
+	nextMessage("Les territoires traversés me\nrapporteront des cristaux");
+	
+	nextMessage( "Je veux aussi déplacer\nmon mage vers une tour", 300, 300);
+	nextClick(582,225); nextClick(582,225);
+	nextMenu(InfoMessages["MenuMovement"]);
+	nextClick(532,190);
+	nextMessage( "Fini ! Je valide mes ordres", 100, 100 );
+	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
+	*/
+	
+	//learnt spell and first fighting
+	nextMap();
+	
+	/*
+	nextMessage( "Carte du lendemain !\n\nJ'ai conquis de nouveaux territoires", 50, 100);
+	nextMessage( "J'ai appris un sort automatiquement :\nune étoile rouge s'affiche à côté du mage\npour chaque sort appris", 565,200);
+	*/
+	
+	nextClick(537,193); nextMessage( "Je vais livrer mon\npremier combat", 600, 150);
+	nextMenu(InfoMessages["MenuMovement"]);
+	nextClick(473,189); nextClick(200,400);
+	nextMessage( "Les forces de chaque camp s'affichent :\npour le moment, je gagne !");
+	
+	nextClick(410,118); nextMessage("Imaginons que mon adversaire\nsoit défendu par son cavalier", 100, 100); nextClick(433,164); nextClick(200,400);
+	nextMessage( "Je peux SIMULER les ordres\nde mon adversaire...\n\n...et anticiper le résultat !\n\nMaintenant, mon adversaire est le plus fort\ncar son cavalier le soutient", 40, 250);
+	
+	nextClick(513,239); nextMessage("J'attaque avec une unité plus doué\nen attaque qu'en soutien...", 600, 150); nextClick(477,191); nextClick(200,400);
+	nextMessage( "...et je reprends le dessus !");
+	
+	nextMessage( "En cliquant sur le menu\nde Simulation, je peux même\nvisualiser la carte\ntelle qu'elle sera\nau prochain tour !", 650, 200);
+	
+	//marche pas :
+	nextMenu(InfoMessages["MenuNextTurnBeforeAttack"]);
+	nextMessage( "Voilà la carte de demain...\nSI mon adversaire joue comme je l'ai prédis");
 	
 	TIMER_COUNT++;
 	
 }
 
+TUTO_old_X=50; TUTO_old_Y=100; //current position of message
 var nextMessage = function (txt, x, y, clear) {
-	if (x==null) { x=50; y=100;};
+	if (x==null) 
+		{ x=TUTO_old_X; y=TUTO_old_Y;}
+	else { TUTO_old_X=x; TUTO_old_Y=y; }
 	if (clear==null) clear=true;
 	if (TIMER_COUNT == timer_match) {
 		if (clear) clearMessage();
