@@ -93,7 +93,7 @@ background-color:hsl(45,30%,97%);
 
 .menu, .selectedMenu { 	position:static; 		width:auto;		height:auto;  		padding:0rem 0rem 0rem 0rem ;  box-shadow: 5px 5px 8px #aaa;	}  
 .mapParent 		{ 	position:absolute; 	top:0rem;	left:0rem; }
-
+#canvasTutorial		{ 	position:absolute; 	top:0rem;	left:0rem; z-index:10000; }
 
 /* large screen device */
 @media all and (min-width: 75em) { /* easiest way to suppress shadow */

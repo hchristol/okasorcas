@@ -394,7 +394,7 @@ var initMap = function(map, orders, redrawMap) {
 	}
 	
 	//tutorial info
-	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size(),null,"noClick").getContext("2d");
+	CANVAS_TUTORIAL = Map.InsertCanvas(new Point(0,0),map.land.size().add(400,100), document.getElementById('canvasTutorial'), "noClick").getContext("2d");
 	if (TIMER_TUTORIAL==null) {
 		TIMER_TUTORIAL = setInterval( tutorialNextTimer, TIMER_BASE_DURATION_MS);
 	}
