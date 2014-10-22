@@ -7,7 +7,7 @@ TIMER_BASE_DURATION_MS = 800;
 TIMER_COUNT=0; //number of event
 timer_match=0;
 
-TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
+TUTO_MAP_COUNT=4; //index N of mapN.json file to be loaded during tutorial
 
 //sequence of tutorial info
 var tutorialNextTimer = function() {
@@ -32,19 +32,17 @@ var tutorialNextTimer = function() {
 	nextMessage( "Je ne peux rien faire d'autre\npour le moment\nJe VALIDE MES ORDRES !");
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
 	nextMessage( "Plus qu'à attendre le lendemain !" );
-*/	
+
 
 	//recruiting
 	nextMap();
-	nextMessage( "Et voici la carte\ndu jour d'après");
+	nextMessage( "Et voici la carte\ndu jour d'après\n\nEnnemis en vue !");
 	nextMessage( "Je vais recruter\nde nouvelles armées");
 	nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
 	nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage\n\nJe peux recruter jusqu'à\n4 UNITES à la fois");
 	nextClick(528,190); nextClick(513,238); 
-
-	nextArrow( 996,307, "L'unité recruté dépend du terrain\nPour plus d'info, consulter l'aide sur les terrains");
-	nextMenu(InfoMessages["MenuTerainArray"]);
-	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
+	
+	nextMessage("L'unité recrutée dépend du terrain", 50, 100);
 
 	nextArrow( 507,205, "Je suis limité par mon argent (cristaux)\nLe coût est indiqué à côté", 100, 100);
 	nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir du menu Info Revenu");
@@ -54,12 +52,12 @@ var tutorialNextTimer = function() {
 	nextMessage( "Hop ! Je valide mes ordres\net j'attends le lendemain !" );
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
 	
-	
+	*/	
 	
 	/*
 	//moving 
 	nextMap();
-	//nextMessage( "Le lendemain, mes copains\naussi ont recruté\n\nLes têtes de morts indiquent\nqu'il y a eu des combats");
+	//nextMessage( "Le lendemain, mes copains\naussi ont recruté");
 	nextClick(534,188);
 	nextMessage("Je veux déplacer\nmon cavalier", 500,100);
 	nextClick(597,167);nextClick(646,212);nextClick(706,204);
@@ -76,27 +74,49 @@ var tutorialNextTimer = function() {
 	*/
 	
 	//learnt spell and first fighting
-	nextMap();
-	
 	/*
+	nextMap();
 	nextMessage( "Carte du lendemain !\n\nJ'ai conquis de nouveaux territoires", 50, 100);
-	nextMessage( "J'ai appris un sort automatiquement :\nune étoile rouge s'affiche à côté du mage\npour chaque sort appris", 565,200);
-	*/
 	
-/*
+	nextArrow( 540,165, "J'ai appris un sort automatiquement :\nune étoile rouge s'affiche à côté du mage\npour chaque sort appris");
+	
+	
 	nextClick(537,193); nextMessage( "Je vais livrer mon\npremier combat", 600, 150);
 	nextMenu(InfoMessages["MenuMovement"]);
 	nextClick(473,189); nextClick(200,400);
-	nextMessage( "Les forces de chaque camp s'affichent :\npour le moment, je gagne !");
+	nextArrow( 460,162, "Les forces de chaque camp s'affichent :\npour le moment, je gagne !");
+	nextMessage( "La force d'une unité varie selon :\n- sa fatigue (plus elle s'est déplacée, moins elle est puissante)\n- le type de terrain\n- sa position de combat : attaque / défense / soutien", 50, 100 );
+	nextArrow( 464,168, "Unité en DEFENSE");
+	nextArrow( 518,160, "Unité en ATTAQUE");
+	nextArrow( 496,220, "Unité en SOUTIEN\n(située sur un territoire connecté\nau combat)");
 	
-	nextClick(410,118); nextMessage("Imaginons que mon adversaire\nsoit défendu par son cavalier", 100, 100); nextClick(433,164); nextClick(200,400);
-	nextMessage( "Je peux SIMULER les ordres\nde mon adversaire...\n\n...et anticiper le résultat !\n\nMaintenant, mon adversaire est le plus fort\ncar son cavalier le soutient", 40, 250);
+	nextMessage( "Je peux SIMULER les ordres\nde mon adversaire", 40, 50);
+	nextClick(410,118); nextMessage("Un cavalier vient soutenir\nmon adversaire", 100, 100); nextClick(433,164); nextClick(200,400);
+	nextMessage("Maintenant, mon adversaire est le plus fort !", 40, 250);
+
 	
-	nextClick(513,239); nextMessage("J'attaque avec une unité plus doué\nen attaque qu'en soutien...", 600, 150); nextClick(477,191); nextClick(200,400);
+	nextClick(513,239); nextMessage("J'attaque avec une unité plus douée\nen attaque qu'en soutien...", 600, 150); nextClick(477,191); nextClick(200,400);
 	nextMessage( "...et je reprends le dessus !");
 	
-*/
+	nextArrow( 996,307, "Les forces et faiblesses\ndes unités sont\ndécrites ici");
+	nextMenu(InfoMessages["MenuTerainArray"]);
+	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
+	
+	nextMessage( "Je valide mes ordres et\nj'attend le lendemain...", 100, 100 ); nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
+	
 
+	//throwing spell
+	nextMap(); //4
+	
+	nextMessage("... VICTOIRE !!", 407, 120);
+	nextArrow( 464,145, "Un tête de mort = 1 combat");
+	nextArrow( 420,135, "Les unités du mage\nque j'ai occis\ndeviennent neutres");
+	*/
+	
+	nextMessage( "Je vais maintenant\nutiliser ma MAGIE", 174, 250);
+	nextClick(485,188); nextArrow( 470,290, "Ce menu" ); nextMenu(InfoMessages["MenuSpellThrow"]);
+	nextMessage( "En ayant appris un sort sur une plaine\nje peux lancer une attaque magique\nsur des territoires plaines proches", 50, 100);
+	
 	//nextArrow(996,189, "En cliquant sur le menu\nde Simulation, je peux même\nvisualiser la carte\ntelle qu'elle sera\nau prochain tour !");
 	TIMER_COUNT++;
 	
@@ -152,7 +172,7 @@ var nextArrow = function( x, y, message ) {
 		var dx=-60; dy=-60;
 		if (message!=null)
 			var dy_message = dy+20 - message.length/2;
-		if (y<150) { dy=60; dy_message= 1.5 *dy; }
+		if (y<100) { dy=60; dy_message= 1.5 *dy; }
 		if (message != null) clearMessage();
 		CANVAS_TUTORIAL.strokeStyle = "brown"; CANVAS_TUTORIAL.fillStyle = "white"	;
 		CANVAS_TUTORIAL.lineWidth = 10;
