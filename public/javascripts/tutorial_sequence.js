@@ -111,12 +111,38 @@ var tutorialNextTimer = function() {
 	nextMessage("... VICTOIRE !!", 407, 120);
 	nextArrow( 464,145, "Un tête de mort = 1 combat");
 	nextArrow( 420,135, "Les unités du mage\nque j'ai occis\ndeviennent neutres");
-	*/
+	
 	
 	nextMessage( "Je vais maintenant\nutiliser ma MAGIE", 174, 250);
+	*/
 	nextClick(485,188); nextArrow( 470,290, "Ce menu" ); nextMenu(InfoMessages["MenuSpellThrow"]);
-	nextMessage( "En ayant appris un sort sur une plaine\nje peux lancer une attaque magique\nsur des territoires plaines proches", 50, 100);
+	nextMessage( "En ayant appris un sort sur une plaine\nje peux lancer une attaque magique\nsur des territoires plaines proches", 50, 300);
 	
+	nextMessage( "Plus je connaîtrai de sorts de plaine,\nplus mes attaques porteront loin", 50, 300);
+	nextClick(350,139); 
+	nextMessage( "Il y a deux sortes d'attaques magiques :\n-Les attaques magiques qui agissent comme un déplacement du mage\n-Les attaques distantes : le mage reste à sa place\n\nUne attaque magique en plaine équivaut à un déplacement de mon mage.");
+	nextMessage("Chaque attaque magique a aussi une force. Dans mon cas,\nune attaque magique sur plaine a une force assez moyenne.");
+	nextArrow( 996,307, "Comme pour les unités,\nles caractéristiques\ndes attaques magiques\nsont pour chaque terrain\ndécrites ici"); nextClear();
+	nextMenu(InfoMessages["MenuTerainArray"]);
+	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
+	
+	nextMessage("Et je passe quelques ordres supplémentaires", 10, 280);
+	//1rst unit
+	nextClick(459,190); nextClick(431,162);   nextClick(403,121);   nextClick(343,86); 
+	//2nd unit
+	nextClick(803,131);   nextClick(803,131);   nextClick(794,200);   nextClick(788,258);   nextClick(860,266);   nextClick(918,278);   nextClick(964,317);
+	//ennemy
+	//wizard
+	nextClick(314,168); nextClick(314,168); nextMenu(InfoMessages["MenuSpellThrow"]); nextClick(346,84);
+	nextMessage("Je teste à nouveau\nles ordres de mon adversaire", 10, 280);
+	//rider
+	nextClick(108,165); nextClick(282,120);   nextClick(221,105);
+	nextMessage("Astuce : pour annuler un ordre,\n il suffit de recliquer sur l'unité");
+	nextClick(282,120);  nextClick(282,120);  nextClick(282,120); nextClick(346,135);  nextClick(405,120);
+	
+	nextMessage("Les attaques magiques\nagissent comme une unité :\nelles peuvent soutenir\nles territoires adjacents");
+	
+	 
 	//nextArrow(996,189, "En cliquant sur le menu\nde Simulation, je peux même\nvisualiser la carte\ntelle qu'elle sera\nau prochain tour !");
 	TIMER_COUNT++;
 	
@@ -124,6 +150,7 @@ var tutorialNextTimer = function() {
 
 TUTO_old_X=50; TUTO_old_Y=100; //current position of message
 var nextMessage = function (txt, x, y, clear) {
+
 	if (x==null) 
 		{ x=TUTO_old_X; y=TUTO_old_Y;}
 	else { TUTO_old_X=x; TUTO_old_Y=y; }
@@ -158,6 +185,11 @@ var nextMenu = function( menuName, clearMessage ) {
 	timer_match+=3; //wait more
 }
 
+var nextClear = function(waitFor) {
+	if (TIMER_COUNT == timer_match) clearMessage();
+	if (waitFor!=null) timer_match+=waitFor;
+}
+
 var nextClick = function( x, y, clearMessage) {
 	if (clearMessage==null) clear=false;
 	if (TIMER_COUNT == timer_match) {
@@ -168,6 +200,7 @@ var nextClick = function( x, y, clearMessage) {
 }
 
 var nextArrow = function( x, y, message ) {
+
 	if (TIMER_COUNT == timer_match) {
 		var dx=-60; dy=-60;
 		if (message!=null)
