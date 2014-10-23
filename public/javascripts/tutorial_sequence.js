@@ -138,7 +138,7 @@ var tutorialNextTimer = function() {
 	//rider
 	nextClick(108,165); nextClick(282,120);   nextClick(221,105);
 	nextMessage("Astuce : pour annuler un ordre,\n il suffit de recliquer sur l'unité");
-	nextClick(282,120);  nextClick(282,120);  nextClick(282,120); nextClick(346,135);  nextClick(405,120);
+	nextClick(282,120);  nextClick(282,120);  nextClick(282,120); nextClick(346,135);  nextClick(405,120);   nextClick(246,657);
 	
 	nextMessage("Les attaques magiques\nagissent comme une unité :\nelles peuvent soutenir\nles territoires adjacents");
 	
