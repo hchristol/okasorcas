@@ -13,7 +13,6 @@ TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
 var tutorialNextTimer = function() {
 	
 	timer_match=0; //to match with TIMER_COUNT
-
 	
 	//reincarnation	
 	nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !\n\nDans ce jeu vous êtes un magicien", 100, 100);
@@ -25,12 +24,13 @@ var tutorialNextTimer = function() {
 	nextMenu(InfoMessages["MenuReincarnation"]);
 	nextArrow( 888,40, "Dans ce menu,\nje sélectionne mon mage\n(dans mon cas, Ange)");
 	nextMenu(People.WizardName[1]);
-	nextMessage( "Ces ronds m'indiquent les endroits\noù je peux faire apparaitre mon mage\n(en gros : partout !)");
+	nextMessage( "Ces ronds m'indiquent les endroits\noù je peux faire apparaitre mon mage\n(en gros : partout !)", 100, 100);
 	nextClick(581,226);
 	nextMessage( "Voici l'endroit que j'ai choisi");
-	nextMessage( "Je ne peux rien faire d'autre\npour le moment\nJe VALIDE MES ORDRES !");
+	nextMessage( "Je ne peux rien faire d'autre\npour le moment\nJe VALIDE MES ORDRES !", 100, 100);
+	nextArrow( 994,150, "Ce menu");
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
-	nextMessage( "Plus qu'à attendre le lendemain !" );
+	nextMessage( "Plus qu'à attendre le lendemain !", 100, 100 );
 	nextMap(); //1
 
 	//recruiting
@@ -50,7 +50,7 @@ var tutorialNextTimer = function() {
 	nextMap(); //2
 	
 	//moving 
-	//nextMessage( "Le lendemain, mes copains\naussi ont recruté");
+	nextMessage( "Le lendemain, mes copains\naussi ont recruté");
 	nextClick(534,188);
 	nextMessage("Je veux déplacer\nmon cavalier", 500,100);
 	nextClick(597,167);nextClick(646,212);nextClick(706,204);
@@ -85,12 +85,13 @@ var tutorialNextTimer = function() {
 	nextClick(410,118); nextMessage("Un cavalier vient soutenir\nmon adversaire", 100, 100); nextClick(433,164); nextClick(200,400);
 	nextMessage("Maintenant, mon adversaire est le plus fort !", 40, 250);
 
-	
+	nextMessage("Il peut y avoir\njusqu'à DEUX UNITÉS par territoire\nJe vais en profiter.", 50, 100);
 	nextClick(513,239); nextMessage("J'attaque avec une unité plus douée\nen attaque qu'en soutien...", 600, 150); nextClick(477,191); nextClick(200,400);
 	nextMessage( "...et je reprends le dessus !");
 	
 	nextArrow( 996,307, "Les forces et faiblesses\ndes unités sont\ndécrites ici");
 	nextMenu(InfoMessages["MenuTerainArray"]);
+	nextArrow(580,45); 
 	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 	
 	nextMessage( "Je valide mes ordres et\nj'attend le lendemain...", 100, 100 ); nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
@@ -111,7 +112,9 @@ var tutorialNextTimer = function() {
 	nextMessage( "Il y a deux sortes d'attaques magiques :\n-Les attaques magiques qui agissent comme un déplacement du mage\n-Les attaques distantes : le mage reste à sa place\n\nUne attaque magique en plaine équivaut à un déplacement de mon mage.");
 	nextMessage("Chaque attaque magique a aussi une force. Dans mon cas,\nune attaque magique sur plaine a une force assez moyenne.");
 	nextArrow( 996,307, "Comme pour les unités,\nles caractéristiques\ndes attaques magiques\nsont pour chaque terrain\ndécrites ici"); nextClear();
+	
 	nextMenu(InfoMessages["MenuTerainArray"]);
+	nextArrow(1150,32); 
 	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 	
 	nextMessage("Et je passe quelques\nordres supplémentaires", 10, 280);
@@ -139,7 +142,7 @@ var tutorialNextTimer = function() {
 	nextArrow(344,131, "La richesse aussi :\nce symbole indique que mes\nfinances sont excellentes");
 	nextArrow(375,350, "A l'inverse, ce symbole\nindique que ce mage est proche\nde la ruine");
 	
-	nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir du menu Info Revenu");
+	nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir de ce menu");
 	nextMenu(InfoMessages["MenuRevenue"]);
 	timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
 	
