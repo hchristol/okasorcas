@@ -62,12 +62,17 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 
 			
 			if (j!=i) { //change support on different wizard
-				htmlCell.onclick = function() { //order for changing diplomatic status
+				var changeDiplo = function() { //order for changing diplomatic status
 					if (INPUT_ORDER!=null) {
 						INPUT_ORDER.newDiplomaticOrder(this.idWizard1, this.idWizard2, this.typeOfSupport );
 						//refresh view
 						displayDiplomaticSupport(INPUT_ORDER.map.diplomacy, htmlElementParent );
 					}
+				}
+				if (MENU_TUTORIAL == null) htmlCell.onclick = changeDiplo;
+				else {
+					htmlCell.fakeclick = changeDiplo;
+					htmlCell.id="menuDiplo_" + i + "_" + j ; //required for tutorial
 				}
 			}
 

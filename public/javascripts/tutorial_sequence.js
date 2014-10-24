@@ -7,7 +7,7 @@ TIMER_BASE_DURATION_MS = 800;
 TIMER_COUNT=0; //number of event
 timer_match=0;
 
-TUTO_MAP_COUNT=4; //index N of mapN.json file to be loaded during tutorial
+TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
 
 //sequence of tutorial info
 var tutorialNextTimer = function() {
@@ -16,7 +16,6 @@ var tutorialNextTimer = function() {
 
 	
 	//reincarnation	
-/*
 	nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !\n\nDans ce jeu vous êtes un magicien", 100, 100);
 	nextArrow( 420,339, "Le but du jeu est d'emmener\nson mage sur 8 de ces tours");
 
@@ -32,10 +31,9 @@ var tutorialNextTimer = function() {
 	nextMessage( "Je ne peux rien faire d'autre\npour le moment\nJe VALIDE MES ORDRES !");
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
 	nextMessage( "Plus qu'à attendre le lendemain !" );
-
+	nextMap(); //1
 
 	//recruiting
-	nextMap();
 	nextMessage( "Et voici la carte\ndu jour d'après\n\nEnnemis en vue !");
 	nextMessage( "Je vais recruter\nde nouvelles armées");
 	nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
@@ -45,18 +43,13 @@ var tutorialNextTimer = function() {
 	nextMessage("L'unité recrutée dépend du terrain", 50, 100);
 
 	nextArrow( 507,205, "Je suis limité par mon argent (cristaux)\nLe coût est indiqué à côté", 100, 100);
-	nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir du menu Info Revenu");
-	nextMenu(InfoMessages["MenuRevenue"]);
-	timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
+
 	
 	nextMessage( "Hop ! Je valide mes ordres\net j'attends le lendemain !" );
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
+	nextMap(); //2
 	
-	*/	
-	
-	/*
 	//moving 
-	nextMap();
 	//nextMessage( "Le lendemain, mes copains\naussi ont recruté");
 	nextClick(534,188);
 	nextMessage("Je veux déplacer\nmon cavalier", 500,100);
@@ -71,11 +64,9 @@ var tutorialNextTimer = function() {
 	nextClick(532,190);
 	nextMessage( "Fini ! Je valide mes ordres", 100, 100 );
 	nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
-	*/
+	nextMap(); //3
 	
 	//learnt spell and first fighting
-	/*
-	nextMap();
 	nextMessage( "Carte du lendemain !\n\nJ'ai conquis de nouveaux territoires", 50, 100);
 	
 	nextArrow( 540,165, "J'ai appris un sort automatiquement :\nune étoile rouge s'affiche à côté du mage\npour chaque sort appris");
@@ -103,18 +94,15 @@ var tutorialNextTimer = function() {
 	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 	
 	nextMessage( "Je valide mes ordres et\nj'attend le lendemain...", 100, 100 ); nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
-	
-
-	//throwing spell
 	nextMap(); //4
 	
+	//throwing spell
 	nextMessage("... VICTOIRE !!", 407, 120);
 	nextArrow( 464,145, "Un tête de mort = 1 combat");
 	nextArrow( 420,135, "Les unités du mage\nque j'ai occis\ndeviennent neutres");
 	
 	
 	nextMessage( "Je vais maintenant\nutiliser ma MAGIE", 174, 250);
-	*/
 	nextClick(485,188); nextArrow( 470,290, "Ce menu" ); nextMenu(InfoMessages["MenuSpellThrow"]);
 	nextMessage( "En ayant appris un sort sur une plaine\nje peux lancer une attaque magique\nsur des territoires plaines proches", 50, 300);
 	
@@ -126,7 +114,7 @@ var tutorialNextTimer = function() {
 	nextMenu(InfoMessages["MenuTerainArray"]);
 	timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 	
-	nextMessage("Et je passe quelques ordres supplémentaires", 10, 280);
+	nextMessage("Et je passe quelques\nordres supplémentaires", 10, 280);
 	//1rst unit
 	nextClick(459,190); nextClick(431,162);   nextClick(403,121);   nextClick(343,86); 
 	//2nd unit
@@ -142,7 +130,47 @@ var tutorialNextTimer = function() {
 	
 	nextMessage("Les attaques magiques\nagissent comme une unité :\nelles peuvent soutenir\nles territoires adjacents");
 	
-	 
+	nextMessage( "Je valide mes ordres et\nj'attend le lendemain...", 100, 100 ); nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
+	nextMap(); //5
+	
+	//revenue & diplomacy
+	
+	nextMessage("La victoire est à moi !", 100, 100);
+	nextArrow(344,131, "La richesse aussi :\nce symbole indique que mes\nfinances sont excellentes");
+	nextArrow(375,350, "A l'inverse, ce symbole\nindique que ce mage est proche\nde la ruine");
+	
+	nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir du menu Info Revenu");
+	nextMenu(InfoMessages["MenuRevenue"]);
+	timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
+	
+	
+	nextMessage("Les mages peuvent se déclarer\nla guerre ou se soutenir", 100, 300);
+	nextClick(642,430);  nextClick(583,428);  nextClick(553,383); //Crochet
+	nextMessage("Par exemple, si Crochet\net Gengis s'attaquent");
+	nextClick(517,241); nextClick(517,241);  nextMenu(InfoMessages["MenuMovement"]); nextClick(577,231);  nextClick(594,289);   nextClick(531,322);  nextClick(549,379); //Gengis
+	nextMessage("Ils sont de forces égales :\nles deux unités vont\nmourir");
+	
+	
+	nextMessage("Mais imaginons qu'Elrond\nintervienne diplomatiquement", 50, 100);
+	nextArrow(996,65, "Menu diplomatie");
+	nextMenu(InfoMessages["MenuDiplo"]);
+	nextDiploChange(3,2);
+	nextArrow(261,160, "Elrond déclare\nLA GUERRE à Crochet !");
+	timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
+	nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nGengis : les forces\nsont changées ! Gengis gagne !", 100, 300);
+	
+	nextMessage("A l'inverse, si Elrond\nveut protéger Crochet", 50, 100);
+	nextArrow(996,65, "Menu diplomatie");
+	nextMenu(InfoMessages["MenuDiplo"]);
+	nextDiploChange(3,2);
+	nextArrow(261,160, "Elrond déclare\nson soutien");
+	timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
+	nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nCrochet : les forces\nsont changées ! Crochet gagne !", 100, 300);
+	
+	nextMessage("Attention :\n- un mage qui soutient un autre peut quand même l'attaquer\n- si un mage soutien plusieurs camps dans une bataille, alors il reste neutre", 50, 100);
+	
+	nextMessage("Merci d'avoir suivi ce tuto.\nVous en savez maintenant assez pour jouer !\nLe 8ème sortilège fera de vous le maître de ce monde !", 200, 200)
+	
 	//nextArrow(996,189, "En cliquant sur le menu\nde Simulation, je peux même\nvisualiser la carte\ntelle qu'elle sera\nau prochain tour !");
 	TIMER_COUNT++;
 	
@@ -226,6 +254,13 @@ var nextMap = function() {
 		TUTO_MAP_COUNT++; loadMap();
 	}
 	timer_match+=2;
+}
+
+var nextDiploChange = function(wizard1, wizard2) {
+	if (TIMER_COUNT == timer_match) {
+		document.getElementById("menuDiplo_" + wizard1 + "_" + wizard2).fakeclick();
+	}
+	timer_match+=2;	
 }
 
 var clearMessage = function() { CANVAS_TUTORIAL.clearRect(0, 0, 2000, 2000); }
