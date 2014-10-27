@@ -87,7 +87,7 @@ var init = function () {
 	item = AddMenuItem(menuParent, InfoMessages["MenuReincarnation"] , "menu", function(evt) { 
 		MenuSelectItem(this,"menu", "selectedMenu");
 		var posMenu = MenuFloatingPosition( 
-			Point.mouseCoordinates( evt, mapContainer ) , 
+			Point.mouseCoordinates( evt, null ) , // Point.mouseCoordinates( evt, mapContainer ) 
 			new Point( menuChooseWizard.clientWidth, menuChooseWizard.clientHeight), 
 			new Point(0,0), CURRENT_MAP.land.size() )
 		menuChooseWizard.style.left=posMenu.x + 'px';

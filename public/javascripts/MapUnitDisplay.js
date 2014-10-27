@@ -93,6 +93,8 @@ Unit.DrawUnits = function(ctx1,ctx2,ctx3, place, map) {
 		for( var j=0; j<map.spells.spells[owner].length; j++ ) {
 			Map.InsertImageInCanvas("images/spell.png",  place.units[indexOfWizard].graphicPosition().add(-15 + 18 * Math.cos(j/4*Math.PI) ,-33 - 20 * Math.sin(j/4*Math.PI) ), ctx3);
 		}
+	
+		
 	}
 	
 	/*

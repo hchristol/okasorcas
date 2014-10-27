@@ -320,9 +320,11 @@ Point.pathTo = function(ctx,path,closing, resolution) {
 */
 Point.mouseCoordinates= function(evt, DOMelement) {
 
+	if (DOMelement == null) return new Point(evt.clientX, evt.clientY); //no container
+	
 	var containerX = DOMelement.offsetLeft;
 	var containerY = DOMelement.offsetTop;
-
+		
 	//old return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
 	var isTouchSupported = 'ontouchstart' in window;
 	if(isTouchSupported){                     // for touch devices
