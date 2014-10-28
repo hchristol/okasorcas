@@ -26,7 +26,23 @@ html
 			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
 			input(type='file', accept='.zip', name='zipbackup')
-			input(type="submit", value="Envoyer !", name="ok")
+			input(type="submit", value="Envoyer la carte et ECRASER l'ancienne !", name="ok")
+		br
+		br
+		span 
+			b Modifier les parametres de la partie :
+		form#formadmin(action="changegameparam", method="post", enctype="multipart/form-data", autocomplete="off")
+			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
+			input(type="hidden", id="gameId", value= gameId, name='gameId')
+			p Duree du tour : 
+				input(type='number', name='turnDuration', value=turnDuration )
+			p Date de derniere/prochaine resolution : 
+				input(type="text", name='turnLastDate', value=turnLastDate, size=30)
+			input(type="submit", value="Valider modification parametres", name="ok")
+		br
+		br
+		span 
+			b Liste des joueurs (pour envoi mail et consultation) :
 		each wizard, i in users
 			div
 				form(action="/" + gameId + "/changeUsers", method="post")
@@ -35,6 +51,6 @@ html
 					span=wizard.wizardname
 					//value=wizard.password to ignore password, value="" to force password
 					input(type="text", name="password" value=wizard.password) 
-					input(type="submit", name="Submit")
+					//input(type="submit", name="Submit")
 					a(href="mailto:" + wizard.email + "?subject=L8S " + gameId + "&body=user=" + wizard.wizardname + "    password=" + wizard.password)
 						span mailto

@@ -293,7 +293,18 @@ app.get('/:game/client', //client.index);
 				var okas= require('./public/javascripts/Map.js');
 				for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
 		
-				res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser });
+				//read current map to display its parameters
+				redis.client.get( map.jsonfilepath(req.params.game, 0), function(err,reply) {
+					
+					if (reply == null) { //no map yet
+						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:1440, turnLastDate:"2014-09-22T00:30:11.563Z" });	 //no parameters
+					} else {
+						var map= new okas.Map( JSON.parse(reply));
+						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:map.turnDuration, turnLastDate:JSON.stringify(map.turnLastDate)});						
+					}
+
+				});
+				
 			} else
 				//authenticated player
 				res.render('client', { title: '!!!!8!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard });
