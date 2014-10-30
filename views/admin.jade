@@ -31,13 +31,15 @@ html
 		br
 		span 
 			b Modifier les parametres de la partie :
-		form#formadmin(action="changegameparam", method="post", enctype="multipart/form-data", autocomplete="off")
+		form#adminchangeparam(action="/" + gameId + "/adminchangeparam", method="post")
 			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
 			p Duree du tour : 
 				input(type='number', name='turnDuration', value=turnDuration )
-			p Date de derniere/prochaine resolution : 
+			p Date de derniere/prochaine resolution (year-month-day...) : 
 				input(type="text", name='turnLastDate', value=turnLastDate, size=30)
+			p Activer bots (mettre true pour les activer) : 
+				input(type="text", name='aiEnabled', value=aiEnabled, size=30)
 			input(type="submit", value="Valider modification parametres", name="ok")
 		br
 		br

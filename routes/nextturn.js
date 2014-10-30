@@ -61,7 +61,8 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 			//console.log("proceedNextTurn : read orders : " + redisorder);
 			redis.client.get( redisorder, function(err,reply) { //read orders
 
-				var iaToPlay=true;
+				var iaToPlay=false;
+				if (init.map.aiEnabled==true) iaToPlay=true; //bots activated
 				
 				if (reply!=null) {
 					

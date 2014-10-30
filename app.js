@@ -297,10 +297,10 @@ app.get('/:game/client', //client.index);
 				redis.client.get( map.jsonfilepath(req.params.game, 0), function(err,reply) {
 					
 					if (reply == null) { //no map yet
-						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:1440, turnLastDate:"2014-09-22T00:30:11.563Z" });	 //no parameters
+						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:1440, turnLastDate:"2014-09-22T00:30:11.563Z", aiEnabled:"false" });	 //no parameters
 					} else {
 						var map= new okas.Map( JSON.parse(reply));
-						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:map.turnDuration, turnLastDate:JSON.stringify(map.turnLastDate)});						
+						res.render('admin', { title: '!!!!8 ADMIN!!!! ' + req.user.username + ' - ' + req.params.game , wizard : idWizard, gameId : req.params.game, users: wizardToUser, turnDuration:map.turnDuration, turnLastDate:JSON.stringify(map.turnLastDate), aiEnabled:JSON.stringify(map.aiEnabled)});						
 					}
 
 				});
@@ -599,6 +599,61 @@ uploadComplete=function(res, file_count, file_count_complete, msg) {
 	}
 }
 
+
+//update parameters of game
+app.post('/:game/adminchangeparam',
+	function(req, res) {
+	
+		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+		
+			//allowed ?
+			var wizardToUser =  JSON.parse( reply );
+			if (! req.isAuthenticated() ) 
+				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+
+			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
+			if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
+			
+			res.setHeader('Content-Type', 'text/plain');
+			
+			//get the current map
+			var ficname= req.params.game + ".map.json";
+			
+			//valid paramaters ?
+			var turnDuration = parseInt(req.body.turnDuration);
+			if (isNaN(turnDuration) ) { res.send("turnDuration : invalid number value : " + req.body.turnDuration, 200);	 return; }
+			var turnLastDate = Date.parse(req.body.turnLastDate.replace(/"/g, "")); //delete " if present (bug jade ?)
+			if (isNaN(turnLastDate) ) { res.send("turnLastDate : invalid date value : " + req.body.turnLastDate, 200);	 return; }
+			
+			//load map
+			redis.client.get( ficname, function(err,reply) {
+
+				if (reply==null) { if (res != null) res.send("no map found in database !"); return; }
+				
+				var okas= require('./public/javascripts/Map.js');
+				var map= new okas.Map(JSON.parse(reply));
+				
+				//modify param
+				map.turnDuration = turnDuration;
+				map.turnLastDate = turnLastDate;
+				
+				if (req.body.aiEnabled=="true") map.aiEnabled=true;
+				else map.aiEnabled=false;
+				
+				//save modified map
+				redis.client.set(ficname, JSON.stringify(map), function(err) { 
+					if(err) { console.log(err); res.send("ERROR in save map : " + err); }
+					res.send("OK ! Parameters updated : turnDuration=" + turnDuration + "  ;  turnLastDate=" + req.body.turnLastDate + " ; aiEnabled=" + req.body.aiEnabled);
+				}); 
+				
+				
+			});
+			
+			
+
+		});
+	}
+);	
 
 //end of turn : solving order
 app.get('/:game/nextturn', nextturn.index);

@@ -15,6 +15,7 @@ function Map(json) { //land, people, planning, diplomacy) {
 		this.turnNumber=json.turnNumber;
 		this.turnDuration=json.turnDuration;
 		this.turnLastDate=new Date(json.turnLastDate);
+		this.aiEnabled=json.aiEnabled; //bots or not bots
 		
 		this.land = new Land(json.land);
 		
@@ -56,6 +57,7 @@ function Map(json) { //land, people, planning, diplomacy) {
 		this.incomes.updateIncomes(this);
 		this.spells=new LearnedSpells();
 		this.diplomacy = new Diplomacy();
+		this.aiEnabled=false;
 	}
 	
 } 
