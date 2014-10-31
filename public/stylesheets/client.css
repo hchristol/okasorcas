@@ -66,6 +66,14 @@ background-color:hsl(45,30%,97%);
 .incomeNegative 		{  color:orange;    }
 .incomeBankrupcy  	{  color:red;    font-weight:bold;  }
 
+.myDiplomacy {  
+	border:1px solid hsl(45,30%,65%);
+	background-color:hsl(45,30%,99%);
+}
+.notMyDiplomacy { 
+	border:1px solid hsl(45,30%,85%);
+	background-color:hsl(45,30%,90%);
+}
 
 /* floating menus */
 #menuFloating, #menuChooseWizard  { 

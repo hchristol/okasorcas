@@ -36,6 +36,7 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 		for( var j=1; j<People.WIZARD_COUNT; j++) {
 		
 			var htmlCell= document.createElement("td");
+			
 			htmlCell.idWizard1=i; htmlCell.idWizard2=j; htmlCell.typeOfSupport=Diplomacy.WAR;  //to send param on click event
 			htmlRow.appendChild(htmlCell);
 			
@@ -55,8 +56,7 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 					Map.InsertImage("./images/support.png", null, htmlCell,32,32);
 					htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
 				}
-				
-				
+	
 			}
 
 
@@ -75,6 +75,14 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 					htmlCell.id="menuDiplo_" + i + "_" + j ; //required for tutorial
 				}
 			}
+			
+			//enlight wizard own's diplomacy concern
+			if ( (i==CURRENT_WIZARD) || (j==CURRENT_WIZARD)  ) {
+				if (i!=j) htmlCell.className="myDiplomacy"; 
+			} else {
+				if (i!=j) htmlCell.className="notMyDiplomacy"; 
+			}
+			
 
 		}
 		
