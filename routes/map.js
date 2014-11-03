@@ -26,6 +26,10 @@ exports.jsonfilepath = function(game, previous) {
 exports.readimage = function(req, res){	
 
 	redis.client.get(req.params.game + ".map.jpg", function(err,reply) {
+		if (reply == null) { 
+			res.setHeader('Content-Type', 'text/plain');
+			res.send("No image file for game \n" + req.params.game, 200);
+		}
 		res.writeHead(200, {'Content-Type': 'image/jpg' });	
 		res.end( new Buffer(reply, 'base64') ); //convert image string into binary
 	});

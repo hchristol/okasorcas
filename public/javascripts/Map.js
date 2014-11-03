@@ -586,10 +586,17 @@ Incomes.prototype.nextTurn = function(map) {
 				if (place.units.length==0) { place.owner=0; continue; }
 				
 				for( var j=0;j<place.units.length;j++) {
+					var idwizard = place.owner;
 					map.people.changeOwner( place.units[j]  , 0)
 					place.updateOwner(); //required if wizard present there
 					
 					//conflict with wizard and its became neutral unit ?
+					if (place.owner == Place.CONFLICT) {
+						map.people.removeUnitsIn(place, function(unit) { if (unit.owner!=idwizard) return true;  return false; } );
+						place.updateOwner();							
+					}
+					
+					/* OLD : wizard die if unit stronger
 					if (place.owner == Place.CONFLICT) {
 						var f = new Fighting(place);
 						//see which unit is strongest, ignore neighbor places
@@ -599,6 +606,7 @@ Incomes.prototype.nextTurn = function(map) {
 						map.people.removeUnitsIn(f.place, function(unit) { if (unit.owner!=f.winner) return true;  return false; } );
 						f.place.updateOwner();						
 					}
+					*/
 					
 				}
 				

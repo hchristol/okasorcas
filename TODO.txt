@@ -1,5 +1,5 @@
+- debug wizard send magic menu
 
-- change admin parameters : bot activated/desactivated
 - victory wizard fun image
 
 - return an array of hacker wizard and desactivate their orders maps. See Map.prototype.addOrdersTactic
