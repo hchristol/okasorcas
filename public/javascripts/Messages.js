@@ -2,7 +2,7 @@
 
 /** French translatation of game messages **/
 InfoMessages["MenuReincarnation"] = "Réincarner<br>un magicien";
-InfoMessages["MenuDiplo"] = "Diplomacie<br>Guerre/Soutien";
+InfoMessages["MenuDiplo"] = "Diplomatie<br>entre mages";
 InfoMessages["MenuRevenue"] = "Info<br>Revenus";
 InfoMessages["MenuReplay"] = "Carte<br>précédente";
 InfoMessages["MenuReplayCancel"] = "Réafficher<br>carte actuelle";

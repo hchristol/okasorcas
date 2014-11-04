@@ -18,7 +18,7 @@ var tutorialNextTimer = function() {
 
 		//reincarnation	
 		nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !\n\nDans ce jeu vous êtes un magicien", 100, 100);
-		nextArrow( 420,339, "Le but du jeu est d'emmener\nson mage sur 8 de ces tours");
+		nextArrow( 420,339, "Le but du jeu est d'emmener\nson mage sur ces 8 tours");
 
 		nextArrow(241,158); nextArrow(297,152); nextArrow(332,87); nextArrow(519,157); nextArrow(566,384); nextArrow(752,373); nextArrow(689,570);
 		nextMessage( "Au début, je choisi un endroit\noù faire apparaitre mon mage");
@@ -39,7 +39,7 @@ var tutorialNextTimer = function() {
 
 	//recruiting
 	if ( TUTO_MAP_COUNT == 1 ) {
-		nextMessage( "2ème TOUR : voici la carte\ndu jour d'après\n\nEnnemis en vue !");
+		nextMessage( "2ème TOUR : voici la carte\ndu lendemain\n\nEnnemis en vue !");
 		nextMessage( "Je vais recruter\nde nouvelles armées");
 		nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
 		nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage\n\nJe peux recruter jusqu'à\n4 UNITES à la fois");
@@ -77,6 +77,8 @@ var tutorialNextTimer = function() {
 	//learnt spell and first fighting
 	if ( TUTO_MAP_COUNT == 3 ) {
 		nextMessage( "4ème TOUR  !\n\nJ'ai conquis de nouveaux territoires", 50, 100);
+		nextArrow(573,222); nextArrow(637,210);
+		nextArrow( 697,201, "Ces territoires vides sont à moi\ncar je suis le seul à les\navoir traversés" );
 		
 		nextArrow( 540,165, "J'ai appris un sort automatiquement :\nune étoile rouge s'affiche à côté du mage\npour chaque sort appris");
 		
@@ -100,7 +102,7 @@ var tutorialNextTimer = function() {
 		
 		nextArrow( 996,307, "Les forces et faiblesses\ndes unités sont\ndécrites ici");
 		nextMenu(InfoMessages["MenuTerainArray"]);
-		nextArrow(580,45); 
+		//nextArrow(580,45); 
 		timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 		
 		nextMessage( "Je valide mes ordres et\nj'attend le lendemain...", 100, 100 ); nextMenu("<b>" + InfoMessages["MenuValidateOrders"] + "</b>" );
@@ -109,6 +111,7 @@ var tutorialNextTimer = function() {
 	
 	//throwing spell
 	if ( TUTO_MAP_COUNT == 4 ) {
+	
 		nextMessage("5ème TOUR : \nVICTOIRE !!", 407, 120);
 		nextArrow( 464,145, "Un tête de mort = 1 combat");
 		nextArrow( 420,135, "Les unités du mage\nque j'ai occis\ndeviennent neutres");
@@ -121,11 +124,19 @@ var tutorialNextTimer = function() {
 		nextMessage( "Plus je connaîtrai de sorts de plaine,\nplus mes attaques porteront loin", 50, 300);
 		nextClick(350,139); 
 		nextMessage( "Il y a deux sortes d'attaques magiques :\n-Les attaques magiques qui agissent comme un déplacement du mage\n-Les attaques distantes : le mage reste à sa place\n\nUne attaque magique en plaine équivaut à un déplacement de mon mage.");
-		nextMessage("Chaque attaque magique a aussi une force. Dans mon cas,\nune attaque magique sur plaine a une force assez moyenne.");
+	
+		nextClick(801,548); nextMenu(InfoMessages["MenuSpellThrow"]);
+		nextArrow( 788,538, "Ce mage possède une \nattaque magique distante"); 
+		nextArrow(299,380); nextArrow(417,354);  nextArrow(450,317); nextArrow( 574,422 );
+		nextClick(585,430);
+		nextArrow( 553,382, "La magie de la mer porte loin\nElle est puissante mais\nne permet pas de\ndéplacer le mage");
+		nextClick(350,139); 
+		
+		nextMessage("Dans mon cas,\nune attaque magique sur plaine a une force assez moyenne.");
 		nextArrow( 996,307, "Comme pour les unités,\nles caractéristiques\ndes attaques magiques\nsont pour chaque terrain\ndécrites ici"); nextClear();
 		
 		nextMenu(InfoMessages["MenuTerainArray"]);
-		nextArrow(1150,32); 
+		//nextArrow(1150,32); 
 		timer_match+=5; if (TIMER_COUNT == timer_match) document.getElementById('viewTerrainRules').style.visibility="hidden";
 		
 		nextMessage("Et je passe quelques\nordres supplémentaires", 10, 280);
@@ -139,7 +150,7 @@ var tutorialNextTimer = function() {
 		nextMessage("Je teste à nouveau\nles ordres de mon adversaire", 10, 280);
 		//rider
 		nextClick(108,165); nextClick(282,120);   nextClick(221,105);
-		nextMessage("Astuce : pour annuler un ordre,\n il suffit de recliquer sur l'unité");
+		nextMessage("Astuce : pour annuler un ordre,\n il suffit de recliquer plusieurs fois sur l'unité");
 		nextClick(282,120);  nextClick(282,120);  nextClick(282,120); nextClick(346,135);  nextClick(405,120);   nextClick(246,657);
 		
 		nextMessage("Les attaques magiques\nagissent comme une unité :\nelles peuvent soutenir\nles territoires adjacents");
@@ -150,11 +161,12 @@ var tutorialNextTimer = function() {
 	
 	//revenue & diplomacy
 	if ( TUTO_MAP_COUNT == 5 ) {
+
 		nextMessage("6ème TOUR  :\nLa victoire est à moi !", 100, 100);
 		nextArrow(344,131, "La richesse aussi :\nce symbole indique que mes\nfinances sont excellentes");
 		nextArrow(375,350, "A l'inverse, ce symbole\nindique que ce mage est proche\nde la ruine");
 		
-		nextArrow( 992,99, "L'état des finances de chaque mage\nest aussi consultable en détail\nà partir de ce menu");
+		nextArrow( 992,99, "L'état des finances\nde chaque mage\nest aussi \nconsultable en\ndétail à partir\nde ce menu");
 		nextMenu(InfoMessages["MenuRevenue"]);
 		timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
 		
@@ -164,11 +176,17 @@ var tutorialNextTimer = function() {
 		nextMessage("Par exemple, si Crochet\net Gengis s'attaquent");
 		nextClick(517,241); nextClick(517,241);  nextMenu(InfoMessages["MenuMovement"]); nextClick(577,231);  nextClick(594,289);   nextClick(531,322);  nextClick(549,379); //Gengis
 		nextMessage("Ils sont de forces égales :\nles deux unités vont\nmourir");
+	
 		
-		
-		nextMessage("Mais imaginons qu'Elrond\nintervienne diplomatiquement", 50, 100);
-		nextArrow(996,65, "Menu diplomatie");
+		nextArrow(994,69,"La diplomatie peut changer\nle cours de cette bataille");
+	
 		nextMenu(InfoMessages["MenuDiplo"]);
+		nextMessage("Dans ce tableau :\nhorizontalement, on voit ce que\nElrond pense des autres\n(rien pour le moment)", 619,170);
+		for(var i=216; i<593; i+= 50) nextArrow(i ,169);
+		nextMessage("Verticalement, on voit ce que\nles autres pensent d'Elrond", 363,443);
+		for(var i=110; i<430; i+= 50) nextArrow(323 , i);
+		
+		nextMessage("Imaginons qu'Elrond\nintervienne diplomatiquement", 50, 100);
 		nextDiploChange(3,2);
 		nextArrow(261,160, "Elrond déclare\nLA GUERRE à Crochet !");
 		timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
