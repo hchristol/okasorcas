@@ -102,7 +102,17 @@ background-color:hsl(45,30%,97%);
 .menu, .selectedMenu { 	position:static; 		width:auto;		height:auto;  		padding:0rem 0rem 0rem 0rem ;  box-shadow: 5px 5px 8px #aaa;	}  
 .mapParent 		{ 	position:absolute; 	top:0rem;	left:0rem; }
 #canvasTutorial		{ 	position:absolute; 	top:0rem;	left:0rem; z-index:10000; }
-
+/* fading effect for tutorial */
+#fadingTutorial		{ 	position:absolute; 	top:0rem;	left:0rem; z-index:10001; background-color:hsl(45,30%,0%); width:100%; height:100%; 
+			/* fading animation */
+	        -webkit-transition: opacity 1.5s ease-in; /* for chrome, safari */
+            -moz-transition: opacity 1.5s ease-in; /* for mozilla firefox */
+            -o-transition: opacity 1.5s ease-in; /* for opera */
+			transition-property: opacity; transition-duration: 1.5s; /* ie */
+}
+#fadingTutorial.fade-out   { opacity:0; }  
+#fadingTutorial.fade-in    { opacity:1; }
+		
 /* large screen device */
 @media all and (min-width: 75em) { /* easiest way to suppress shadow */
 	/* .menu, .selectedMenu {  	box-shadow:none;  }   unwanted behavior with floating menu */

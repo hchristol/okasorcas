@@ -133,7 +133,8 @@ var init = function () {
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
 		//save json orders
-		var myTactic = INPUT_ORDER.map.planning.tacticOf(CURRENT_WIZARD);
+		var myTactic = null;
+		if (INPUT_ORDER.map.planning != null)  myTactic = INPUT_ORDER.map.planning.tacticOf(CURRENT_WIZARD);
 		
 		if (myTactic==null) { alert(InfoMessages["InfoOrdersEmpty"]); return; }
 		

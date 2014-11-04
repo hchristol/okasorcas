@@ -298,9 +298,14 @@ var loadMap = function(redrawMap) {
 	} 
 	else 
 	{ //first loading of map
+		document.getElementById("fadingTutorial").className = "fade-out";
 		var request="tutorial/map" + TUTO_MAP_COUNT + ".json";
 		if (TURN_REPLAY>0) request+="?previous=" + TURN_REPLAY; //optional historic map
 		RequestJson(request, function(json) {  //load map object
+		
+			//Tutorial : next map on click
+			document.getElementById("fadingTutorial").onclick=function() { loadMapInTutorial(); };
+		
 			var map = new Map( JSON.parse(json) );
 			
 			if (TURN_REPLAY>0) { //previous orders are stored in map
