@@ -304,7 +304,7 @@ var loadMap = function(redrawMap) {
 		RequestJson(request, function(json) {  //load map object
 		
 			//Tutorial : next map on click
-			document.getElementById("fadingTutorial").onclick=function() { loadMapInTutorial(); };
+			document.getElementById("fadingTutorial").onclick=function() { if (TUTO_MAP_COUNT < TUTO_MAX_MAP_COUNT) TIMER_COUNT = NEXT_MAP_FORCED; };
 		
 			var map = new Map( JSON.parse(json) );
 			

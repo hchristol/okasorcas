@@ -187,6 +187,8 @@ var tutorialNextTimer = function() {
 		nextMessage("Merci d'avoir suivi ce tuto.\nVous en savez maintenant assez pour jouer !\nLe 8ème sortilège fera de vous le maître de ce monde !", 200, 200);
 	}
 	
+	TUTO_MAX_MAP_COUNT = 5; //max turn number
+	
 	//nextArrow(996,189, "En cliquant sur le menu\nde Simulation, je peux même\nvisualiser la carte\ntelle qu'elle sera\nau prochain tour !");
 	
 	TIMER_COUNT++;
@@ -263,14 +265,17 @@ var nextArrow = function( x, y, message ) {
 	timer_match++;
 }
 
-
+NEXT_MAP_FORCED = 999999; //when we want to directly switch to a new map
 var nextMap = function() {
-
-	if (TIMER_COUNT == timer_match) {
+	
+	//console.log("DEBUG nextMap : TIMER_COUNT=" + TIMER_COUNT + " TUTO_MAP_COUNT=" + TUTO_MAP_COUNT + " timer_match = " + timer_match);
+	if ( (TIMER_COUNT == timer_match) || ( TIMER_COUNT == NEXT_MAP_FORCED )  ) {
 		document.getElementById("fadingTutorial").className = "fade-in";
+		
+		if ( TIMER_COUNT == NEXT_MAP_FORCED ) Map.InsertCommentInCanvas( CANVAS_TUTORIAL, " => TOUR SUIVANT !", new Point(400, 400), 40 );
 	}
 	
-	if (TIMER_COUNT == timer_match + 2) {
+	if ( (TIMER_COUNT == timer_match + 2) || ( TIMER_COUNT == NEXT_MAP_FORCED + 2 ) ) {
 		clearMessage();
 		TUTO_MAP_COUNT++; loadMap();
 		TIMER_COUNT=-4; //new count for this turn
@@ -278,6 +283,7 @@ var nextMap = function() {
 	}
 	timer_match+=4;
 }
+
 
 
 var nextDiploChange = function(wizard1, wizard2) {
