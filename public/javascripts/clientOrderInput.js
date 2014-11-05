@@ -61,13 +61,13 @@ ClientOrders.LAST_CLICKED_PLACE=null; //allow CANCELLING ORDER
 ClientOrders.CURRENT_ORDER_CAN_BE_CANCELED=false; //allow CANCELLING ORDER
 /** click event **/
 ClientOrders.prototype.onClick = function( pos ) {
-
-	//display x y
-	if (document.getElementById('debugtext') != null)
-		document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")";
 	
 	//search nearest place on the present map, because client see it
 	var place=this.presentMap.land.nearestPlace( pos, ClientOrders.MAX_CLICK_DISTANCE );
+	
+	//display x y
+	if (document.getElementById('debugtext') != null) document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")   place.id=" + place.id;
+	
 	
 	//document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ") selected place = " + place;
 		

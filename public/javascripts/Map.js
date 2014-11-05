@@ -550,18 +550,6 @@ Incomes.prototype.futureStock = function( idWizard, numberOfTurn ) {
 }
 
 
-/* to delete estimate the number of turn before wizard get the max_stock (return positive value). If income is 0 or negative, return null 
-Incomes.prototype.howManyTurnBeforeReachingMaxStock = function( idWizard ) {
-	if (this.incomes[idWizard]<=0) return null;
-	return ( Incomes.MAX_STOCK - this.stocks[idWizard] ) / this.incomes[idWizard];	
-}
-// estimate the number of turn before wizard get to 0 stock. If income is 0 or positive, return null 
-Incomes.prototype.howManyTurnBeforeReachingBankrupcy = function(idWizard ) {
-	if (this.incomes[idWizard]>=0) return null;
-	return ( this.stocks[idWizard] ) / ( - this.incomes[idWizard] );	
-}
-*/
-
 /** add incomes to stocks. If stocks are negatives, all units became neutral ones**/
 Incomes.prototype.nextTurn = function(map) {
 	this.updateIncomes(map);
@@ -579,6 +567,7 @@ Incomes.prototype.nextTurn = function(map) {
 		//bankruptcy : all units of wizard become neutral 
 		for (i=0; i<map.land.places.length; i++ ) {
 			var place = map.land.places[i];
+			
 			if (place.owner==0) continue;
 			if (this.stocks[place.owner]<0) {
 			
@@ -586,16 +575,17 @@ Incomes.prototype.nextTurn = function(map) {
 				if (place.units.length==0) { place.owner=0; continue; }
 				
 				for( var j=0;j<place.units.length;j++) {
-					var idwizard = place.owner;
+					
 					map.people.changeOwner( place.units[j]  , 0)
 					place.updateOwner(); //required if wizard present there
-					
-					//conflict with wizard and its became neutral unit ?
-					if (place.owner == Place.CONFLICT) {
-						map.people.removeUnitsIn(place, function(unit) { if (unit.owner!=idwizard) return true;  return false; } );
-						place.updateOwner();							
-					}
-					
+										
+				}
+				
+				//conflict with wizard and its became neutral unit ?
+				if (place.owner == Place.CONFLICT) {
+					map.people.removeUnitsIn(place, function(unit) { if ( (unit.type!=Unit.WIZARD) ) return true;  return false; } );
+					place.updateOwner();							
+				}
 					/* OLD : wizard die if unit stronger
 					if (place.owner == Place.CONFLICT) {
 						var f = new Fighting(place);
@@ -608,7 +598,6 @@ Incomes.prototype.nextTurn = function(map) {
 					}
 					*/
 					
-				}
 				
 			}
 			
