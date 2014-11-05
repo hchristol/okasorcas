@@ -90,9 +90,12 @@ Unit.DrawUnits = function(ctx1,ctx2,ctx3, place, map) {
 		} 
 		
 		//draw learned spells! around wizard
-		for( var j=0; j<map.spells.spells[owner].length; j++ ) {
-			Map.InsertImageInCanvas("images/spell.png",  place.units[indexOfWizard].graphicPosition().add(-15 + 18 * Math.cos(j/4*Math.PI) ,-33 - 20 * Math.sin(j/4*Math.PI) ), ctx3);
-		}
+		if (map.spells.spells[owner].length<8) 
+			for( var j=0; j<map.spells.spells[owner].length; j++ ) {
+				Map.InsertImageInCanvas("images/spell.png",  place.units[indexOfWizard].graphicPosition().add(-15 + 18 * Math.cos(j/4*Math.PI) ,-33 - 20 * Math.sin(j/4*Math.PI) ), ctx3);
+			}
+		else //winner !!!
+			Map.InsertImageInCanvas("images/victory.png",  place.units[indexOfWizard].graphicPosition().add(-70,-95), ctx1 );
 	
 		
 	}

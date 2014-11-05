@@ -2036,18 +2036,6 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					//duration of movement
 					var duration = this.movementFactor(place.terrain) * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE;
 				
-					//unfriendly crossed place (last place ignored) : loss of time .  Deprecated until we got information about the previous order map
-/*
-					if ( (place.owner!=this.owner) && (i != order.parameters.places.length-1 ) ) {
-						//other ennemy there : unit slow down 
-						if (place.units != null) {
-							for( var j=0; j<place.units.length;j++) {
-								if (place.units[j].owner != this.owner ) duration+= 0.5 * this.movementFactor(place.terrain) * place.units[j].strength(map) / strength;  //strength-=place.units[j].strength(map)/this.movementFactor(place.terrain) ;
-							}
-						}
-					}
-*/
-				
 					daysOfJourney += duration;
 	
 	
@@ -2061,15 +2049,9 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					var max_strength=Unit.strengthOfType(this.type, order.parameters.places[i].terrain, typeOfFight);
 					if (strength>max_strength) strength = max_strength;
 
+					//debug Movement!
+					//console.log("DEBUG Strength! : duration entre " + place.id + " et " + order.parameters.places[i-1].id + " = " + duration + "   strength=" + strength );
 				
-					//min and round strength
-					/*
-					var minStrength=this.strength()/this.movementFactor() ;	//unit wants to stop its movement
-				
-					if ( strength < minStrength  ) 
-						if (order.parameters.places.length==2) ; //try at least one movement, for peasant
-						else strength=0;
-					*/
 				
 				}
 
@@ -2432,8 +2414,12 @@ Act.prototype.movementAddPlace = function( newPlace, map, reallyAddPlace ) {
 	this.parameters.places.push(newPlace); //to test movement
 	
 	var strength = this.parameters.unit.strength(map,this, newPlace.terrain, Fighting.ATTACK ) ;
-	var minStrength =  Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO * Unit.strengthOfType(this.parameters.unit.type, fromPlace.terrain, Fighting.ATTACK);
+	var minStrength =  Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO * Unit.strengthOfType(this.parameters.unit.type, newPlace.terrain, Fighting.ATTACK); //2014-11-05 instead of fromPlace
 	if (minStrength < Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE ) minStrength = Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE ;
+	
+	//debug Movement!
+	//console.log("	DEBUG movementAddPlace : strength=" + strength + "  minStrength =" + minStrength);
+	
 	if ( (strength>=  minStrength ) ||  ( this.parameters.places.length <= 2 ) ) { //enough strenght to move, or first movement
 		if ( reallyAddPlace == false ) this.parameters.places.splice(this.parameters.places.length-1,1); //only testing, place can be removed
 		return Act.MVT_OK;

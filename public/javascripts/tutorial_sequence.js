@@ -7,7 +7,7 @@ TIMER_BASE_DURATION_MS = 800;
 TIMER_COUNT=0; //number of event
 timer_match=0;
 
-TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
+TUTO_MAP_COUNT=3; //index N of mapN.json file to be loaded during tutorial
 
 //sequence of tutorial info
 var tutorialNextTimer = function() {
@@ -84,6 +84,7 @@ var tutorialNextTimer = function() {
 		
 		
 		nextClick(537,193); nextMessage( "Je vais livrer mon\npremier combat", 600, 150);
+		nextMessage("Les combats sont résolus\nAPRÈS TOUS LES DÉPLACEMENTS : \nseule compte la position finale\ndes unités en mouvement.");
 		nextMenu(InfoMessages["MenuMovement"]);
 		nextClick(473,189); nextClick(200,400);
 		nextArrow( 460,162, "Les forces de chaque camp s'affichent :\npour le moment, je gagne !");
@@ -133,7 +134,7 @@ var tutorialNextTimer = function() {
 		nextClick(350,139); 
 		
 		nextMessage("Dans mon cas,\nune attaque magique sur plaine a une force assez moyenne.");
-		nextArrow( 996,307, "Comme pour les unités,\nles caractéristiques\ndes attaques magiques\nsont pour chaque terrain\ndécrites ici"); nextClear();
+		nextArrow( 996,307, "Les attaques magiques\nsont détaillées\nici aussi"); nextClear();
 		
 		nextMenu(InfoMessages["MenuTerainArray"]);
 		//nextArrow(1150,32); 
@@ -169,7 +170,7 @@ var tutorialNextTimer = function() {
 		nextArrow( 992,99, "L'état des finances\nde chaque mage\nest aussi \nconsultable en\ndétail à partir\nde ce menu");
 		nextMenu(InfoMessages["MenuRevenue"]);
 		timer_match+=3; if (TIMER_COUNT == timer_match) document.getElementById('viewIncomes').style.visibility="hidden";
-		
+		nextMessage("Un mage ruiné\nperd toutes ses armées.\nAïe Aïe !", 100, 300);
 		
 		nextMessage("Les mages peuvent se déclarer\nla guerre ou se soutenir", 100, 300);
 		nextClick(642,430);  nextClick(583,428);  nextClick(553,383); //Crochet

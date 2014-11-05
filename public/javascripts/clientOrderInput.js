@@ -64,17 +64,17 @@ ClientOrders.prototype.onClick = function( pos ) {
 	
 	//search nearest place on the present map, because client see it
 	var place=this.presentMap.land.nearestPlace( pos, ClientOrders.MAX_CLICK_DISTANCE );
-	
-	//display x y
-	if (document.getElementById('debugtext') != null) document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")   place.id=" + place.id;
-	
-	
+		
 	//document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ") selected place = " + place;
 		
 	if (place ==null) { //click nowhere : ends current order
 		this.resetOrder(); 
 		return;
 	}	
+	
+	//display x y
+	//if (document.getElementById('debugtext') != null) document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")   place.id=" + place.id;
+	
 	
 	var mode = this.selectMode; //this.selectMode can be changed too quickly, so save it before as local var mode
 		
