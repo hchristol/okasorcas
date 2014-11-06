@@ -70,12 +70,12 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 								
 					//orders for current map or deprecated orders (may happends if not updated by player)
 					if ( tactic.turnNumber != init.map.turnNumber) { //ignored ! Too old !
-						console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
+						//console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
 						tactic = null; 
 					} 
 					else {
 						init.orders.acts = init.orders.acts.concat( tactic.acts );
-						console.log("nombre ordres du magicien " + iOrder + " = " + tactic.acts.length);
+						console.log("Round " + init.map.turnNumber + " : number of orders of wizard " + okas.People.WizardName[iOrder] + " = " + tactic.acts.length);
 						iaToPlay=false;
 					}
 				} 

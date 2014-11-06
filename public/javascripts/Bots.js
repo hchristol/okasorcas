@@ -169,12 +169,21 @@ Bots.prototype.numberOfAllyUnitsAround= function( place ) {
 		
 		//console.log( this.map.diplomacy.supports[p.owner][place.owner] );
 		
+<<<<<<< HEAD
 		if (this.map.diplomacy.supports[p.owner]!=null)
+=======
+		if (this.map.diplomacy.supports[p.owner] != null)
+>>>>>>> finale_release
 			if (this.map.diplomacy.supports[p.owner][place.owner] == this.okas.Diplomacy.SUPPORT_YES) {
 				if (p.owner==place.owner) countAllies++;
 				else countAllies+=0.5; //ally count for half an ally, ah ah
 			}
+<<<<<<< HEAD
 	
+=======
+		//else { console.log("DEBUG Bots.prototype.numberOfAllyUnitsAround : this.map.diplomacy.supports.length=" + this.map.diplomacy.supports.length + 
+		//		" p.owner=" + p.owner + "   array : "  ); }  //+ JSON.stringify(this.map.diplomacy.supports)
+>>>>>>> finale_release
 	}
 
 	return countAllies;
