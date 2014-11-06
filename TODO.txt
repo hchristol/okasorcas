@@ -1,7 +1,7 @@
-
-- victory wizard fun image
-
 - return an array of hacker wizard and desactivate their orders maps. See Map.prototype.addOrdersTactic
+
+- boutons stop / next dans tutorial
+
 
 - controlling order reading in order.js
 - controlling order (security) : in updateOrder

@@ -229,7 +229,8 @@ Map.prototype.updateOrder = function(order) {
 		if (order.parameters.support==null) return;
 		
 		if (  (order.parameters.idWizard2!=order.owner) && ( order.parameters.idWizard2 != 0) ) //security : no diplomacy change on self or neutral wizard
-			this.diplomacy.supports[order.owner][order.parameters.idWizard2]=order.parameters.support;
+			if ( this.diplomacy.supports[order.owner] != null )
+				this.diplomacy.supports[order.owner][order.parameters.idWizard2]=order.parameters.support;
 						
 	}
 	
@@ -251,10 +252,15 @@ Map.prototype.addOrdersTactic = function( tactic ) {
 	}
 	
 	//fraud detection for too crowded places. TODO : return an array of hacker wizard and desactivate their orders
+	hackers = new Array();
 	for (idWizard=1; idWizard<People.WIZARD_COUNT; idWizard++)
-		if (this.land.placesTooCrowdedFor(idWizard).length>0)
+		if (this.land.placesTooCrowdedFor(idWizard).length>0) {
 			console.log("ALERT !!! wizard " + idWizard + " (" + People.WizardName[idWizard] + ") PUT too much UNITS ! HE's a hacker !");
+			
+			hackers.push(idWizard);
+		}
 	
+	return hackers;
 }
 
 /** Return an array of Fightings, due to places in conflict.  **/
@@ -671,6 +677,7 @@ LearnedSpells.prototype.hasLearn = function( idWizard, place ) {
 	if (place.tower==null) return true;
 	var idPlace=place.id;
 	if (idWizard==0) return true;
+	if (this.spells[idWizard] == null) return false;
 	if (this.spells[idWizard].indexOf(idPlace) >= 0) return true;
 	return false;
 }
