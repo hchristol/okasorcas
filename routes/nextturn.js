@@ -19,7 +19,8 @@ exports.index = function(req, res) {
 };
 
 //res : response wanted, null if no res parameter
-exports.proceedNextTurn = function(game, forceNextTurn, res) {
+//hackers : index of wizard whose orders must be ignorer coz they does not respect law
+exports.proceedNextTurn = function(game, forceNextTurn, res, hackers) {
 	
 	//get the current map
 	var ficname= game + ".map.json";
@@ -51,12 +52,22 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 				if (init.map.history==null) init.map.history=new Object();
 				init.map.history.orders=init.orders;
 				
-				nextturnMessage=nextturn(game, init.map, init.orders, forceNextTurn);
+				nextturnMessage=nextturn(res, game, init.map, init.orders, forceNextTurn);
 				if (res != null) res.render('nextturn', { title: '!!!!8!!!! NEXT TURN', message: nextturnMessage});
 				return;
 			}
 			
 			//READ NEXT ORDER
+			//wizard to be ignored ?
+			/* issues with bots and maybe without them. Disabled.
+			if (hackers !=null) {
+				if (hackers.indexOf(iOrder)>=0) {
+					console.log("  reload orders without hacker : " + iOrder);
+					readNextOrder(); //hacker in black list, ignore him !
+				}
+			}
+			*/
+			
 			var redisorder = game + ".orders" + iOrder + ".json";
 			//console.log("proceedNextTurn : read orders : " + redisorder);
 			redis.client.get( redisorder, function(err,reply) { //read orders
@@ -65,17 +76,17 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 				if (init.map.aiEnabled==true) iaToPlay=true; //bots activated
 				
 				if (reply!=null) {
-					
+			
 					var tactic = okas.Tactic.fromJSON( JSON.parse(reply), init.map );
 								
 					//orders for current map or deprecated orders (may happends if not updated by player)
 					if ( tactic.turnNumber != init.map.turnNumber) { //ignored ! Too old !
-						console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
+						//console.log("Ordres périmés : tactic.turnNumber=" + tactic.turnNumber + " map.turnNumber=" + init.map.turnNumber ); 
 						tactic = null; 
 					} 
 					else {
 						init.orders.acts = init.orders.acts.concat( tactic.acts );
-						console.log("nombre ordres du magicien " + iOrder + " = " + tactic.acts.length);
+						console.log("Round " + init.map.turnNumber + " : number of orders of wizard " + okas.People.WizardName[iOrder] + " = " + tactic.acts.length);
 						iaToPlay=false;
 					}
 				} 
@@ -84,8 +95,7 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 				
 					//bot enter its orders	
 					var tactic = ia.getOrders(iOrder);
-					init.orders.acts = init.orders.acts.concat( tactic.acts );
-					console.log("nombre ordres du bot " + iOrder + " = " + tactic.acts.length);		
+					init.orders.acts = init.orders.acts.concat( tactic.acts );	
 				
 				}
 				
@@ -104,7 +114,7 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 /**
 Solve current turn
 */
-nextturn = function (game, map, orders, forceNextTurn) {
+nextturn = function (res, game, map, orders, forceNextTurn) {
 	var message = 'Next turn OK' ;
 	
 	//is it time to solve ?
@@ -122,7 +132,15 @@ nextturn = function (game, map, orders, forceNextTurn) {
 	saveToJson(game, map, "map_previous" + ".json"); //save map before solving its orders, as an archive file
 	
 	//1) APPLY ORDERS AND SETTLE FIGHTINGS
-	map.addOrdersTactic( orders ); //apply orders to old map
+	
+/* issues with bots and maybe without them. Disabled.
+	hackers = map.addOrdersTactic( orders ); //apply orders to old map
+	if (hackers.length>0) {
+		console.log("hackers found : proceedNextTurn without their orders ");
+		exports.proceedNextTurn(game, forceNextTurn, res, hackers); //have to reload map
+	}
+*/	
+	
 	map.terminateOrders();
 	
 	//incremente date of next turn until it becomes too soon for next turn
