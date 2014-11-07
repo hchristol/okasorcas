@@ -112,7 +112,9 @@ background-color:hsl(45,30%,97%);
 }
 #fadingTutorial.fade-out   { opacity:0; }  
 #fadingTutorial.fade-in    { opacity:1; }
-		
+/* tutorial buttons */
+#controlTutorial	{ 	position:absolute; 	top:42rem;	left:25rem;   width:auto;		height:auto;   z-index:10002;  opacity:0.5; }
+
 /* large screen device */
 @media all and (min-width: 75em) { /* easiest way to suppress shadow */
 	/* .menu, .selectedMenu {  	box-shadow:none;  }   unwanted behavior with floating menu */

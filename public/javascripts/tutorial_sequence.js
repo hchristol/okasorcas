@@ -7,10 +7,14 @@ TIMER_BASE_DURATION_MS = 800;
 TIMER_COUNT=0; //number of event
 timer_match=0;
 
-TUTO_MAP_COUNT=3; //index N of mapN.json file to be loaded during tutorial
+TUTO_MAP_COUNT=0; //index N of mapN.json file to be loaded during tutorial
+
+TUTO_PAUSE = false; //true when waiting
 
 //sequence of tutorial info
 var tutorialNextTimer = function() {
+	
+	if (TUTO_PAUSE) return;
 	
 	timer_match=0; //to match with TIMER_COUNT
 	
@@ -313,3 +317,20 @@ var nextDiploChange = function(wizard1, wizard2) {
 }
 
 var clearMessage = function() { CANVAS_TUTORIAL.clearRect(0, 0, 2000, 2000); }
+
+
+//control buttons
+tutorialPlay = function() { 
+	if (TUTO_PAUSE==false) {
+		TUTO_PAUSE = true; 
+		document.getElementById("tutorial_play").src='images/tutorial_play.png';  
+	} else {
+		TUTO_PAUSE = false; 
+		document.getElementById("tutorial_play").src='images/tutorial_pause.png';  	
+	}
+};
+
+tutorialNext = function() { 
+	if (TUTO_MAP_COUNT < TUTO_MAX_MAP_COUNT) TIMER_COUNT = NEXT_MAP_FORCED; 
+	document.getElementById("tutorial_turn_info").innerHTML="Tour " + (TUTO_MAP_COUNT + 2);
+};
