@@ -22,5 +22,11 @@ html
 		/* pass wizard id to client */
 		input(type="hidden", id="wizardId", value= wizard)
 		input(type="hidden", id="gameId", value= gameId)
+		span#controlAdminEditMap
+			table
+				each val in [0, 1, 2, 3, 4, 5, 6, 7]
+					tr
+						td 
+							image(src='images/terrain' + val +'.png' onclick='adminEditControlTerrain(' + val + ')'  id='mapEditControl' + val class='menu')
 
 

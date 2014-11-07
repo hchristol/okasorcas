@@ -15,7 +15,7 @@ Furthermore, we draw each cached units on a separated kinetic canvas (the one wh
 * @function
 * @returns 
 */
-Map.prototype.draw = function(layerLand, layerPeople){
+Map.prototype.draw = function(layerLand){
 
 	//Fill the background Map
 	layerLand.add( new Kinetic.Rect({

@@ -4,9 +4,31 @@
 
 var stage; //canvas for map
 var layerLand; //to be saved as an simple image for client
-var layerPeople;
 var stageUnits; //canvas for units (to be save as an image)
 var map;
+
+var CURRENT_EDIT_CONTROL = -1;
+var CURRENT_EDIT_CONTROL_TERRAIN = -1;
+
+//change control to terrain
+var adminEditControlTerrain = function( terrainId ) { 
+	console.log("Control terrain = " + terrainId);
+	selectControl(terrainId);
+	CURRENT_EDIT_CONTROL = 1; //terrain
+	CURRENT_EDIT_CONTROL_TERRAIN = terrainId;
+}
+		
+var selectControl = function ( idControl ) {
+	console.log("selectControl ");
+	var k=0;
+	while ( document.getElementById('mapEditControl' + k) != null ) {
+		document.getElementById('mapEditControl' + k).className = "menu" ;
+		k++;
+		console.log("selectControl " + k );
+	}
+	document.getElementById('mapEditControl' + idControl).className = "selectedMenu" ;
+		
+}
 
 var init = function () {
 
@@ -26,19 +48,28 @@ var init = function () {
 			height: map.land.size().y
 		});
 		
-		layerLand = new Kinetic.Layer();
-		//layerPeople = new Kinetic.Layer();
-		map.draw(layerLand, layerPeople ); 
-		stage.add(layerLand);
-		//stage.add(layerPeople);    
+		//redraw map
+		redrawKineticMap = function() {
+			console.log("redrawKineticMap");
+			var first_init = (layerLand == null);
+			if (first_init) 
+				layerLand = new Kinetic.Layer();
+			else layerLand.clear();
+			map.draw(layerLand ); 
+			if (first_init) stage.add(layerLand); 
+			else stage.draw();
+		};
+		redrawKineticMap(); //first drawing
+
+		
 		
 		//units drawn without canvas :
 		var canvas_units1 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		var canvas_units2 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		var canvas_units3 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
-		map.people.draw(canvas_units1, canvas_units2, canvas_units3, map);
+		map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map);
 	
-		
+
 		stage.on('click', function(evt) {
 
 			//alert( "c'est bien t'as cliqué ici : " + ( evt.clientX - document.getElementById('canvasMap').getBoundingClientRect().left ) );
@@ -47,7 +78,19 @@ var init = function () {
 			
 			var pos = Point.mouseCoordinates( evt, document.getElementById('canvasMap') )
 			var place=map.land.nearestPlace( pos );
-			alert( place.id );
+			
+			if (place==null) return;
+			
+			//alert( place.id );
+			
+			//terrain control
+			if (CURRENT_EDIT_CONTROL == 1) {
+				console.log("Terrain changé");
+				place.terrain = CURRENT_EDIT_CONTROL_TERRAIN;
+				redrawKineticMap();
+			}
+			
+			
 		});
 		
 		/*
