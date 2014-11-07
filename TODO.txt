@@ -1,5 +1,3 @@
-- boutons stop / next dans tutorial
-
-
+- tower visible in admin mode
 
 
