@@ -902,8 +902,8 @@ function Land(json) {
 			//no terrain propagation.
 
 			//tower on this terrain ?
-			if ( (towerCount<8) ||  (Math.random()*100< 0  )  )
-				{ randomPlace.tower=towerCount; towerCount++; }
+			//if ( (towerCount<8) ||  (Math.random()*100< 0  )  )
+			//	{ randomPlace.tower=towerCount; towerCount++; }
 			
 		}
 

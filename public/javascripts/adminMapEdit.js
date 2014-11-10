@@ -8,23 +8,18 @@ var stageUnits; //canvas for units (to be save as an image)
 var map;
 
 var CURRENT_EDIT_CONTROL = -1;
-var CURRENT_EDIT_CONTROL_TERRAIN = -1;
 
 //change control to terrain
-var adminEditControlTerrain = function( terrainId ) { 
-	console.log("Control terrain = " + terrainId);
-	selectControl(terrainId);
-	CURRENT_EDIT_CONTROL = 1; //terrain
-	CURRENT_EDIT_CONTROL_TERRAIN = terrainId;
+var adminEditControl = function( controlId ) { 
+	selectControl(controlId);
+	CURRENT_EDIT_CONTROL = controlId;
 }
 		
 var selectControl = function ( idControl ) {
-	console.log("selectControl ");
-	var k=0;
-	while ( document.getElementById('mapEditControl' + k) != null ) {
-		document.getElementById('mapEditControl' + k).className = "menu" ;
-		k++;
-		console.log("selectControl " + k );
+	for (var k=0; k<30; k++) {
+		if ( document.getElementById('mapEditControl' + k) != null ) {
+			document.getElementById('mapEditControl' + k).className = "menu" ;
+		}
 	}
 	document.getElementById('mapEditControl' + idControl).className = "selectedMenu" ;
 		
@@ -50,7 +45,6 @@ var init = function () {
 		
 		//redraw map
 		redrawKineticMap = function() {
-			console.log("redrawKineticMap");
 			var first_init = (layerLand == null);
 			if (first_init) 
 				layerLand = new Kinetic.Layer();
@@ -68,8 +62,13 @@ var init = function () {
 		var canvas_units2 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		var canvas_units3 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map);
+		
+		//canvas for control
+		var canvas_control = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 	
 
+		var place_with_tower = null; //tower that will be exchanged with another place
+		var place_to_move = null; //place that we want to move
 		stage.on('click', function(evt) {
 
 			//alert( "c'est bien t'as cliqué ici : " + ( evt.clientX - document.getElementById('canvasMap').getBoundingClientRect().left ) );
@@ -84,11 +83,43 @@ var init = function () {
 			//alert( place.id );
 			
 			//terrain control
-			if (CURRENT_EDIT_CONTROL == 1) {
-				console.log("Terrain changé");
-				place.terrain = CURRENT_EDIT_CONTROL_TERRAIN;
-				redrawKineticMap();
+			if ( (CURRENT_EDIT_CONTROL >= 0) && (CURRENT_EDIT_CONTROL < 20) ) { 
+				place.terrain = CURRENT_EDIT_CONTROL;
+				redrawKineticMap(); //refresh map
 			}
+			
+			//tower exchange control
+			if (CURRENT_EDIT_CONTROL == 20 ) { 
+				
+				if (place.tower != null) { //first place : choose de tower
+					place_with_tower = place; //id tower that will be moved
+				} 
+				else { //place that will receive tower
+					if (place_with_tower==null) return; //no previous tower selected
+					place.tower = place_with_tower.tower;
+					place_with_tower.tower = null;
+					place_with_tower = place; //ready for new exchange
+					//refresh map
+					map.clear(canvas_units1); map.clear(canvas_units2); map.clear(canvas_units3); 
+					map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map); //redraw towers
+				}
+				
+			}			
+			
+			//coord moving control
+			if (CURRENT_EDIT_CONTROL == 21 ) { 
+				
+				if (place_to_move == null) { //first place choosen
+					place_to_move = place; //id tower that will be moved
+				} 
+				else { //coord to move place on
+					if (place_to_move==null) return; //no previous tower selected
+					place.position = pos;
+					place_to_move = null; //ready for new exchange
+					redrawKineticMap(); //refresh map
+				}
+				
+			}			
 			
 			
 		});
