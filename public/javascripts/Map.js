@@ -2421,7 +2421,7 @@ Act.prototype.movementAddPlace = function( newPlace, map, reallyAddPlace ) {
 	this.parameters.places.push(newPlace); //to test movement
 	
 	var strength = this.parameters.unit.strength(map,this, newPlace.terrain, Fighting.ATTACK ) ;
-	var minStrength =  Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO * Unit.strengthOfType(this.parameters.unit.type, newPlace.terrain, Fighting.ATTACK); //2014-11-05 instead of fromPlace
+	var minStrength =  Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO * Unit.strengthOfType(this.parameters.unit.type, null, Fighting.ATTACK); //2014-11-05 instead of fromPlace, 2014-11-12 null instead of newPlace.terrain
 	if (minStrength < Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE ) minStrength = Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE ;
 	
 	//debug Movement!
