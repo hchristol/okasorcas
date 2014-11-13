@@ -1832,7 +1832,13 @@ Value : in equivalent thousands men at arms
 */
 Unit.strengthOfType = function(typeUnit, terrain, typeOfFight) {
 	
-	if (terrain==null) terrain=Place.PLAIN;
+	if (terrain==null) { //average strength
+		var sum = 0;
+		for (var i = 0; i < Place.TERRAIN_COUNT; i++)
+			sum = Unit.strengthOfType(typeUnit, i, typeOfFight );
+		return sum / Place.TERRAIN_COUNT;
+	}
+	
 	if (typeUnit == Unit.WIZARD )  {
 		if (typeOfFight==Fighting.DEFENSE) return Unit.strengthOfType(null, terrain, typeOfFight ) * 1.33 ; 
 	}
