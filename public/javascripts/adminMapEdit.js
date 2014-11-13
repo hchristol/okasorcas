@@ -27,8 +27,20 @@ var selectControl = function ( idControl ) {
 
 var init = function () {
 
+	//argument that request a new map ?
+	var newMap = document.URL.match(/newMap=([a-z]+)/);
+	if ( (newMap!=null) && (newMap.length==2) && ( newMap[1]=="yes" ) ) {
+		map = new Map(); //generate a new map
+		initMap();
+	}
+	else //reload ancient map
+		RequestJson("mapjson", function(json) {  //load map object
+			map = new Map( JSON.parse(json) );
+			initMap();
+		});
+}
 
-	map = new Map();
+var initMap = function () {
 
 	//Canvas context where to display map
 	document.getElementById('canvasMap').width=map.land.size().x;
@@ -55,13 +67,18 @@ var init = function () {
 		};
 		redrawKineticMap(); //first drawing
 
-		
-		
 		//units drawn without canvas :
+		redrawUnitMap = function() { 
+			map.clear(canvas_units1); map.clear(canvas_units2); map.clear(canvas_units3); 
+			map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map); //redraw towers
+		}
+		
+		
+		
 		var canvas_units1 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		var canvas_units2 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		var canvas_units3 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
-		map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map);
+		redrawUnitMap();
 		
 		//canvas for control
 		var canvas_control = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
@@ -100,8 +117,7 @@ var init = function () {
 					place_with_tower.tower = null;
 					place_with_tower = place; //ready for new exchange
 					//refresh map
-					map.clear(canvas_units1); map.clear(canvas_units2); map.clear(canvas_units3); 
-					map.people.draw(canvas_units1, canvas_units2, canvas_units3, null, map); //redraw towers
+					redrawUnitMap();
 				}
 				
 			}			
@@ -116,7 +132,7 @@ var init = function () {
 					if (place_to_move==null) return; //no previous tower selected
 					place.position = pos;
 					place_to_move = null; //ready for new exchange
-					redrawKineticMap(); //refresh map
+					redrawKineticMap(); redrawUnitMap(); //refresh map
 				}
 				
 			}			
