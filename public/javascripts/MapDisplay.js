@@ -46,7 +46,7 @@ Map.InsertCanvas= function(position, size, layer, classname) {
 
 /** add an image in a canvas element**/
 Map.InsertImageInCanvas = function (url, position, ctx, height, width, opacity) {
-	
+	if (ctx == null) return;
 	var img = new Image(); 
 	
 	//console.log("loading..... " + ctx.debugname + " " + url);

@@ -833,7 +833,7 @@ function Land(json) {
 			
 			
 			if ( placeIsOk ) {
-				this.places[i]= pNew; pNew.id=i;; i++; //validate the new place
+				this.places[i]= pNew; pNew.id=i; i++; //validate the new place
 				tryCount=0;
 			} else {
 				tryCount++; //next try

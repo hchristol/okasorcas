@@ -108,8 +108,11 @@ var initMap = function () {
 			//tower exchange control
 			if (CURRENT_EDIT_CONTROL == 20 ) { 
 				
+				map.clear(canvas_control); 
+				
 				if (place.tower != null) { //first place : choose de tower
 					place_with_tower = place; //id tower that will be moved
+					place_with_tower.position.showEnlightedCircle(canvas_control, "blue", 10 );
 				} 
 				else { //place that will receive tower
 					if (place_with_tower==null) return; //no previous tower selected
@@ -118,6 +121,7 @@ var initMap = function () {
 					place_with_tower = place; //ready for new exchange
 					//refresh map
 					redrawUnitMap();
+					place_with_tower.position.showEnlightedCircle(canvas_control, "blue", 10 );
 				}
 				
 			}			
@@ -125,17 +129,52 @@ var initMap = function () {
 			//coord moving control
 			if (CURRENT_EDIT_CONTROL == 21 ) { 
 				
+				map.clear(canvas_control); 
+				
 				if (place_to_move == null) { //first place choosen
 					place_to_move = place; //id tower that will be moved
+					place_to_move.position.showEnlightedCircle(canvas_control, "red", 10 );
 				} 
 				else { //coord to move place on
+				
+					pos.showEnlightedCircle(canvas_control, "orange", 10 );
+					
 					if (place_to_move==null) return; //no previous tower selected
-					place.position = pos;
+					place_to_move.position = pos;
 					place_to_move = null; //ready for new exchange
+					
+					//rebuild graph
+					map.land.graphInitByDistance();
+					map.land.graphRemoveCrossingNeighbors();
+					//rebuild spatial index
+					map.land.spatialIndexInit(); 
+					
 					redrawKineticMap(); redrawUnitMap(); //refresh map
+					map.clear(canvas_control); pos.showEnlightedCircle(canvas_control, "green", 10 );
 				}
 				
-			}			
+			}
+
+			//place create
+			if (CURRENT_EDIT_CONTROL == 22 ) { 
+				
+				map.clear(canvas_control); 
+				pos.showEnlightedCircle(canvas_control, "orange", 10 );
+				
+				var pNew = new Place( pos, Place.PLAIN);
+				idPlace=map.land.places.length;
+				map.land.places[idPlace]= pNew; pNew.id=idPlace;//validate the new place
+				
+				//rebuild graph
+				map.land.graphInitByDistance();
+				map.land.graphRemoveCrossingNeighbors();
+				//rebuild spatial index
+				map.land.spatialIndexInit(); 
+					
+				redrawKineticMap(); redrawUnitMap(); //refresh map
+				map.clear(canvas_control); pos.showEnlightedCircle(canvas_control, "green", 10 );					
+			}	
+			
 			
 			
 		});
