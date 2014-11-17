@@ -1347,14 +1347,14 @@ Place.TERRAIN_COUNT=8; //count type of terrain
 
 /** Incomes! of terrain **/
 Place.incomeOfTerrain = function(terrain) {
-	if (terrain==Place.PLAIN) return 17;
-	if (terrain==Place.HILL) return 16;
-	if (terrain==Place.CITY) return 25;
-	if (terrain==Place.FOREST) return 15;
-	if (terrain==Place.SEA) return 14;
-	if (terrain==Place.MOUNTAIN) return 10;
-	if (terrain==Place.DESERT) return 8;
-	if (terrain==Place.VOLCANO) return 8;
+	if (terrain==Place.PLAIN) return 14;
+	if (terrain==Place.HILL) return 14;
+	if (terrain==Place.CITY) return 20;
+	if (terrain==Place.FOREST) return 14;
+	if (terrain==Place.SEA) return 10;
+	if (terrain==Place.MOUNTAIN) return 8;
+	if (terrain==Place.DESERT) return 6;
+	if (terrain==Place.VOLCANO) return 4;
 	return 14; //unknown place : medium income. medium incomes is used to scale strenght of units too.
 }
 
@@ -1807,7 +1807,7 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 		return Unit.movementFactorOfType(null, terrain) + 7;
 
 	}
-	if (typeUnit == Unit.PEASANT ) return Unit.movementFactorOfType(null, terrain) + 2 ;
+	if (typeUnit == Unit.PEASANT ) return Unit.movementFactorOfType(null, terrain) + 3 ;
 	if (typeUnit == Unit.DRAGON ) { 
 		return 4;
 	}

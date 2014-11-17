@@ -325,7 +325,12 @@ Point.mouseCoordinates= function(evt, DOMelement) {
 	var containerX = DOMelement.offsetLeft;
 	var containerY = DOMelement.offsetTop;
 		
-	//old return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
+	//old since 2013 return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
+	
+	//since November 2014 : 
+	return new Point(  ( evt.clientX - containerX ), ( evt.clientY - containerY )  );
+	
+	//first bug of android chrome fix, don't work anymore since November 2014
 	var isTouchSupported = 'ontouchstart' in window;
 	if(isTouchSupported){                     // for touch devices
 		return new Point(evt.clientX-containerX, evt.clientY-containerY);
