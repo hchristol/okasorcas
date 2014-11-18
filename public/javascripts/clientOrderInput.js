@@ -52,7 +52,8 @@ ClientOrders.prototype.initClick = function (mapContainer, beforeFunction ) {
 	mapContainer.onclick = function(evt) {	
 		if (beforeFunction!=null) beforeFunction( Point.mouseCoordinates( evt, mapContainer ) );
 		ClientOrders.HideFloatingsMenus();
-		client.onClick( Point.mouseCoordinates( evt, mapContainer ) );
+		//client.onClick( Point.mouseCoordinates( evt, mapContainer ) );
+		client.onClick( Point.mouseCoordinates( evt, null ) ); //November 2014, assume map is at (0,0) , issue bug with android chrome 
 	};
 }
 
@@ -71,7 +72,7 @@ ClientOrders.prototype.onClick = function( pos ) {
 	}	
 	
 	//display x y
-	//if (document.getElementById('debugtext') != null) document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")   place.id=" + place.id;
+	//if (document.getElementById('debugtext') != null) document.getElementById('debugtext').innerHTML="ClientOrders.onClick  new Point(" + pos.x + "," + pos.y + ")   place.id=" + place.id + " window.devicePixelRatio=" + window.devicePixelRatio;
 	
 	
 	var mode = this.selectMode; //this.selectMode can be changed too quickly, so save it before as local var mode

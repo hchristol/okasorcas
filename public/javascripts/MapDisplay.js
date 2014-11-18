@@ -320,15 +320,16 @@ Point.pathTo = function(ctx,path,closing, resolution) {
 */
 Point.mouseCoordinates= function(evt, DOMelement) {
 
-	if (DOMelement == null) return new Point(evt.clientX, evt.clientY); //no container
+	//18th of November : use pageX instead of clientX
+	if (DOMelement == null) return new Point(evt.pageX, evt.pageY); //no container
 	
 	var containerX = DOMelement.offsetLeft;
 	var containerY = DOMelement.offsetTop;
-		
+
 	//old since 2013 return new Point(  ( mouseEvent.clientX - DOMelement.getBoundingClientRect().left ), ( mouseEvent.clientY - DOMelement.getBoundingClientRect().top )  );
 	
 	//since November 2014 : 
-	return new Point(  ( evt.clientX - containerX ), ( evt.clientY - containerY )  );
+	return new Point(  ( evt.pageX - containerX ), ( evt.pageX - containerY )  );
 	
 	//first bug of android chrome fix, don't work anymore since November 2014
 	var isTouchSupported = 'ontouchstart' in window;
