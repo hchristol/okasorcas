@@ -7,12 +7,45 @@ var layerLand; //to be saved as an simple image for client
 var stageUnits; //canvas for units (to be save as an image)
 var map;
 
+var canvas_units1;
+var canvas_units2;
+var canvas_units3;
+
+//canvas for control
+var canvas_control;
+
+
+var place_with_tower = null; //tower that will be exchanged with another place
+var place_to_move = null; //place that we want to move
+		
 var CURRENT_EDIT_CONTROL = -1;
 
-//change control to terrain
+lastTypeOfTerrainChoosen = Place.PLAIN; //default type for newly created place
+
+//control button click
 var adminEditControl = function( controlId ) { 
 	selectControl(controlId);
 	CURRENT_EDIT_CONTROL = controlId;
+	
+	//remember type of terrain choosen coz it's used in creating a new place
+	if ( (CURRENT_EDIT_CONTROL >= 0) && (CURRENT_EDIT_CONTROL < 20) ) { 
+		lastTypeOfTerrainChoosen=CURRENT_EDIT_CONTROL;
+	}
+			
+	//validate and redraw
+	if (CURRENT_EDIT_CONTROL == 30 ) { 
+		map.clear(canvas_control);
+		
+		//rebuild graph
+		map.land.graphInitByDistance();
+		map.land.graphRemoveCrossingNeighbors();
+		//rebuild spatial index
+		map.land.spatialIndexInit(); 
+		
+		//refresh map
+		redrawKineticMap(); redrawUnitMap(); 
+	}
+			
 }
 		
 var selectControl = function ( idControl ) {
@@ -24,6 +57,7 @@ var selectControl = function ( idControl ) {
 	document.getElementById('mapEditControl' + idControl).className = "selectedMenu" ;
 		
 }
+		
 
 var init = function () {
 
@@ -75,24 +109,27 @@ var initMap = function () {
 		
 		
 		
-		var canvas_units1 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
-		var canvas_units2 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
-		var canvas_units3 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
+		canvas_units1 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
+		canvas_units2 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
+		canvas_units3 = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 		redrawUnitMap();
 		
 		//canvas for control
-		var canvas_control = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
+		canvas_control = Map.InsertCanvas(new Point(0,0),map.land.size(),document.getElementById('canvasMap'),"noClick").getContext("2d");
 	
 
-		var place_with_tower = null; //tower that will be exchanged with another place
-		var place_to_move = null; //place that we want to move
-		stage.on('click', function(evt) {
+		place_with_tower = null; //tower that will be exchanged with another place
+		place_to_move = null; //place that we want to move
+		
+
+
+		document.getElementById('canvasMap').onclick = function(evt) {
 
 			//alert( "c'est bien t'as cliqué ici : " + ( evt.clientX - document.getElementById('canvasMap').getBoundingClientRect().left ) );
 			//alert( "c'est bien t'as cliqué ici : " + Point.mouseCoordinates( evt, document.getElementById('canvasMap') ) );
 			
 			
-			var pos = Point.mouseCoordinates( evt, document.getElementById('canvasMap') )
+			var pos = Point.mouseCoordinates( evt, null) ; //document.getElementById('canvasMap') 
 			var place=map.land.nearestPlace( pos );
 			
 			if (place==null) return;
@@ -101,27 +138,29 @@ var initMap = function () {
 			
 			//terrain control
 			if ( (CURRENT_EDIT_CONTROL >= 0) && (CURRENT_EDIT_CONTROL < 20) ) { 
+				Map.InsertImageInCanvas("images/terrain" + CURRENT_EDIT_CONTROL + ".png", place.position.add(-16,-16), canvas_control );
 				place.terrain = CURRENT_EDIT_CONTROL;
-				redrawKineticMap(); //refresh map
+				//redrawKineticMap(); //refresh map
 			}
 			
 			//tower exchange control
 			if (CURRENT_EDIT_CONTROL == 20 ) { 
 				
-				map.clear(canvas_control); 
-				
 				if (place.tower != null) { //first place : choose de tower
 					place_with_tower = place; //id tower that will be moved
-					place_with_tower.position.showEnlightedCircle(canvas_control, "blue", 10 );
+					place_with_tower.position.showEnlightedCircle(canvas_control, "red", 3 );
 				} 
 				else { //place that will receive tower
 					if (place_with_tower==null) return; //no previous tower selected
+					pos1=place_with_tower.position;
+					pos2=place.position;
+					canvas_control.strokeStyle = "red"; canvas_control.fillStyle = "red";	 canvas_control.lineWidth = 1;
+					CanvasDrawArrow (canvas_control, pos1, pos2, 2, 1, 0.2, 10, 0.2);
 					place.tower = place_with_tower.tower;
 					place_with_tower.tower = null;
 					place_with_tower = place; //ready for new exchange
 					//refresh map
-					redrawUnitMap();
-					place_with_tower.position.showEnlightedCircle(canvas_control, "blue", 10 );
+					//redrawUnitMap();
 				}
 				
 			}			
@@ -129,28 +168,20 @@ var initMap = function () {
 			//coord moving control
 			if (CURRENT_EDIT_CONTROL == 21 ) { 
 				
-				map.clear(canvas_control); 
-				
 				if (place_to_move == null) { //first place choosen
 					place_to_move = place; //id tower that will be moved
-					place_to_move.position.showEnlightedCircle(canvas_control, "red", 10 );
+					place_to_move.position.showEnlightedCircle(canvas_control, "green", 3 );
 				} 
 				else { //coord to move place on
-				
-					pos.showEnlightedCircle(canvas_control, "orange", 10 );
 					
 					if (place_to_move==null) return; //no previous tower selected
+
+					canvas_control.strokeStyle = "green"; canvas_control.fillStyle = "green";	 canvas_control.lineWidth = 1;
+					CanvasDrawArrow (canvas_control, place_to_move.position, pos, 2, 1, 0.2, 10, 0.2);
+					
 					place_to_move.position = pos;
 					place_to_move = null; //ready for new exchange
 					
-					//rebuild graph
-					map.land.graphInitByDistance();
-					map.land.graphRemoveCrossingNeighbors();
-					//rebuild spatial index
-					map.land.spatialIndexInit(); 
-					
-					redrawKineticMap(); redrawUnitMap(); //refresh map
-					map.clear(canvas_control); pos.showEnlightedCircle(canvas_control, "green", 10 );
 				}
 				
 			}
@@ -158,26 +189,40 @@ var initMap = function () {
 			//place create
 			if (CURRENT_EDIT_CONTROL == 22 ) { 
 				
-				map.clear(canvas_control); 
-				pos.showEnlightedCircle(canvas_control, "orange", 10 );
+				Map.InsertImageInCanvas("images/terrain" + lastTypeOfTerrainChoosen + ".png", pos.add(-16,-16), canvas_control );
+				pos.showEnlightedCircle(canvas_control, "green", 30 );
 				
-				var pNew = new Place( pos, Place.PLAIN);
+				var pNew = new Place( pos, lastTypeOfTerrainChoosen);
 				idPlace=map.land.places.length;
 				map.land.places[idPlace]= pNew; pNew.id=idPlace;//validate the new place
-				
-				//rebuild graph
-				map.land.graphInitByDistance();
-				map.land.graphRemoveCrossingNeighbors();
-				//rebuild spatial index
-				map.land.spatialIndexInit(); 
-					
-				redrawKineticMap(); redrawUnitMap(); //refresh map
-				map.clear(canvas_control); pos.showEnlightedCircle(canvas_control, "green", 10 );					
+								
 			}	
 			
 			
 			
-		});
+		};
+		
+		//mouse move event used for changing many terrain type
+		document.getElementById('canvasMap').onmousemove = function(evt) {
+			
+			if (!evt.altKey) return; //no button pressed
+			
+			var pos = Point.mouseCoordinates( evt, null) ; //document.getElementById('canvasMap') 
+			var place=map.land.nearestPlace( pos );
+			
+			if (place==null) return;
+			
+			//alert( place.id );
+			
+			//terrain control
+			if ( (CURRENT_EDIT_CONTROL >= 0) && (CURRENT_EDIT_CONTROL < 20) ) { 
+				Map.InsertImageInCanvas("images/terrain" + CURRENT_EDIT_CONTROL + ".png", place.position.add(-16,-16), canvas_control );
+				place.terrain = CURRENT_EDIT_CONTROL;
+				//redrawKineticMap(); //refresh map
+			}	
+			
+		};
+		
 		
 		/*
 		//-----------------------
@@ -200,6 +245,8 @@ var initMap = function () {
 		*/
 		
 	});
+	
+	
 	
 	//save map
 	document.getElementById('saveMap').onclick = function(e) {

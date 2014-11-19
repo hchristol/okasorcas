@@ -27,7 +27,7 @@ html
 				each val in [0, 1, 2, 3, 4, 5, 6, 7]
 					tr
 						td 
-							image(src='images/terrain' + val +'.png' onclick='adminEditControl(' + val + ')'  id='mapEditControl' + val class='menu' title='Change terrain')
+							image(src='images/terrain' + val +'.png' onclick='adminEditControl(' + val + ')'  id='mapEditControl' + val class='menu' title='Change terrain (press ALT to change many terrains on mouse move)')
 				tr
 					td 
 						image(src='images/tower.png' onclick='adminEditControl(20)'  id='mapEditControl20'  class='menu' title='Move a tower')
@@ -37,3 +37,6 @@ html
 				tr
 					td 
 						image(src='images/toolAddPlace.png' onclick='adminEditControl(22)'  id='mapEditControl22'  class='menu' title='Add a new Place')
+				tr
+					td 
+						image(src='images/validate.png' onclick='adminEditControl(30)'  id='mapEditControl30'  class='menu' title='Redraw map')
