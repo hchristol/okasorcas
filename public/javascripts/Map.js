@@ -2193,7 +2193,7 @@ Act.prototype.toJSON = function() { //abreviate field and filter non required at
 		if ( this.parameters.graphicPositions != null ) { 
 			jsonParameters.gpos = new Array();
 			for (var i=0; i<this.parameters.graphicPositions.length; i++) {
-				jsonParameters.gpos.push(this.parameters.graphicPositions[i]);
+				jsonParameters.gpos.push(this.parameters.graphicPositions[i].round(0));
 			}
 			
 		}
@@ -2935,6 +2935,12 @@ Point.prototype.equals = function(toCompare){
 */
 Point.prototype.round = function(nbDecimal){
 	if (nbDecimal==null) nbDecimal=2;
+	
+	if (nbDecimal==0) {
+		this.x= Math.round(this.x); this.y= Math.round(this.y);
+		return this;
+	}
+	
 	var f= Math.pow(10, nbDecimal);
 	this.x= Math.round(this.x * f)/f; this.y= Math.round(this.y * f)/f;
 	return this;
