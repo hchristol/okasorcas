@@ -1,0 +1,1 @@
+- include old map for movement and order to diminish strength of units crossing enemy line and to improve strength on sea owned by friendly ships
