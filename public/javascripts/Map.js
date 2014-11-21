@@ -2177,6 +2177,8 @@ Act.prototype.toJSON = function() { //abreviate field and filter non required at
 	
 	if (this.type==Act.MOVEMENT) {
 	
+		if ( this.parameters.p != null ) console.log("debug Act.prototype.toJSON : act has wrong parameters !!!! (parameters.p found !!!!)");
+	
 		if ( (this.parameters.places==null) && ( this.parameters.p != null ) ) { //places in unconverted parameters
 			//return directly unconverted parameters :
 			return {  o:this.owner, t:this.type, p:this.parameters, r:this.result } 
