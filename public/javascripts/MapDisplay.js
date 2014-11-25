@@ -313,6 +313,7 @@ Point.pathTo = function(ctx,path,closing, resolution) {
 	for (var i=1; i<path.length; i++) path[i].lineTo(ctx, resolution);
 	if (closing) ctx.closePath(); 
 	return ctx;
+	
 };
 
 /**
