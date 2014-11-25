@@ -790,6 +790,7 @@ function Land(json) {
 		this.height=json.height;
 		this.width=json.width;
 		this.neighbors=json.neighbors;
+		this.labels=json.labels
 		
 		this.places = new Array();
 		for (var i=0; i<json.places.length;i++) {
@@ -805,6 +806,12 @@ function Land(json) {
 		this.width=1000; //default width
 		//random places...
 		this.places = new Array();
+		
+		//empty labels
+		this.labels = new Array();
+		//test :
+		this.labels.push(["Hobbiton", 200, 200, 3.14 / 2]);
+		
 		var i=0;
 		
 		//Try to put place not too close from each other. Stop generate places if the number of try exceed tryMax.
@@ -938,7 +945,7 @@ function Land(json) {
 * TO json 
 */
 Land.prototype.toJSON = function() { //save only truly required fields
-	return { height:this.height, width:this.width, places:this.places, neighbors:this.neighbors };
+	return { height:this.height, width:this.width, places:this.places, labels:this.labels, neighbors:this.neighbors };
 }
 
 /**
@@ -954,6 +961,11 @@ Land.prototype.width;
 * @property {Array} places - list of all place
 */
 Land.prototype.places;
+
+/**
+* @property {Array} labels - texts on map 
+*/
+Land.prototype.labels;
 
 /**
 * @property {Array} neighbors - indexes of neighbors places, given an index of a place
