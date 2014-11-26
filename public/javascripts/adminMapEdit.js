@@ -198,6 +198,32 @@ var initMap = function () {
 								
 			}	
 			
+			if (CURRENT_EDIT_CONTROL == 23 ) { 
+				
+				var myLabel = document.getElementById("labelText").value;
+				if (myLabel == "") { alert("You have to enter a non empty label text"); return;}
+				
+				var onSea = 0;
+				if (document.getElementById("labelOnSea").checked ) onSea =1;
+				
+				Map.InsertImageInCanvas("images/toolLabel.png", pos.add(-16,-16), canvas_control );
+				
+				//existing label ?
+				for (var i=0; i<map.land.labels.length; i++) {
+					var other = map.land.labels[i]; //other label
+					if (other[0]==myLabel) { //move existing label to its new position
+						other[1]=pos.x;
+						other[2]=pos.y;
+						other[3]=onSea;
+						return;
+					}
+				}
+				
+				//new label
+				map.land.labels.push([ myLabel, pos.x, pos.y, onSea ]);
+								
+			}	
+			
 			
 			
 		};

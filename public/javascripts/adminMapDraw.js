@@ -195,20 +195,22 @@ Land.prototype.draw = function(layer){
 	
 	
 	//draw each label
-	fontSize=15; fontFamily='Arial'; fontStyle='Italic';
+	fontSize=11; fontFamily='Droid Serif'; fontStyle='Italic';
 	for(i=0; i<this.labels.length;i++) {
-		layer.add( new Kinetic.Text({   //halo
-		  x: this.labels[i][1],
-		  y: this.labels[i][2],
-		  text: this.labels[i][0],
-		  fontSize: fontSize,
-		  strokeWidth: '4',
-		  stroke: Palette.ground,
-		  fontFamily: fontFamily,
-		  fontStyle: fontStyle,
-		  fill: Palette.pathGround,
-		  rotation : this.labels[i][3]
-		}));
+		if (this.labels[i][3]==0) {  //halo
+			layer.add( new Kinetic.Text({   //halo
+			  x: this.labels[i][1],
+			  y: this.labels[i][2],
+			  text: this.labels[i][0],
+			  fontSize: fontSize,
+			  strokeWidth: '4',
+			  stroke: Palette.ground,
+			  fontFamily: fontFamily,
+			  fontStyle: fontStyle,
+			  fill: Palette.labelGround,
+			  //rotation : this.labels[i][3]
+			}));
+		}
 		layer.add( new Kinetic.Text({ //text
 		  x: this.labels[i][1],
 		  y: this.labels[i][2],
@@ -216,10 +218,11 @@ Land.prototype.draw = function(layer){
 		  fontSize: fontSize,
 		  fontFamily: fontFamily,
 		  fontStyle: fontStyle,
-		  fill: Palette.pathGround,
-		  rotation : this.labels[i][3]
+		  fill: Palette.labelGround,
+		  //rotation : this.labels[i][3]
 		}));
 		
+		/* test
 		layer.add( 
 			new Kinetic.TextPath({
 			  x: 100,
@@ -231,6 +234,7 @@ Land.prototype.draw = function(layer){
 			  data: 'M10,10 C0,0 10,150 100,100 S300,150 400,50'
 			})
 		);
+		*/
 	}	
 	
 };

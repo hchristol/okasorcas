@@ -810,7 +810,7 @@ function Land(json) {
 		//empty labels
 		this.labels = new Array();
 		//test :
-		this.labels.push(["Hobbiton", 200, 200, 3.14 / 2]);
+		//this.labels.push(["Hobbiton", 200, 200, 3.14 / 2]);
 		
 		var i=0;
 		

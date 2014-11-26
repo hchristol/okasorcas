@@ -5,6 +5,7 @@ html
 		meta(name='apple-mobile-web-app-capable', content="yes")
 		title= title
 		link(rel='stylesheet', href='/stylesheets/client.css')
+		link(href='http://fonts.googleapis.com/css?family=Droid+Serif:700italic' rel='stylesheet' type='text/css')
 		script(src='/javascripts/kinetic-v4.4.1.min.js')
 		script(src='/javascripts/Util.js')
 		script(src='/javascripts/Map.js')
@@ -37,6 +38,12 @@ html
 				tr
 					td 
 						image(src='images/toolAddPlace.png' onclick='adminEditControl(22)'  id='mapEditControl22'  class='menu' title='Add a new Place')
+				tr
+					td 
+						image(src='images/toolLabel.png' onclick='adminEditControl(23)'  id='mapEditControl23'  class='menu' title='Add a new label')
+						input(type="text", id="labelText", value='')
+						input(type="checkbox", id="labelOnSea", checked=false)
+						span sea
 				tr
 					td 
 						image(src='images/validate.png' onclick='adminEditControl(30)'  id='mapEditControl30'  class='menu' title='Redraw map')

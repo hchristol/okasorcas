@@ -13,6 +13,7 @@ Palette = {
 	
 	tree:"hsl(120,22%,73%)",
 	
+	labelGround: "hsl(80,6%,52%)",
 	
 	armyBorder:"#543"
 
