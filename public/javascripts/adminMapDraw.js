@@ -197,45 +197,72 @@ Land.prototype.draw = function(layer){
 	//draw each label
 	fontSize=11; fontFamily='Droid Serif'; fontStyle='Italic';
 	for(i=0; i<this.labels.length;i++) {
-		if (this.labels[i][3]==0) {  //halo
-			layer.add( new Kinetic.Text({   //halo
-			  x: this.labels[i][1],
-			  y: this.labels[i][2],
-			  text: this.labels[i][0],
+		var lb=this.labels[i];
+		if (lb.length==4) {//simple label	
+			if (lb[3]==0) {  //halo
+				layer.add( new Kinetic.Text({   //halo
+				  x: lb[1],
+				  y: lb[2],
+				  text: lb[0],
+				  fontSize: fontSize,
+				  strokeWidth: '4',
+				  stroke: Palette.ground,
+				  fontFamily: fontFamily,
+				  fontStyle: fontStyle,
+				  fill: Palette.labelGround,
+				  //rotation : lb[3]
+				}));
+			}
+			layer.add( new Kinetic.Text({ //text
+			  x: lb[1],
+			  y: lb[2],
+			  text: lb[0],
 			  fontSize: fontSize,
-			  strokeWidth: '4',
-			  stroke: Palette.ground,
 			  fontFamily: fontFamily,
 			  fontStyle: fontStyle,
 			  fill: Palette.labelGround,
-			  //rotation : this.labels[i][3]
+			  //rotation : lb[3]
 			}));
 		}
-		layer.add( new Kinetic.Text({ //text
-		  x: this.labels[i][1],
-		  y: this.labels[i][2],
-		  text: this.labels[i][0],
-		  fontSize: fontSize,
-		  fontFamily: fontFamily,
-		  fontStyle: fontStyle,
-		  fill: Palette.labelGround,
-		  //rotation : this.labels[i][3]
-		}));
+
+		if (lb.length==8) {//curved label	
 		
-		/* test
-		layer.add( 
-			new Kinetic.TextPath({
-			  x: 100,
-			  y: 50,
-			  fill: '#333',
-			  fontSize: '24',
-			  fontFamily: 'Arial',
-			  text: 'All the world\'s a stage, and all the men and women merely players.',
-			  data: 'M10,10 C0,0 10,150 100,100 S300,150 400,50'
-			})
-		);
-		*/
+			/*
+			if (lb[3]==0) {  //halo
+				layer.add( new Kinetic.Text({   //halo
+				  x: lb[1],
+				  y: lb[2],
+				  text: lb[0],
+				  fontSize: fontSize,
+				  strokeWidth: '4',
+				  stroke: Palette.ground,
+				  fontFamily: fontFamily,
+				  fontStyle: fontStyle,
+				  fill: Palette.labelGround,
+				  //rotation : lb[3]
+				}));
+			}
+			*/
+			
+			layer.add( 
+				new Kinetic.TextPath({
+				  x: 0, //lb[1],
+				  y: 0, //lb[2],
+				  fill: Palette.labelGround,
+				  fontSize: fontSize,
+				  fontFamily: fontFamily,
+				  fontStyle: fontStyle,
+				  text: lb[0],
+				  //curved path :
+				  data: 'M ' + lb[1] + ' ' + lb[2] + ' Q ' + lb[4] + ' ' + lb[5] + ' ' + lb[6] + ' ' + lb[7]   //'M 100 300 Q 300 250 500 450' //'M10,10 C0,0 10,150 100,100 S300,150 400,50' //
+				})
+			);
+			
+		}
+		
+		
 	}	
+
 	
 };
 

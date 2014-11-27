@@ -16,9 +16,9 @@
    version="1.1"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="ToolLabel.svg"
-   inkscape:export-filename="C:\Users\hchristol\nodejsapp\okasorcas\public\images\terrain5.png"
-   inkscape:export-xdpi="28.8"
-   inkscape:export-ydpi="28.8">
+   inkscape:export-filename="C:\Users\hchristol\nodejsapp\okasorcas\public\images\toolLabelOnCurve.png"
+   inkscape:export-xdpi="27.9"
+   inkscape:export-ydpi="27.9">
   <defs
      id="defs9">
     <linearGradient
@@ -2935,16 +2935,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1826"
-     inkscape:window-height="1061"
+     inkscape:window-width="1328"
+     inkscape:window-height="983"
      id="namedview7"
      showgrid="true"
      inkscape:zoom="1.37"
-     inkscape:cx="-248"
+     inkscape:cx="-66.4"
      inkscape:cy="76.4"
-     inkscape:window-x="90"
-     inkscape:window-y="-4"
-     inkscape:window-maximized="1"
+     inkscape:window-x="169"
+     inkscape:window-y="11"
+     inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
      inkscape:snap-global="false">
     <inkscape:grid
@@ -2965,7 +2965,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -3033,13 +3033,49 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-size:36.49799999999999800px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#705242;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold;color:#000000;fill-rule:nonzero;stroke-width:0.76400000000000001px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-     x="3.3548393"
-     y="65.924454"
+     style="font-size:36.5px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;color:#000000;fill:#705242;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.764px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Arial;-inkscape-font-specification:Sans Bold"
+     x="-34.347561"
+     y="69.086777"
      id="text3732"
-     sodipodi:linespacing="125%"><tspan
+     sodipodi:linespacing="125%"
+     transform="matrix(0.821,-0.571,0.571,0.821,0,0)"><tspan
        sodipodi:role="line"
        id="tspan3734"
-       x="3.3548393"
-       y="65.924454">Label</tspan></text>
+       x="-34.347561"
+       y="69.086777">Label</tspan></text>
+  <path
+     style="fill:none;stroke:#ff0000;stroke-width:5.698;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="M 6.57,102 C 16.1,76.6 74.4,26.3 98.1,39.4"
+     id="path3566"
+     inkscape:connector-curvature="0" />
+  <path
+     sodipodi:type="arc"
+     style="color:#000000;fill:none;stroke:#ff0000;stroke-width:5.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     id="path4336"
+     sodipodi:cx="12"
+     sodipodi:cy="96.4"
+     sodipodi:rx="7.66"
+     sodipodi:ry="7.3"
+     d="M 19.7,96.4 A 7.66,7.3 0 1 1 4.34,96.4 7.66,7.3 0 1 1 19.7,96.4 z"
+     transform="translate(-0.73,-2.19)" />
+  <path
+     sodipodi:type="arc"
+     style="color:#000000;fill:none;stroke:#ff0000;stroke-width:5.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     id="path4336-1"
+     sodipodi:cx="12"
+     sodipodi:cy="96.4"
+     sodipodi:rx="7.66"
+     sodipodi:ry="7.3"
+     d="M 19.7,96.4 A 7.66,7.3 0 1 1 4.34,96.4 7.66,7.3 0 1 1 19.7,96.4 z"
+     transform="translate(36.2,-38.7)" />
+  <path
+     sodipodi:type="arc"
+     style="color:#000000;fill:none;stroke:#ff0000;stroke-width:5.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     id="path4336-7"
+     sodipodi:cx="12"
+     sodipodi:cy="96.4"
+     sodipodi:rx="7.66"
+     sodipodi:ry="7.3"
+     d="M 19.7,96.4 A 7.66,7.3 0 1 1 4.34,96.4 7.66,7.3 0 1 1 19.7,96.4 z"
+     transform="translate(81.4,-57.7)" />
 </svg>

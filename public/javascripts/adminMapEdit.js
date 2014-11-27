@@ -121,7 +121,7 @@ var initMap = function () {
 		place_with_tower = null; //tower that will be exchanged with another place
 		place_to_move = null; //place that we want to move
 		
-
+		pointsLabel=new Array(); //array of point for label on curve
 
 		document.getElementById('canvasMap').onclick = function(evt) {
 
@@ -211,6 +211,7 @@ var initMap = function () {
 				//existing label ?
 				for (var i=0; i<map.land.labels.length; i++) {
 					var other = map.land.labels[i]; //other label
+					if (other.length!=4) continue; //ignore curved labels
 					if (other[0]==myLabel) { //move existing label to its new position
 						other[1]=pos.x;
 						other[2]=pos.y;
@@ -224,6 +225,46 @@ var initMap = function () {
 								
 			}	
 			
+			if (CURRENT_EDIT_CONTROL == 24 ) { 
+				
+				if (pointsLabel.length<2) {
+					pointsLabel.push(pos);
+					pos.showEnlightedCircle(canvas_control, "darkgray", 5 );
+					return;
+				}
+				
+				tmpPointsLabel=pointsLabel;
+				pointsLabel = new Array(); //ready for another label
+				
+				var myLabel = document.getElementById("labelText").value;
+				if (myLabel == "") { alert("You have to enter a non empty label text"); return;}
+				
+				var onSea = 0;
+				if (document.getElementById("labelOnSea").checked ) onSea =1;
+				
+				Map.InsertImageInCanvas("images/toolLabel.png", pos.add(-16,-16), canvas_control );
+				pos.showEnlightedCircle(canvas_control, "darkgray", 5 );
+				
+				//existing label ?
+				for (var i=0; i<map.land.labels.length; i++) {
+					var other = map.land.labels[i]; //other label
+					if (other.length!=8) continue; //ignore non curved labels
+					if (other[0]==myLabel) { //move existing label to its new position
+						other[1]=tmpPointsLabel[0].x;
+						other[2]=tmpPointsLabel[0].y;					
+						other[3]=onSea;
+						other[4]=tmpPointsLabel[1].x;
+						other[5]=tmpPointsLabel[1].y;
+						other[6]=pos.x;
+						other[7]=pos.y;
+						return;
+					}
+				}
+				
+				//new label
+				map.land.labels.push([ myLabel, tmpPointsLabel[0].x, tmpPointsLabel[0].y, onSea, tmpPointsLabel[1].x, tmpPointsLabel[1].y, pos.x, pos.y ]);
+								
+			}
 			
 			
 		};
