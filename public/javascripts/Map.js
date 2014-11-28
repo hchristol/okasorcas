@@ -515,8 +515,8 @@ Incomes.prototype.stocks;
 Incomes.prototype.incomes;
 
 /** default values **/
-Incomes.INITIAL_STOCK = 100;
-Incomes.INITIAL_INCOMES = 100;
+Incomes.INITIAL_STOCK = 200;
+Incomes.INITIAL_INCOMES = 0;
 Incomes.MAX_STOCK = 1000;
 
 /** calculates new incomes values, depending on units on map*/
@@ -733,14 +733,17 @@ LearnedSpells.prototype.placesToThrowSpell = function (idWizard, placeFrom, land
 
 /** return true if a spell target a specific terrain is a distant attack or a movement of wizard **/
 LearnedSpells.isSpellAMovement = function(terrain) {
+
 	if (terrain==Place.PLAIN) return true;
 	if (terrain==Place.FOREST) return true;
+	if (terrain==Place.CITY) return true;	
+	if (terrain==Place.HILL) return true;
+	
 	if (terrain==Place.SEA) return false;
 	if (terrain==Place.MOUNTAIN) return false;
 	if (terrain==Place.DESERT) return false;	
-	if (terrain==Place.CITY) return true;	
 	if (terrain==Place.VOLCANO) return false;
-	if (terrain==Place.HILL) return true;
+	
 	return false;
 }
 
@@ -765,13 +768,13 @@ LearnedSpells.strength = function(terrain) {
 **/
 LearnedSpells.rangeOfSpell = function( terrain ) {
 	if (terrain==Place.PLAIN) return Place.SIZE * 3;
-	if (terrain==Place.FOREST) return Place.SIZE * 6;
+	if (terrain==Place.FOREST) return Place.SIZE * 4;
 	if (terrain==Place.SEA) return  Place.SIZE * 11;
 	if (terrain==Place.MOUNTAIN) return  Place.SIZE * 10;
 	if (terrain==Place.DESERT) return Place.SIZE * 7;
 	if (terrain==Place.CITY) return Place.SIZE * 15;
 	if (terrain==Place.VOLCANO) return Place.SIZE * 10;
-	if (terrain==Place.HILL) return Place.SIZE * 4;
+	if (terrain==Place.HILL) return Place.SIZE * 2;
 	return Place.SIZE * 1.5;
 }
 
@@ -790,7 +793,8 @@ function Land(json) {
 		this.height=json.height;
 		this.width=json.width;
 		this.neighbors=json.neighbors;
-		this.labels=json.labels
+		this.labels=json.labels;
+		if (this.labels==null) 	this.labels = new Array(); //empty labels
 		
 		this.places = new Array();
 		for (var i=0; i<json.places.length;i++) {
@@ -1359,15 +1363,15 @@ Place.TERRAIN_COUNT=8; //count type of terrain
 
 /** Incomes! of terrain **/
 Place.incomeOfTerrain = function(terrain) {
-	if (terrain==Place.PLAIN) return 17;
-	if (terrain==Place.HILL) return 16;
-	if (terrain==Place.CITY) return 25;
-	if (terrain==Place.FOREST) return 15;
-	if (terrain==Place.SEA) return 14;
+	if (terrain==Place.PLAIN) return 16;
+	if (terrain==Place.HILL) return 14;
+	if (terrain==Place.CITY) return 30;
+	if (terrain==Place.FOREST) return 12;
+	if (terrain==Place.SEA) return 12;
 	if (terrain==Place.MOUNTAIN) return 10;
 	if (terrain==Place.DESERT) return 8;
 	if (terrain==Place.VOLCANO) return 8;
-	return 14; //unknown place : medium income. medium incomes is used to scale strenght of units too.
+	return 14; //unknown place : medium income. medium incomes is used to scale strenght of units too. See averageNumberOfTerrainForOneUnit
 }
 
 
@@ -1559,13 +1563,11 @@ Place.prototype.removeOutnumberedUnits = function(people) {
 	if (this.units==null) return;
 	var maxUnit=People.MAX_UNIT_PER_PLACE;
 	
-/*	
-	if ( (this.owner==0) && (this.units.length>0)) { //neutral place has to be  with units of its type (avoid to much neutral units)
-		if (Unit.typeRecruitedOn(this.terrain) != this.units[0].type)
-		maxUnit=0; 
+	if ( (this.owner==0) && (this.units.length>0)) { //neutral place has to be  with less units (avoid to much neutral units)
+		//if (Unit.typeRecruitedOn(this.terrain) != this.units[0].type)
+		maxUnit=1; 
 	}
-*/
-
+	
 	while (this.units.length>maxUnit) {
 		
 		//take the weakest unit
@@ -1968,8 +1970,8 @@ Unit.prototype.cost = function() {
 Unit.costOfType = function(type) {
 
 	if (type == Unit.WIZARD ) return 0;
-	var cost = 200;
-	var mediumCost=200; //to normalize value
+	var cost = 100; //basic cost for all units
+	var mediumCost=cost; //to normalize value
 	for (var i=0; i<Place.TERRAIN_COUNT; i++)  {
 		cost += 
 			Unit.strengthOfType(type, i, Fighting.ATTACK) + Unit.strengthOfType(type, i, Fighting.DEFENSE) + Unit.strengthOfType(type, i, Fighting.SUPPORT) +
@@ -1980,7 +1982,7 @@ Unit.costOfType = function(type) {
 	}
 		
 	
-	averageNumberOfTerrainForOneUnit = 5;
+	averageNumberOfTerrainForOneUnit = 3;
 	cost = cost * ( Place.incomeOfTerrain(null) * averageNumberOfTerrainForOneUnit ) / mediumCost;
 	
 	//flying unit bonus

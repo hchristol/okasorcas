@@ -531,7 +531,10 @@ app.post('/:game/restore',
 						uploadComplete(res, file_count, file_count_complete, msg); 
 					}); 	
 				}
-				else file_count++;
+				else { 
+					msg += "  NO map.json FOUND !!!";
+					file_count++; 
+				}
 				
 				var file = zip.files['map_previous.json']; 
 				msg += "\n Restoring (if exists) " + 'map_previous.json';

@@ -199,6 +199,9 @@ Land.prototype.draw = function(layer){
 	for(i=0; i<this.labels.length;i++) {
 		var lb=this.labels[i];
 		if (lb.length==4) {//simple label	
+			
+			//alert("DEBUG : label  " + i + " : " + lb[0]);
+			
 			if (lb[3]==0) {  //halo
 				layer.add( new Kinetic.Text({   //halo
 				  x: lb[1],
@@ -209,7 +212,7 @@ Land.prototype.draw = function(layer){
 				  stroke: Palette.ground,
 				  fontFamily: fontFamily,
 				  fontStyle: fontStyle,
-				  fill: Palette.labelGround,
+				  fill: Palette.label,
 				  //rotation : lb[3]
 				}));
 			}
@@ -220,35 +223,54 @@ Land.prototype.draw = function(layer){
 			  fontSize: fontSize,
 			  fontFamily: fontFamily,
 			  fontStyle: fontStyle,
-			  fill: Palette.labelGround,
+			  fill: Palette.label,
 			  //rotation : lb[3]
 			}));
 		}
 
 		if (lb.length==8) {//curved label	
 		
-			/*
-			if (lb[3]==0) {  //halo
-				layer.add( new Kinetic.Text({   //halo
-				  x: lb[1],
-				  y: lb[2],
-				  text: lb[0],
-				  fontSize: fontSize,
-				  strokeWidth: '4',
-				  stroke: Palette.ground,
-				  fontFamily: fontFamily,
-				  fontStyle: fontStyle,
-				  fill: Palette.labelGround,
-				  //rotation : lb[3]
-				}));
+			alert("DEBUG : label curve " + i + " : " + lb[0]);
+			
+			curveSize = new Point(lb[1], lb[2]).distance( new Point(lb[6], lb[7]));
+			textSize = lb[0].length * fontSize / 3 ;
+			//add some spaces to extend text
+			spacesToAdd=Math.round(Math.log(curveSize/textSize)) ;
+			console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize + "  spacesToAdd =" +  spacesToAdd);
+			for( var ispace = 1; ispace <= spacesToAdd; ispace++ ) {
+				lb[0]=lb[0].split('').join(' '); 
 			}
-			*/
+			textSize = lb[0].length * fontSize / 3;
+			//and increase text size to adust on curve
+			if (curveSize > textSize )  
+				fontSize = 11 + (curveSize - textSize)/25;
+			console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize);
+			
+			if (lb[3]==0) {  //halo
+			
+				layer.add( 
+					new Kinetic.TextPath({
+					  x: 0, //lb[1],
+					  y: 0, //lb[2],
+					  fill: Palette.label,
+					  fontSize: fontSize,
+					  strokeWidth: '4',
+					  stroke: Palette.ground,
+					  fontFamily: fontFamily,
+					  fontStyle: fontStyle,
+					  text: lb[0],
+					  //curved path :
+					  data: 'M ' + lb[1] + ' ' + lb[2] + ' Q ' + lb[4] + ' ' + lb[5] + ' ' + lb[6] + ' ' + lb[7]   //'M 100 300 Q 300 250 500 450' //'M10,10 C0,0 10,150 100,100 S300,150 400,50' //
+					})
+				);
+				
+			}
 			
 			layer.add( 
 				new Kinetic.TextPath({
 				  x: 0, //lb[1],
 				  y: 0, //lb[2],
-				  fill: Palette.labelGround,
+				  fill: Palette.label,
 				  fontSize: fontSize,
 				  fontFamily: fontFamily,
 				  fontStyle: fontStyle,
