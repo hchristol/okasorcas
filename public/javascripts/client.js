@@ -314,6 +314,7 @@ var init = function () {
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 		if (menuFloating.unitTarget!=null) menuFloating.clientOrderInput.showLearnedSpellOf(menuFloating.unitTarget);  		
 		menuFloating.style.visibility="hidden";
+		menuFloating.typeOfOrder=-1; //no type of order
 	} );
 	item.id="MenuLearnedSpells"; //id for menu, to show later the number of learned spells
 

@@ -151,6 +151,10 @@ ClientOrders.prototype.selectUnit = function( unit ) {
 			
 			typeOfOrder=this.selectFloatingMenuTypeOrder(unit); 
 			if (typeOfOrder==null) return; //type of order not yet choosen
+			if (typeOfOrder==-1) { //show learnt spells : end of order
+				this.resetOrder();
+				return;			
+			}
 		} 	
 
 		newOrder = new Act(unit.owner,typeOfOrder); //default order
@@ -199,8 +203,10 @@ ClientOrders.prototype.selectUnit = function( unit ) {
 	}
 	
 	if  (this.currentOrder.type==Act.SPELL_THROW )  {
-		unit.showPossiblePlacesToThrowSpell( this.ctxPlacesToGo, this.currentOrder, this.map );
-		this.selectMode = ClientOrders.SELECT_PLACE; //a place has to be choosen now
+		if (this.currentOrder.parameters.places.length<1) { //place not already choosen
+			unit.showPossiblePlacesToThrowSpell( this.ctxPlacesToGo, this.currentOrder, this.map );
+			this.selectMode = ClientOrders.SELECT_PLACE; //a place has to be choosen now
+		}
 	}
 	
 }
@@ -384,6 +390,7 @@ ClientOrders.prototype.selectPlace = function( place ) {
 		
 		var order=this.currentOrder; //remember current order
 		this.map.planning.orderRefresh(this.ctxOrders, this.ctxOrdersStrength, this.map); //refresh orders
+
 		this.resetOrder(); //ready for another order
 		
 		//finish displaying info, use order because this.currentOrder has been erased by resetOrder :
@@ -415,6 +422,7 @@ ClientOrders.prototype.resetOrder = function() {
 	//no more unit targeted with an optionnal floating menu
 	menuFloating=document.getElementById('menuFloating'); //menu for choosing type of order
 	menuFloating.unitTarget=null;
+	menuFloating.typeOfOrder=null;
 	
 	//permitting CANCELLING ORDER
 	if (!ClientOrders.CURRENT_ORDER_CAN_BE_CANCELED ) this.currentOrder=null; //no more current order
@@ -455,7 +463,7 @@ ClientOrders.prototype.showLearnedSpellOf = function(unit) {
 	for( var i=0; i<placesWithSpells.length; i++) {
 		placesWithSpells[i].position.add(0,-10).showEnlightedCircle(this.ctxPlacesToGo, Unit.ColorOf(unit.owner) , 25);
 	}
-	
+	this.currentOrder=null; //stop current order
 	//alert( this.map.spells.spells[unit.owner].length + " sorts connus - et par learnedspells : " + placesWithSpells.length );
 	//this.resetOrder();
 }

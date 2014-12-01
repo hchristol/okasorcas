@@ -229,8 +229,6 @@ Land.prototype.draw = function(layer){
 		}
 
 		if (lb.length==8) {//curved label	
-		
-			alert("DEBUG : label curve " + i + " : " + lb[0]);
 			
 			curveSize = new Point(lb[1], lb[2]).distance( new Point(lb[6], lb[7]));
 			textSize = lb[0].length * fontSize / 3 ;
