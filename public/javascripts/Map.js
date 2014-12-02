@@ -42,8 +42,7 @@ function Map(json) { //land, people, planning, diplomacy) {
 		}
 		if (json.history!=null) if (json.history.fightings != null) { //past fightings	
 			this.history.fightings=json.history.fightings ;
-		}
-		
+		}	
 		
 	} else {
 		//create new map
@@ -58,6 +57,7 @@ function Map(json) { //land, people, planning, diplomacy) {
 		this.spells=new LearnedSpells();
 		this.diplomacy = new Diplomacy();
 		this.aiEnabled=false;
+		
 	}
 	
 } 
@@ -102,6 +102,12 @@ Map.prototype.history;
 Map.prototype.planning;
 
 /**
+* @property {Map} copy of map before any order has been added. Used in Unit.prototype.strength . Never saved in json
+*/
+Map.prototype.oldMap;
+
+
+/**
 * @property {Incomes} incomes for the current
 */
 Map.prototype.incomes;
@@ -122,11 +128,21 @@ Map.prototype.clone = function() {
 	return new Map( JSON.parse(JSON.stringify(this)));
 }
 
+/** create oldMap **/
+Map.prototype.initOldMap = function() {
+	if (this.oldMap==null) {
+		this.oldMap=this.clone(); //memory before adding order
+	}
+}
+
 /** 
 Add an order to the planning. 
 **/
 Map.prototype.addOrder = function(order) {
-	if (this.planning == null) this.planning = new Tactic(new Array(), this.turnNumber);
+	this.initOldMap();
+	if (this.planning == null) {
+		this.planning = new Tactic(new Array(), this.turnNumber);
+	}
 	
 	//existing order ?
 	var i=this.planning.acts.indexOf(order);
@@ -1827,8 +1843,8 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 	}
 	
 	//default movement factor : depend only of terrain
-	if (terrain==Place.PLAIN) return 5;
-	if (terrain==Place.FOREST) return 12;
+	if (terrain==Place.PLAIN) return 2;
+	if (terrain==Place.FOREST) return 5;
 	if (terrain==Place.SEA) return 15;
 	if (terrain==Place.MOUNTAIN) return 20;
 	if (terrain==Place.VOLCANO) return 22;
@@ -2061,7 +2077,14 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					var place = order.parameters.places[i];
 				
 					//duration of movement
-					var duration = this.movementFactor(place.terrain) * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE;
+					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
+					var oldPlace = map.oldMap.land.places[place.id];
+					if (this.owner!=oldPlace.owner) {
+						stealthDuration=10; //TODO : to be improved
+						//console.log("DEBUG Unit.prototype.strength ; stealthFactor=" + stealthFactor);
+					}
+					
+					var duration = stealthDuration + this.movementFactor(place.terrain) * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE;
 				
 					daysOfJourney += duration;
 	
