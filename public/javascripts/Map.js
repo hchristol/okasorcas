@@ -483,9 +483,12 @@ function Diplomacy(json) {
 }
 
 /** Value for support **/
-Diplomacy.SUPPORT_YES=1;
-Diplomacy.SUPPORT_NO=0;
+Diplomacy.SUPPORT_YES=2;
+Diplomacy.SUPPORT_NO=1;
 Diplomacy.WAR=-1;
+/** other values : for  stealthDuration */
+Diplomacy.NEUTRAL_NO_WIZARD=0; //diplomacy of only neutral place and unit that belong to no one
+Diplomacy.SELF=3; //diplomacy with myself !
 
 /**
 * @property {Number} support between wizard : array i of array j of idwizard (j>i)
@@ -1826,10 +1829,10 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 		if ( (terrain==Place.MOUNTAIN) || (terrain==Place.VOLCANO) ) return 7;
 	}
 	if (typeUnit == Unit.BOWMAN ) {
-		if (terrain==Place.FOREST) return 7;
+		if (terrain==Place.FOREST) return 3;
 	}
 	if (typeUnit == Unit.CORSAIR ) {
-		if (terrain==Place.SEA) return 5;
+		if (terrain==Place.SEA) return 2;
 		return Unit.movementFactorOfType(null, terrain) + 4 ;
 
 	}
@@ -1837,23 +1840,50 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 		return Unit.movementFactorOfType(null, terrain) + 7;
 
 	}
-	if (typeUnit == Unit.PEASANT ) return Unit.movementFactorOfType(null, terrain) + 2 ;
+	if (typeUnit == Unit.PEASANT ) return Unit.movementFactorOfType(null, terrain) + 1 ;
 	if (typeUnit == Unit.DRAGON ) { 
 		return 4;
 	}
 	
 	//default movement factor : depend only of terrain
 	if (terrain==Place.PLAIN) return 2;
-	if (terrain==Place.FOREST) return 5;
-	if (terrain==Place.SEA) return 15;
-	if (terrain==Place.MOUNTAIN) return 20;
-	if (terrain==Place.VOLCANO) return 22;
-	if (terrain==Place.DESERT) return 8;
-	if (terrain==Place.HILL) return 7;
-	if (terrain==Place.CITY) return 10;
+	if (terrain==Place.FOREST) return 3;
+	if (terrain==Place.SEA) return 3; //see stealthDurationOfType : unit are slow on hostile places
+	if (terrain==Place.MOUNTAIN) return 10;
+	if (terrain==Place.VOLCANO) return 11;
+	if (terrain==Place.DESERT) return 2;
+	if (terrain==Place.HILL) return 4;
+	if (terrain==Place.CITY) return 2;
 	
-	return 10; //medium value
+	return 5; //medium value
 
+}
+
+/** Stealth! return the base duration of entering into a neutral or hostile place **/
+Unit.stealthDurationOfType = function(typeUnit, terrain, diplomacy) {
+	if (diplomacy==Diplomacy.SELF) return 0; //no lost time on my territory !
+	var malus=1;
+	if (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD) {
+		malus+=2;
+	}
+	if (diplomacy==Diplomacy.SUPPORT_NO) {
+		malus+=4;
+	}
+	if (diplomacy==Diplomacy.WAR) {
+		malus+=6;
+	}
+	if (terrain==Place.SEA) {
+		if (typeUnit == Unit.CORSAIR ) return malus;
+		return 10 + malus; //units other than corsair have to wait a boat !
+	}
+	if (terrain==Place.PLAIN) return 1+malus;
+	if (terrain==Place.FOREST) return 3+malus;
+	if (terrain==Place.MOUNTAIN) return 7+malus;
+	if (terrain==Place.VOLCANO) return 10+malus;
+	if (terrain==Place.DESERT) return 5+malus;
+	if (terrain==Place.HILL) return 2+malus;
+	if (terrain==Place.CITY) return 6;	
+	
 }
 
 /** return the basic strength! of the unit on a given terrain. 
@@ -1995,6 +2025,11 @@ Unit.costOfType = function(type) {
 		mediumCost += 
 			Unit.strengthOfType(null, i, Fighting.ATTACK) + Unit.strengthOfType(null, i, Fighting.DEFENSE) + Unit.strengthOfType(null, i, Fighting.SUPPORT) +
 			( ( 15 - (Unit.movementFactorOfType(null,i))  ) * 3  );
+			
+		//add stealth factor
+		cost += 15 - (Unit.stealthDurationOfType(type, i, Diplomacy.NEUTRAL_NO_WIZARD) + Unit.stealthDurationOfType(type, i, Diplomacy.WAR) ) / 3
+		
+		mediumCost += 15 - (Unit.stealthDurationOfType(null, i, Diplomacy.NEUTRAL_NO_WIZARD) + Unit.stealthDurationOfType(null, i, Diplomacy.WAR) ) / 3
 	}
 		
 	
@@ -2079,10 +2114,18 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					//duration of movement
 					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
 					var oldPlace = map.oldMap.land.places[place.id];
+					
+					var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
 					if (this.owner!=oldPlace.owner) {
-						stealthDuration=10; //TODO : to be improved
-						//console.log("DEBUG Unit.prototype.strength ; stealthFactor=" + stealthFactor);
+						if (oldPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
+						else diplomacy=map.oldMap.diplomacy.supports[oldPlace.owner][this.owner];
 					}
+					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
+					
+					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*2; //unit slow down when it encounter a increasing number of hostile units 
+					
+					//console.log("DEBUG Unit.prototype.strength diplomacy=" + diplomacy + " stealthDuration=" + stealthDuration);
+					
 					
 					var duration = stealthDuration + this.movementFactor(place.terrain) * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE;
 				
