@@ -627,6 +627,7 @@ app.post('/:game/adminchangeparam',
 			if (isNaN(turnDuration) ) { res.send("turnDuration : invalid number value : " + req.body.turnDuration, 200);	 return; }
 			var turnLastDate = Date.parse(req.body.turnLastDate.replace(/"/g, "")); //delete " if present (bug jade ?)
 			if (isNaN(turnLastDate) ) { res.send("turnLastDate : invalid date value : " + req.body.turnLastDate, 200);	 return; }
+			diploReset=false; if (req.body.diploReset=='true') diploReset=true;
 			
 			//load map
 			redis.client.get( ficname, function(err,reply) {
@@ -639,14 +640,16 @@ app.post('/:game/adminchangeparam',
 				//modify param
 				map.turnDuration = turnDuration;
 				map.turnLastDate = turnLastDate;
-				
+				//ai
 				if (req.body.aiEnabled=="true") map.aiEnabled=true;
 				else map.aiEnabled=false;
+				//diplomacy reset ?
+				if (diploReset) map.diplomacy=new okas.Diplomacy();
 				
 				//save modified map
 				redis.client.set(ficname, JSON.stringify(map), function(err) { 
 					if(err) { console.log(err); res.send("ERROR in save map : " + err); }
-					res.send("OK ! Parameters updated : turnDuration=" + turnDuration + "  ;  turnLastDate=" + req.body.turnLastDate + " ; aiEnabled=" + req.body.aiEnabled);
+					res.send("OK ! Parameters updated : turnDuration=" + turnDuration + "  ;  turnLastDate=" + req.body.turnLastDate + " ; aiEnabled=" + req.body.aiEnabled + " ; diploReset=" + req.body.diploReset);
 				}); 
 				
 				
