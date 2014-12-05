@@ -170,7 +170,6 @@ Map.prototype.updateOrder = function(order) {
 		if (order.parameters.place==null) return;
 		if (!this.people.isDead(order.owner)) return;  //no reincarnation if wizard is alive
 
-		
 		this.people.addUnit( 
 			new Unit(Unit.WIZARD, order.owner ), //new Unit belongs to its recruiter
 			order.parameters.place, true) ;		
@@ -184,18 +183,33 @@ Map.prototype.updateOrder = function(order) {
 		
 		//validate movements from the last position moved to the new one
 		for (var k=order._indexOfPlaceFrom; k<order.parameters.places.length;k++) {
-		
+			
 			var leftPlace = order.parameters.unit.place;
 			if (leftPlace==null) return;
 						
 			//move the unit :
 			this.people.moveUnitTo(order.parameters.unit, order.parameters.places[k], true); //force too crowded places, conflicts may occurs
 			
-			//if the place where the unit come from is emptied, then remember it as a place that can be owned only if no one else pass throught it
-			//_ownerByMove : owner of the place, only if no other ennemy unit pass on it. see terminateOrders to get the use of _ownerByMove
+			//if the place where the unit come from is emptied, has to deal with the new owner of the place
 			if (leftPlace.units !=null) if (leftPlace.units.length==0) {
-				if (leftPlace._ownerByMove== null) leftPlace._ownerByMove = order.owner;
-				else if (leftPlace._ownerByMove != order.owner) leftPlace._ownerByMove = Place.CONFLICT;
+			
+				//diplomacy of the old owner of the left place, to set if this left place remains to its old owner or if it is captured
+				oldLeftPlace=this.oldMap.land.places[leftPlace.id];
+				var diplomacy=this.oldMap.diplomacy.statusTowardPlace(order.owner, oldLeftPlace);
+				
+				//potential capture of the place : if war, neutral with no wizard or myself (recapture try)
+				if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD ) || (diplomacy==Diplomacy.SELF )  ) {
+				
+					//remember it as a place that can be owned only if no one else pass throught it
+					//_ownerByMove : owner of the place, only if no other ennemy unit pass on it. see terminateOrders to get the use of _ownerByMove
+					if (leftPlace._ownerByMove== null) leftPlace._ownerByMove = order.owner;
+					else if (leftPlace._ownerByMove != order.owner) leftPlace._ownerByMove = Place.CONFLICT;
+					
+				} else { //neutral or friend wizard : ignore this place, just pass througth
+					leftPlace.owner=oldLeftPlace.owner; //this empty place remain to its owner
+				}
+				
+				
 			}
 		}
 		
@@ -504,7 +518,24 @@ Diplomacy.prototype.toJSON = function() { //save only truly required fields
 	return { supports:this.supports };
 }
 
-
+/** diplomacy between a wizard -> a given place **/
+Diplomacy.prototype.statusTowardPlace = function(idWizard, otherPlace) {
+	var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
+	if (idWizard!=otherPlace.owner) {
+		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
+		else diplomacy=this.supports[idWizard][otherPlace.owner];
+	}
+	return diplomacy;
+}
+/** diplomacy between a given place -> wizard **/
+Diplomacy.prototype.statusFromPlace = function(idWizard, otherPlace) {
+	var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
+	if (idWizard!=otherPlace.owner) {
+		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
+		else diplomacy=this.supports[otherPlace.owner][idWizard];
+	}
+	return diplomacy;
+}
 
 /**
 * Incomes! Stores the incomes of wizard
@@ -2114,20 +2145,14 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					//duration of movement
 					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
 					var oldPlace = map.oldMap.land.places[place.id];
-					
-					var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
-					if (this.owner!=oldPlace.owner) {
-						if (oldPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
-						else diplomacy=map.oldMap.diplomacy.supports[oldPlace.owner][this.owner];
-					}
+					var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
 					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
-					
-					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*2; //unit slow down when it encounter a increasing number of hostile units 
+					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*3; //unit slow down when it encounter a increasing number of hostile units 
 					
 					//console.log("DEBUG Unit.prototype.strength diplomacy=" + diplomacy + " stealthDuration=" + stealthDuration);
 					
 					
-					var duration = stealthDuration + this.movementFactor(place.terrain) * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE;
+					var duration = stealthDuration + this.movementFactor(place.terrain) * ( 0.75 + 0.25 * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE) ;
 				
 					daysOfJourney += duration;
 	

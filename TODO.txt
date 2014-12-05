@@ -1,5 +1,3 @@
-- Vider carte de ses unités dans admin (unitReset, comme diploReset)
-- Prendre territoires au passage des armées seulement pour territoires neutre et en guerre.
 
 - TO BE TESTED : include old map for movement and order to diminish strength of units crossing enemy line and to improve strength on sea owned by friendly ships
   C:\Users\hchristol\nodejsapp\okasorcas\public\javascripts\Map.js (6 hits)
