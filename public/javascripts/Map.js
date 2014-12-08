@@ -642,19 +642,7 @@ Incomes.prototype.nextTurn = function(map) {
 					map.people.removeUnitsIn(place, function(unit) { if ( (unit.type!=Unit.WIZARD) ) return true;  return false; } );
 					place.updateOwner();							
 				}
-					/* OLD : wizard die if unit stronger
-					if (place.owner == Place.CONFLICT) {
-						var f = new Fighting(place);
-						//see which unit is strongest, ignore neighbor places
-						f.addStrengthsOnPlace(place, map, false);
-						f.andTheWinnerIs();
-						//in case of equal strength, all units are deleted
-						map.people.removeUnitsIn(f.place, function(unit) { if (unit.owner!=f.winner) return true;  return false; } );
-						f.place.updateOwner();						
-					}
-					*/
 					
-				
 			}
 			
 		}
@@ -2149,11 +2137,15 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
 					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*3; //unit slow down when it encounter a increasing number of hostile units 
 					
+					if (stealthDuration<0) stealthDuration=0;
+					
 					//console.log("DEBUG Unit.prototype.strength diplomacy=" + diplomacy + " stealthDuration=" + stealthDuration);
 					
 					
 					var duration = stealthDuration + this.movementFactor(place.terrain) * ( 0.75 + 0.25 * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE) ;
 				
+					if (duration<0) duration=0;
+					
 					daysOfJourney += duration;
 	
 	
@@ -2784,6 +2776,7 @@ Fighting.NO_WINNER=-1;
 
 /** add strengths of units based on a given place. isSupporting = true if the place is only a place for supporting distant fight **/
 Fighting.prototype.addStrengthsOnPlace = function(place,map, isSupporting) {
+
 	if (place.units==null) return;
 	for (var i=0; i<place.units.length;i++) {
 		var unit=place.units[i];
@@ -2791,7 +2784,7 @@ Fighting.prototype.addStrengthsOnPlace = function(place,map, isSupporting) {
 		if ( (isSupporting) && ( unit.owner==0 ) ) continue; //neutral unit don't support anyone
 		
 		var order = map.getOrder(unit);
-		if (order==null) this.addStaticUnit(unit, isSupporting, map.diplomacy);
+		if ( (order==null) || ( order.type==Act.RECRUIT ) || ( order.type==Act.SPELL_THROW ) ) this.addStaticUnit(unit, isSupporting, map.diplomacy);
 		else this.addMovement(order,map,isSupporting);
 	}
 }
@@ -2816,8 +2809,10 @@ Fighting.prototype.addStaticUnit = function(unit, isSupporting, diplomacy) {
 	if (idWizardSupported==null) return; //no diplomatic support
 	
 	//potential diplomatic support
-	if (this.strengths[idWizardSupported]!=null) 
+	if (this.strengths[idWizardSupported]!=null) {
+		//console.log("DEBUG Fighting.prototype.addStaticUnit : idWizardSupported=" + idWizardSupported + " unit.strength=" + unit.strength(null, null, anotherUnitTerrain, typeOfFight) + "  anotherUnitTerrain=" + anotherUnitTerrain);
 		this.strengths[idWizardSupported]+=unit.strength(null, null, anotherUnitTerrain, typeOfFight);
+	}
 }
 
 /** add strength of a moving unit **/
@@ -2846,8 +2841,10 @@ Fighting.prototype.addMovement = function(order, map, isSupporting) {
 	if (idWizardSupported==null) return; //no diplomatic support
 	
 	//increase strength
-	if (this.strengths[idWizardSupported]!=null) 
+	if (this.strengths[idWizardSupported]!=null) {
+		//console.log("DEBUG Fighting.prototype.addMovement : idWizardSupported=" + idWizardSupported + " unit.strength=" + unit.strength(map, order, anotherUnitTerrain, typeOfFight));
 		this.strengths[idWizardSupported]+=unit.strength(map, order, anotherUnitTerrain, typeOfFight);
+	}
 }
 
 /** Create a side if not exists and return idwizard **/
@@ -2856,6 +2853,8 @@ Fighting.prototype.createOpponent = function(wizardId) {
 		this.strengths[wizardId]=0; //initialize strength on this place
 		this.opponents.push(wizardId);
 	};
+	
+	//console.log("DEBUG Fighting.prototype.createOpponent : wizardId=" + wizardId);
 	return wizardId;
 }
 

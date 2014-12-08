@@ -67,6 +67,7 @@ var tutorialNextTimer = function() {
 		nextClick(597,167);nextClick(646,212);nextClick(706,204);
 		nextMessage("Plus il se déplace,\nplus sa force diminue.");
 		nextClick(754,162);nextClick(798,126);
+		nextMessage("Une unité traverse rapidement des territoire amis,\nlentement des territoires ennemis\net plus lentement encore s'il y a\ndes unités hostiles.");
 		nextMessage("Les territoires traversés me\nrapporteront des cristaux");
 		
 		nextMessage( "Je veux aussi déplacer\nmon mage vers une tour", 300, 300);
@@ -206,6 +207,7 @@ var tutorialNextTimer = function() {
 		nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nCrochet : les forces\nsont changées ! Crochet gagne !", 100, 300);
 		
 		nextMessage("Attention :\n- un mage qui soutient un autre peut quand même l'attaquer\n- si un mage soutien plusieurs camps dans une bataille, alors il reste neutre", 50, 100);
+
 		
 		nextMessage("Merci d'avoir suivi ce tuto.\nVous en savez maintenant assez pour jouer !\nLe 8ème sortilège fera de vous le maître de ce monde !", 200, 200);
 	}
