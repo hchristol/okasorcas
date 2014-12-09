@@ -21,7 +21,7 @@ var tutorialNextTimer = function() {
 	if ( TUTO_MAP_COUNT == 0 ) {
 
 		//reincarnation	
-		nextMessage( "BIENVENUE DANS LE TUTORIEL\nDU HUITIEME SORTILEGE !\n\nDans ce jeu vous êtes un magicien", 100, 100);
+		nextMessage( "BIENVENUE DANS LA VIDEO D'INITIATION\nAU HUITIEME SORTILEGE !\n\nDans ce jeu vous êtes un magicien\navide de pouvoir", 100, 100);
 		nextArrow( 420,339, "Le but du jeu est d'emmener\nson mage sur ces 8 tours");
 
 		nextArrow(241,158); nextArrow(297,152); nextArrow(332,87); nextArrow(519,157); nextArrow(566,384); nextArrow(752,373); nextArrow(689,570);
@@ -205,10 +205,7 @@ var tutorialNextTimer = function() {
 		nextArrow(261,160, "Elrond déclare\nson soutien");
 		timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
 		nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nCrochet : les forces\nsont changées ! Crochet gagne !", 100, 300);
-		
-		nextMessage("Attention :\n- un mage qui soutient un autre peut quand même l'attaquer\n- si un mage soutien plusieurs camps dans une bataille, alors il reste neutre", 50, 100);
 
-		
 		nextMessage("Merci d'avoir suivi ce tuto.\nVous en savez maintenant assez pour jouer !\nLe 8ème sortilège fera de vous le maître de ce monde !", 200, 200);
 	}
 	

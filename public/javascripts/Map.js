@@ -197,8 +197,8 @@ Map.prototype.updateOrder = function(order) {
 				oldLeftPlace=this.oldMap.land.places[leftPlace.id];
 				var diplomacy=this.oldMap.diplomacy.statusTowardPlace(order.owner, oldLeftPlace);
 				
-				//potential capture of the place : if war, neutral with no wizard or myself (recapture try)
-				if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD ) || (diplomacy==Diplomacy.SELF )  ) {
+				//potential capture of the place :
+				if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO ) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD ) || (diplomacy==Diplomacy.SELF )  ) {
 				
 					//remember it as a place that can be owned only if no one else pass throught it
 					//_ownerByMove : owner of the place, only if no other ennemy unit pass on it. see terminateOrders to get the use of _ownerByMove
@@ -2120,51 +2120,49 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 				
 			if (strength<0) {
 				
-				strength = this.strength(map, null, order.parameters.places[1].terrain, typeOfFight); //beginning strenght (ignore the first left place)
-				var initStrength = strength;
 				var daysOfJourney= 0;  //number of days unit journey
 				var max_duration = 30; //max one month of journey
 		
-
-				//movement exhaustion : every crossed places make the strength dwindle. 
-				for ( var i=2; i<order.parameters.places.length; i++) { //first place is ignored : strenght start to dwindle after the second crossed place
+				//movement duration 
+				for ( var i=1; i<order.parameters.places.length; i++) { 
 					var place = order.parameters.places[i];
 				
 					//duration of movement
 					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
+					if (i==1) stealthDuration = -7; //suprise effect on first place
+					if (map.oldMap==null) map.initOldMap(); //first added order
 					var oldPlace = map.oldMap.land.places[place.id];
 					var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
 					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
 					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*3; //unit slow down when it encounter a increasing number of hostile units 
 					
 					if (stealthDuration<0) stealthDuration=0;
-					
-					//console.log("DEBUG Unit.prototype.strength diplomacy=" + diplomacy + " stealthDuration=" + stealthDuration);
-					
+				
 					
 					var duration = stealthDuration + this.movementFactor(place.terrain) * ( 0.75 + 0.25 * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE) ;
 				
-					if (duration<0) duration=0;
+					if (duration<0) duration=1; //at least one day
 					
 					daysOfJourney += duration;
-	
-	
-					//unit's bonus/malus
-					//decrease =  2 * i * place.position.distance(order.parameters.places[i-1].position) * initStrength / ( (this.movementFactor(place.terrain) + 1) * (this.movementFactor(place.terrain) + 1) ) ;
-					decrease = (duration / max_duration) * initStrength;
-				
-					strength-= decrease ;
+					
+					//old count :
+					//decrease = (duration / max_duration) * initStrength;
+					//strength-= decrease ;
 				
 					//terrain limitation for strength
-					var max_strength=Unit.strengthOfType(this.type, order.parameters.places[i].terrain, typeOfFight);
-					if (strength>max_strength) strength = max_strength;
-
-					//debug Movement!
-					//console.log("DEBUG Strength! : duration entre " + place.id + " et " + order.parameters.places[i-1].id + " = " + duration + "   strength=" + strength );
-				
+					//debug try to desactivated max_strength 2014-12
+					//var max_strength=Unit.strengthOfType(this.type, order.parameters.places[i].terrain, typeOfFight);
+					//if (strength>max_strength) strength = max_strength;
 				
 				}
 
+				//more days of travel, less strength
+				i=order.parameters.places.length-1;
+				strength = ( (max_duration - daysOfJourney ) / max_duration) * this.strength(map, null, order.parameters.places[i].terrain, typeOfFight); 			
+				//debug change strength 2014-12
+				//DEBUG_DAY_OF_JOURNEY = daysOfJourney;
+					
+					
 				//distant support : limit strenght if required
 				if (anotherUnitTerrain != null) {
 					var max_strength=Unit.strengthOfType(this.type, anotherUnitTerrain, typeOfFight);

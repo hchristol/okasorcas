@@ -258,6 +258,7 @@ Unit.ShowPlaceToGo = function( ctx, pos, color ) {
 }
 
 /** show strength of unit **/
+//var DEBUG_DAY_OF_JOURNEY= 0;
 Unit.prototype.showStrengthOfUnit = function(ctx, order, map) {
 	ctx.shadowBlur = 0;
 	var pos = this.place.position; //strength text position
@@ -272,7 +273,7 @@ Unit.prototype.showStrengthOfUnit = function(ctx, order, map) {
 	ctx.lineWidth=2; ctx.strokeStyle = "white";
 	ctx.fillStyle = "black"
 	
-	var text= InfoMessages["Strength"] + " " + this.strength(map, order);
+	var text= InfoMessages["Strength"] + " " + this.strength(map, order, null, Fighting.ATTACK) ; //+ " days " + Math.round(DEBUG_DAY_OF_JOURNEY);
 	ctx.strokeText(text,pos.x,pos.y);   
 	ctx.fillText(text,pos.x,pos.y); 
 }
