@@ -791,13 +791,13 @@ LearnedSpells.isSpellAMovement = function(terrain) {
 LearnedSpells.strength = function(terrain) {
 	var baseStrength=Unit.strengthOfType(null, Place.PLAIN, Fighting.ATTACK );
 	if (terrain==Place.PLAIN) return Math.round(baseStrength * 1.2);
-	if (terrain==Place.FOREST) return Math.round(baseStrength * 1.5);
-	if (terrain==Place.SEA) return Math.round(baseStrength * 2);
-	if (terrain==Place.MOUNTAIN) return Math.round(baseStrength * 2.5);
-	if (terrain==Place.DESERT) return Math.round(baseStrength * 2.2);
+	if (terrain==Place.FOREST) return Math.round(baseStrength * 2);
+	if (terrain==Place.SEA) return Math.round(baseStrength * 3);
+	if (terrain==Place.MOUNTAIN) return Math.round(baseStrength * 4);
+	if (terrain==Place.DESERT) return Math.round(baseStrength * 3);
 	if (terrain==Place.CITY) return Math.round(baseStrength * 1.1);
 	if (terrain==Place.VOLCANO) return Math.round(baseStrength * 3);
-	if (terrain==Place.HILL) return Math.round(baseStrength * 1.33);
+	if (terrain==Place.HILL) return Math.round(baseStrength * 1.5);
 	return Math.round(baseStrength * 1);	
 }
 
@@ -805,14 +805,14 @@ LearnedSpells.strength = function(terrain) {
  Spells range of attack for one spell 
 **/
 LearnedSpells.rangeOfSpell = function( terrain ) {
-	if (terrain==Place.PLAIN) return Place.SIZE * 3;
-	if (terrain==Place.FOREST) return Place.SIZE * 4;
+	if (terrain==Place.PLAIN) return Place.SIZE * 4;
+	if (terrain==Place.FOREST) return Place.SIZE * 6;
 	if (terrain==Place.SEA) return  Place.SIZE * 11;
 	if (terrain==Place.MOUNTAIN) return  Place.SIZE * 10;
 	if (terrain==Place.DESERT) return Place.SIZE * 7;
-	if (terrain==Place.CITY) return Place.SIZE * 15;
+	if (terrain==Place.CITY) return Place.SIZE * 12;
 	if (terrain==Place.VOLCANO) return Place.SIZE * 10;
-	if (terrain==Place.HILL) return Place.SIZE * 2;
+	if (terrain==Place.HILL) return Place.SIZE * 5;
 	return Place.SIZE * 1.5;
 }
 
@@ -1845,7 +1845,7 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 
 	}
 	if (typeUnit == Unit.DWARF ) {
-		if ( (terrain==Place.MOUNTAIN) || (terrain==Place.VOLCANO) ) return 7;
+		if ( (terrain==Place.MOUNTAIN) || (terrain==Place.VOLCANO) ) return 3;
 	}
 	if (typeUnit == Unit.BOWMAN ) {
 		if (terrain==Place.FOREST) return 3;
@@ -1861,15 +1861,15 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 	}
 	if (typeUnit == Unit.PEASANT ) return Unit.movementFactorOfType(null, terrain) + 1 ;
 	if (typeUnit == Unit.DRAGON ) { 
-		return 4;
+		return 3;
 	}
 	
 	//default movement factor : depend only of terrain
 	if (terrain==Place.PLAIN) return 2;
 	if (terrain==Place.FOREST) return 3;
 	if (terrain==Place.SEA) return 3; //see stealthDurationOfType : unit are slow on hostile places
-	if (terrain==Place.MOUNTAIN) return 10;
-	if (terrain==Place.VOLCANO) return 11;
+	if (terrain==Place.MOUNTAIN) return 6;
+	if (terrain==Place.VOLCANO) return 7;
 	if (terrain==Place.DESERT) return 2;
 	if (terrain==Place.HILL) return 4;
 	if (terrain==Place.CITY) return 2;
@@ -1878,30 +1878,30 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 
 }
 
-/** Stealth! return the base duration of entering into a neutral or hostile place **/
+/** Stealth! return the base duration of movement toward a neutral or hostile place **/
 Unit.stealthDurationOfType = function(typeUnit, terrain, diplomacy) {
 	if (diplomacy==Diplomacy.SELF) return 0; //no lost time on my territory !
-	var malus=1;
+	var malus=0;
 	if (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD) {
-		malus+=2;
+		malus+=1.5;
 	}
 	if (diplomacy==Diplomacy.SUPPORT_NO) {
-		malus+=4;
+		malus+=3;
 	}
 	if (diplomacy==Diplomacy.WAR) {
-		malus+=6;
+		malus+=5;
 	}
 	if (terrain==Place.SEA) {
 		if (typeUnit == Unit.CORSAIR ) return malus;
-		return 10 + malus; //units other than corsair have to wait a boat !
+		return 7 + malus; //units other than corsair have to wait a boat !
 	}
-	if (terrain==Place.PLAIN) return 1+malus;
-	if (terrain==Place.FOREST) return 3+malus;
-	if (terrain==Place.MOUNTAIN) return 7+malus;
-	if (terrain==Place.VOLCANO) return 10+malus;
-	if (terrain==Place.DESERT) return 5+malus;
-	if (terrain==Place.HILL) return 2+malus;
-	if (terrain==Place.CITY) return 6;	
+	if (terrain==Place.PLAIN) return 0+malus;
+	if (terrain==Place.FOREST) return 1+malus;
+	if (terrain==Place.MOUNTAIN) return 2*malus;
+	if (terrain==Place.VOLCANO) return 2.5*malus;
+	if (terrain==Place.DESERT) return 1.5*malus;
+	if (terrain==Place.HILL) return 1.25*malus;
+	if (terrain==Place.CITY) return 3+2*malus;	
 	
 }
 
@@ -2128,39 +2128,40 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					var place = order.parameters.places[i];
 				
 					//duration of movement
+					
+					//stealth factor
 					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
-					if (i==1) stealthDuration = -7; //suprise effect on first place
 					if (map.oldMap==null) map.initOldMap(); //first added order
 					var oldPlace = map.oldMap.land.places[place.id];
 					var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
 					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
-					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) stealthDuration+=oldPlace.units.length*3; //unit slow down when it encounter a increasing number of hostile units 
+					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) {
+						for (var u=0; u<oldPlace.units.length; u++) { //unit slow down when it encounter a increasing number of hostile units 
+							stealthDuration+= 0.2 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
+						}
+					}
 					
 					if (stealthDuration<0) stealthDuration=0;
 				
+					//movement factor
+					var movementDuration = this.movementFactor(place.terrain) * ( 0.75 + 0.25 * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE) 
 					
-					var duration = stealthDuration + this.movementFactor(place.terrain) * ( 0.75 + 0.25 * place.position.distance(order.parameters.places[i-1].position) / Place.SIZE) ;
+					//exhaustion factor : the more the unit is moving, the more it needs to have a rest
+					var restDuration=(1.5*i-5);
+					
+					var duration = stealthDuration + movementDuration + restDuration;
 				
 					if (duration<0) duration=1; //at least one day
 					
 					daysOfJourney += duration;
-					
-					//old count :
-					//decrease = (duration / max_duration) * initStrength;
-					//strength-= decrease ;
-				
-					//terrain limitation for strength
-					//debug try to desactivated max_strength 2014-12
-					//var max_strength=Unit.strengthOfType(this.type, order.parameters.places[i].terrain, typeOfFight);
-					//if (strength>max_strength) strength = max_strength;
 				
 				}
 
 				//more days of travel, less strength
 				i=order.parameters.places.length-1;
 				strength = ( (max_duration - daysOfJourney ) / max_duration) * this.strength(map, null, order.parameters.places[i].terrain, typeOfFight); 			
-				//debug change strength 2014-12
-				//DEBUG_DAY_OF_JOURNEY = daysOfJourney;
+				//debug change strength 2014-12 (display duration, see MapUnitDisplay.js  showStrengthOfUnit)
+				//if (anotherUnitTerrain==null) order._DebugDayOfJourney = daysOfJourney; //console.log("Map.js debug change strength 2014-12  daysOfJourney=" + daysOfJourney);
 					
 					
 				//distant support : limit strenght if required
@@ -2559,8 +2560,8 @@ Act.MovementPossiblePlacesToGo = function( place, unitType, land) {
 Act.INVALID_ORDER=-1;
 Act.MVT_OK=0;
 Act.MVT_KO_DISTANCE=2;
-Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO=0.40; //in ratio of the strength of unit
-Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE=3; //in absolute
+Act.MIN_STRENGTH_FOR_MOVEMENT_RATIO=0.25; //in ratio of the strength of unit
+Act.MIN_STRENGTH_FOR_MOVEMENT_VALUE=2; //in absolute
 
 /** is this place is good for recruiting ? 
 	return MVT_OK if recruiting is good
