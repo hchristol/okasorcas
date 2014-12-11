@@ -1880,17 +1880,15 @@ Unit.movementFactorOfType = function(typeUnit, terrain) {
 
 /** Stealth! return the base duration of movement toward a neutral or hostile place **/
 Unit.stealthDurationOfType = function(typeUnit, terrain, diplomacy) {
-	if (diplomacy==Diplomacy.SELF) return 0; //no lost time on my territory !
+	if ( (diplomacy==Diplomacy.SELF) || (diplomacy==Diplomacy.SUPPORT_YES) ) return 0; //no lost time on friendly places !
 	var malus=0;
 	if (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD) {
-		malus+=1.5;
+		malus+=2;
 	}
-	if (diplomacy==Diplomacy.SUPPORT_NO) {
-		malus+=3;
+	if ( (diplomacy==Diplomacy.SUPPORT_NO) || (diplomacy==Diplomacy.WAR) ) {
+		malus+=4;
 	}
-	if (diplomacy==Diplomacy.WAR) {
-		malus+=5;
-	}
+
 	if (terrain==Place.SEA) {
 		if (typeUnit == Unit.CORSAIR ) return malus;
 		return 7 + malus; //units other than corsair have to wait a boat !
@@ -2130,15 +2128,24 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					//duration of movement
 					
 					//stealth factor
-					var stealthDuration=0; //malus duration applied to duration when entering on neutral or ennemy territory 
-					if (map.oldMap==null) map.initOldMap(); //first added order
-					var oldPlace = map.oldMap.land.places[place.id];
-					var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
-					stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
-					if (diplomacy==Diplomacy.WAR) if (oldPlace.units!=null) {
-						for (var u=0; u<oldPlace.units.length; u++) { //unit slow down when it encounter a increasing number of hostile units 
-							stealthDuration+= 0.2 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
+					var stealthDuration=0; //malus duration applied to duration when crossing neutral or ennemy territory 
+					
+					if ( i<order.parameters.places.length-1) { //crossing place duration : not on the last place entered
+					
+						//use map before orders were added
+						if (map.oldMap==null) map.initOldMap(); //first added order
+						var oldPlace = map.oldMap.land.places[place.id]; //place before order were applied
+						var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
+					
+						stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
+						if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO) )  if (oldPlace.units!=null) {
+							//if (anotherUnitTerrain==null) console.log( "debug Map.js BEFORE increasing number of non friendly units  stealthDuration= " + stealthDuration);
+							for (var u=0; u<oldPlace.units.length; u++) { //unit slow down when it encounter a increasing number of non friendly units 
+								stealthDuration+= 0.4 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
+							}
+							//if (anotherUnitTerrain==null) console.log( "debug Map.js AFTER increasing number of non friendly units  stealthDuration= " + stealthDuration);
 						}
+						
 					}
 					
 					if (stealthDuration<0) stealthDuration=0;
@@ -2150,6 +2157,7 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 					var restDuration=(1.5*i-5);
 					
 					var duration = stealthDuration + movementDuration + restDuration;
+					//if (anotherUnitTerrain==null) console.log( "	debug Map.js duration on place " + i + " = "  + duration + "    (" + stealthDuration + " + " + movementDuration + " + " + restDuration + ")" );
 				
 					if (duration<0) duration=1; //at least one day
 					
@@ -2160,6 +2168,9 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 				//more days of travel, less strength
 				i=order.parameters.places.length-1;
 				strength = ( (max_duration - daysOfJourney ) / max_duration) * this.strength(map, null, order.parameters.places[i].terrain, typeOfFight); 			
+				
+				
+				//if (anotherUnitTerrain==null) console.log( "debug Map.js Unit.prototype.strength  daysOfJourney= " + daysOfJourney);
 				//debug change strength 2014-12 (display duration, see MapUnitDisplay.js  showStrengthOfUnit)
 				//if (anotherUnitTerrain==null) order._DebugDayOfJourney = daysOfJourney; //console.log("Map.js debug change strength 2014-12  daysOfJourney=" + daysOfJourney);
 					
