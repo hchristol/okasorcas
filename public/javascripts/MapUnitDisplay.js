@@ -61,6 +61,23 @@ Unit.DrawUnits = function(ctx1,ctx2,ctx3, place, map) {
 	
 	//specific drawing on wizard!
 	if ( ( owner>0) && (indexOfWizard>=0) ) {
+	
+		//diplomacy with wizard
+		var pDiplo=place.units[indexOfWizard].graphicPosition().add(-Unit.IMAGES_SIZE*.45,-Unit.IMAGES_SIZE*.65).add(-5,-15);
+		if (CURRENT_WIZARD!=null) { //sun behind wizard display diplomatic status
+			var diplo = map.diplomacy.supports[owner][CURRENT_WIZARD]; 
+			var icon="images/wizardDiplo" + diplo + ".png";
+			Map.InsertImageInCanvas(icon, pDiplo, ctx2 );		
+			var diplo2 = map.diplomacy.supports[CURRENT_WIZARD][owner];
+			if (diplo2!=diplo) { //different status
+				icon="images/wizardDiplo" + diplo2 + ".png";
+				Map.InsertImageInCanvas(icon,  pDiplo.add(7,0), ctx2 );
+			}
+				
+		} else { //neutral map for guest
+			var icon="images/wizardDiplo1.png"; //neutral
+			Map.InsertImageInCanvas(icon, pDiplo, ctx2 );				
+		}
 		
 		//draw icon incomes! around wizard
 		//size of icon depend on futureStock
@@ -139,11 +156,7 @@ Unit.OFFSET =new Point(-Unit.IMAGES_SIZE*.5,-Unit.IMAGES_SIZE*.75) ;
 Unit.DrawArmy = function(ctx2,ctx3, position, owner, t, opacity ) {
 
 	//position
-	var p=null;
-	if (position!=null)  {
-		p=position.add(-Unit.IMAGES_SIZE*.45,-Unit.IMAGES_SIZE*.65);
-		p=p.add(-5,-15); //new images
-	}
+	var p=position.add(-Unit.IMAGES_SIZE*.45,-Unit.IMAGES_SIZE*.65).add(-5,-15);
 	
 	//Ground blazon (except for neutral units)
 	if (owner > 0) Map.InsertImageInCanvas("images/color" + owner + ".png", p, ctx2,  null, null);
