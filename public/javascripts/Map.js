@@ -195,7 +195,7 @@ Map.prototype.updateOrder = function(order) {
 			
 				//diplomacy of the old owner of the left place, to set if this left place remains to its old owner or if it is captured
 				oldLeftPlace=this.oldMap.land.places[leftPlace.id];
-				var diplomacy=this.oldMap.diplomacy.statusTowardPlace(order.owner, oldLeftPlace);
+				var diplomacy=this.oldMap.diplomacy.diploBetween(order.owner, oldLeftPlace.owner);
 				
 				//potential capture of the place :
 				if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO ) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD ) || (diplomacy==Diplomacy.SELF )  ) {
@@ -518,21 +518,14 @@ Diplomacy.prototype.toJSON = function() { //save only truly required fields
 	return { supports:this.supports };
 }
 
-/** diplomacy between a wizard -> a given place **/
-Diplomacy.prototype.statusTowardPlace = function(idWizard, otherPlace) {
+/** diplomacy between two wizards : the worst status is returned**/
+Diplomacy.prototype.diploBetween = function(idWizard1, idWizard2) {
 	var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
-	if (idWizard!=otherPlace.owner) {
-		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
-		else diplomacy=this.supports[idWizard][otherPlace.owner];
-	}
-	return diplomacy;
-}
-/** diplomacy between a given place -> wizard **/
-Diplomacy.prototype.statusFromPlace = function(idWizard, otherPlace) {
-	var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
-	if (idWizard!=otherPlace.owner) {
-		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD
-		else diplomacy=this.supports[otherPlace.owner][idWizard];
+	if (idWizard1!=idWizard2) {
+		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD;
+		else {
+			diplomacy=Math.min(this.supports[idWizard1][idWizard2], this.supports[idWizard2][idWizard1]);
+		}
 	}
 	return diplomacy;
 }
@@ -2135,10 +2128,10 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 						//use map before orders were added
 						if (map.oldMap==null) map.initOldMap(); //first added order
 						var oldPlace = map.oldMap.land.places[place.id]; //place before order were applied
-						var diplomacy = map.oldMap.diplomacy.statusFromPlace(this.owner, oldPlace);
+						var diplomacy = map.oldMap.diplomacy.diploBetween(this.owner, oldPlace.owner);
 					
 						stealthDuration=Unit.stealthDurationOfType(this.type, place.terrain, diplomacy); 
-						if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO) )  if (oldPlace.units!=null) {
+						if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD)  )  if (oldPlace.units!=null) {
 							//if (anotherUnitTerrain==null) console.log( "debug Map.js BEFORE increasing number of non friendly units  stealthDuration= " + stealthDuration);
 							for (var u=0; u<oldPlace.units.length; u++) { //unit slow down when it encounter a increasing number of non friendly units 
 								stealthDuration+= 0.4 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
@@ -2880,7 +2873,7 @@ Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 	for (var o=0; o<this.opponents.length; o++) {
 		var i=this.opponents[o];
 		//simple support
-		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_YES) {
+		if (diplomacy.diploBetween(wizardId,i)==Diplomacy.SUPPORT_YES) {
 			if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
 			supportedOpponent=i;
 		}
@@ -2895,7 +2888,7 @@ Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 	//search an ennemy at war with
 	for (var o=0; o<this.opponents.length; o++) {
 		var i=this.opponents[o];
-		if (diplomacy.supports[wizardId][i]==Diplomacy.WAR) {
+		if (diplomacy.diploBetween(wizardId,i)==Diplomacy.WAR) {
 			hatedOpponent=i;
 		}
 	}
@@ -2906,7 +2899,7 @@ Fighting.prototype.idWizardSupportedBy = function( wizardId, diplomacy ) {
 		var i=this.opponents[o];
 		
 		//no support : can be supported if only wizard is at war with other opponent
-		if (diplomacy.supports[wizardId][i]==Diplomacy.SUPPORT_NO) {
+		if ( (diplomacy.diploBetween(wizardId,i)==Diplomacy.SUPPORT_NO) || (diplomacy.diploBetween(wizardId,i)==Diplomacy.NEUTRAL_NO_WIZARD) )  {
 			if (supportedOpponent!=null) return null; //if he support more than one opponent, he stays neutral
 			supportedOpponent=i;
 		}

@@ -43,6 +43,10 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 			if (diplomacy.supports[i][j]==Diplomacy.WAR) {
 				Map.InsertImage("./images/dead.png", null, htmlCell,32,32);
 				htmlCell.typeOfSupport=Diplomacy.SUPPORT_YES;
+				
+				if (diplomacy.supports[i][j] != diplomacy.supports[j][i]) { //different status
+					Map.InsertImage("./images/wizardDiplo" + diplomacy.supports[j][i] + ".png", null, htmlCell,32,32);
+				}
 			}
 			
 			
@@ -55,8 +59,11 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 				else {
 					Map.InsertImage("./images/support.png", null, htmlCell,32,32);
 					htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
+					if (diplomacy.supports[i][j] != diplomacy.supports[j][i]) { //different status
+						Map.InsertImage("./images/wizardDiplo" + diplomacy.supports[j][i] + ".png", null, htmlCell,32,32);
+					}
+				
 				}
-	
 			}
 
 

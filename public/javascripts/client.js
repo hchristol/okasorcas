@@ -149,8 +149,7 @@ var init = function () {
 				tooCrowded[i].position.add(0,-10).showEnlightedCircle(INPUT_ORDER.ctxPlacesToGo, Unit.ColorOf(CURRENT_WIZARD) , 30);
 			}
 	
-			//DEBUG accept to crowded order
-			//return;
+			return;
 		}
 		
 		//ok, orders good enough to be send
