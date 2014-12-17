@@ -187,14 +187,14 @@ var tutorialNextTimer = function() {
 		nextArrow(994,69,"La diplomatie peut changer\nle cours de cette bataille");
 	
 		nextMenu(InfoMessages["MenuDiplo"]);
-		nextMessage("Dans ce tableau :\nhorizontalement, on voit ce que\nElrond pense des autres\n(rien pour le moment)", 619,170);
-		for(var i=216; i<593; i+= 50) nextArrow(i ,169);
+		nextMessage("Dans ce tableau :\nhorizontalement, on voit ce que\nElrond pense des autres\n(rien pour le moment)", 619,270);
+		for(var i=216; i<853; i+= 80) nextArrow(i ,169);
 		nextMessage("Verticalement, on voit ce que\nles autres pensent d'Elrond", 363,443);
 		for(var i=110; i<430; i+= 50) nextArrow(323 , i);
 		
 		nextMessage("Imaginons qu'Elrond\nintervienne diplomatiquement", 50, 100);
 		nextDiploChange(3,2);
-		nextArrow(261,160, "Elrond déclare\nLA GUERRE à Crochet !");
+		nextArrow(311,160, "Elrond déclare\nLA GUERRE à Crochet !");
 		timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
 		nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nGengis : les forces\nsont changées ! Gengis gagne !", 100, 300);
 		
@@ -202,7 +202,10 @@ var tutorialNextTimer = function() {
 		nextArrow(996,65, "Menu diplomatie");
 		nextMenu(InfoMessages["MenuDiplo"]);
 		nextDiploChange(3,2);
-		nextArrow(261,160, "Elrond déclare\nson soutien");
+		nextArrow(311,160, "Elrond déclare\nson soutien");
+		nextArrow(411,115, "Crochet doit accepter et\naccorder lui aussi\nson soutien à Elrond");
+		nextArrow(411,115, " (sinon, la diplomatie la plus \ndéfavorable l'emporte)");
+		nextDiploChange(2,3); nextDiploChange(2,3);
 		timer_match+=4; if (TIMER_COUNT == timer_match) document.getElementById('menuChooseSupport').style.visibility="hidden";
 		nextMessage("Et voilà les flottes\nd'Elrond qui soutiennent\nCrochet : les forces\nsont changées ! Crochet gagne !", 100, 300);
 

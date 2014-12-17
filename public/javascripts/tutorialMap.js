@@ -467,8 +467,8 @@ function Diplomacy(json) {
 }
 
 /** Value for support **/
-Diplomacy.SUPPORT_YES=1;
-Diplomacy.SUPPORT_NO=0;
+Diplomacy.SUPPORT_YES=2;
+Diplomacy.SUPPORT_NO=1;
 Diplomacy.WAR=-1;
 
 /**

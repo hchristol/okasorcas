@@ -23,6 +23,15 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 	}
 	htmlArray.appendChild(htmlheader);
 	
+	
+	var changeDiplo = function() { //order for changing diplomatic status (see below)
+		if (INPUT_ORDER!=null) {
+			INPUT_ORDER.newDiplomaticOrder(this.idWizard1, this.idWizard2, this.typeOfSupport );
+			//refresh view
+			displayDiplomaticSupport(INPUT_ORDER.map.diplomacy, htmlElementParent );
+		}
+	}
+				
 	//rows
 	for ( var i=1; i<People.WIZARD_COUNT; i++) {
 		var htmlRow= document.createElement("tr");
@@ -40,42 +49,36 @@ var displayDiplomaticSupport = function( diplomacy, htmlElementParent ) {
 			htmlCell.idWizard1=i; htmlCell.idWizard2=j; htmlCell.typeOfSupport=Diplomacy.WAR;  //to send param on click event
 			htmlRow.appendChild(htmlCell);
 			
-			if (diplomacy.supports[i][j]==Diplomacy.WAR) {
-				Map.InsertImage("./images/dead.png", null, htmlCell,32,32);
-				htmlCell.typeOfSupport=Diplomacy.SUPPORT_YES;
-				
-				if (diplomacy.supports[i][j] != diplomacy.supports[j][i]) { //different status
-					Map.InsertImage("./images/wizardDiplo" + diplomacy.supports[j][i] + ".png", null, htmlCell,32,32);
-				}
-			}
+			if (i==j) {  //self
 			
-			
-			if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_YES) {
+				htmlCell.className="grayCell";
+				Map.InsertImage("./images/diplo" + diplomacy.supports[i][j] + ".png", null, htmlCell,32,32, 0.4);
 				
-				if (i==j) {  
-					htmlCell.className="grayCell";
-					Map.InsertImage("./images/support.png", null, htmlCell,32,32, 0.5);
-				}
-				else {
-					Map.InsertImage("./images/support.png", null, htmlCell,32,32);
-					htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
-					if (diplomacy.supports[i][j] != diplomacy.supports[j][i]) { //different status
-						Map.InsertImage("./images/wizardDiplo" + diplomacy.supports[j][i] + ".png", null, htmlCell,32,32);
-					}
+			} else { //differents wizards
 				
-				}
-			}
+				if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_NO) {
 
-
-			
-			if (j!=i) { //change support on different wizard
-				var changeDiplo = function() { //order for changing diplomatic status
-					if (INPUT_ORDER!=null) {
-						INPUT_ORDER.newDiplomaticOrder(this.idWizard1, this.idWizard2, this.typeOfSupport );
-						//refresh view
-						displayDiplomaticSupport(INPUT_ORDER.map.diplomacy, htmlElementParent );
-					}
 				}
+				
+				//display status
+				opacity1=1; opacity2=1;
+				if (diplomacy.supports[i][j] == diplomacy.supports[j][i]) { //same status
+				
+					if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_NO) opacity1=0.75;
+					opacity2=0; //invisible other status
+					
+				} else { //different status
+					if (diplomacy.supports[i][j]<diplomacy.supports[j][i]) opacity2=0.4; else opacity1=0.4
+				}
+					
+				Map.InsertImage("./images/diplo" + diplomacy.supports[i][j] + ".png", null, htmlCell,32,32, opacity1);
+				Map.InsertImage("./images/diplo" + diplomacy.supports[j][i] + ".png", null, htmlCell,32,32, opacity2);
+					
+				//changing support parameter :
+				if (diplomacy.supports[i][j]==Diplomacy.WAR) htmlCell.typeOfSupport=Diplomacy.SUPPORT_YES;
+				if (diplomacy.supports[i][j]==Diplomacy.SUPPORT_YES) htmlCell.typeOfSupport=Diplomacy.SUPPORT_NO;
+			
+				//change support on different wizard
 				if (MENU_TUTORIAL == null) htmlCell.onclick = changeDiplo;
 				else {
 					htmlCell.fakeclick = changeDiplo;

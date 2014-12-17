@@ -1,1 +1,2 @@
-- replace dead.png and support.png by diplo...png (add neutral) and alter menu
+- delete units in admin (reset map)
+- md file with tutorial

@@ -178,7 +178,7 @@ Unit.DrawEmptyPlace = function(ctx, position, owner, terrain ) {
 }
 
 Unit.DrawWarIcon = function(ctx, position ) { //, stroke: 'black'
-	return Map.InsertImageInCanvas("images/dead.png", position.add(-12,-45), ctx,  28, 28);
+	return Map.InsertImageInCanvas("images/diplo-1.png", position.add(-12,-45), ctx,  28, 28);
 	return null;
 }
 

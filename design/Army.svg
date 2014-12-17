@@ -28,15 +28,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="800"
-     inkscape:window-height="600"
+     inkscape:window-width="1343"
+     inkscape:window-height="897"
      id="namedview7"
      showgrid="true"
      inkscape:zoom="4"
-     inkscape:cx="17.9"
+     inkscape:cx="-22.9"
      inkscape:cy="61.5"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="246"
+     inkscape:window-y="14"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2"
      inkscape:snap-global="false">
@@ -1043,15 +1043,6 @@
        y2="27.9" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient4625"
-       id="linearGradient4254"
-       gradientUnits="userSpaceOnUse"
-       x1="46.5"
-       y1="14.9"
-       x2="46.7"
-       y2="27.9" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient4625-1"
        id="linearGradient4256"
        gradientUnits="userSpaceOnUse"
@@ -1059,6 +1050,64 @@
        y1="14.9"
        x2="46.7"
        y2="27.9" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4625-74"
+       id="linearGradient4254-1"
+       gradientUnits="userSpaceOnUse"
+       x1="46.5"
+       y1="14.9"
+       x2="46.7"
+       y2="27.9" />
+    <linearGradient
+       id="linearGradient4625-74">
+      <stop
+         id="stop4627-0"
+         offset="0"
+         style="stop-color:#ffff82;stop-opacity:1;" />
+      <stop
+         id="stop4629-9"
+         offset="1"
+         style="stop-color:#ffcb4e;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       y2="27.9"
+       x2="46.7"
+       y1="14.9"
+       x1="46.5"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3333"
+       xlink:href="#linearGradient4625-74"
+       inkscape:collect="always" />
+    <linearGradient
+       y2="27.9"
+       x2="46.7"
+       y1="14.9"
+       x1="46.5"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3333-8"
+       xlink:href="#linearGradient4625-74-2"
+       inkscape:collect="always" />
+    <linearGradient
+       id="linearGradient4625-74-2">
+      <stop
+         id="stop4627-0-4"
+         offset="0"
+         style="stop-color:#ffff82;stop-opacity:1;" />
+      <stop
+         id="stop4629-9-5"
+         offset="1"
+         style="stop-color:#ffcb4e;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       y2="27.9"
+       x2="46.7"
+       y1="14.9"
+       x1="46.5"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient3367"
+       xlink:href="#linearGradient4625-74-2"
+       inkscape:collect="always" />
   </defs>
   <metadata
      id="metadata7">
@@ -1068,7 +1117,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1228,16 +1277,6 @@
          style="color:#000000;fill:none;stroke:#5f4c3c;stroke-width:0.9;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
   </g>
-  <path
-     transform="matrix(1.41,0,0,1.41,15.3,-46.7)"
-     d="M 55,19.5 A 7.61,7.61 0 1 1 39.8,19.5 7.61,7.61 0 1 1 55,19.5 z"
-     sodipodi:ry="7.61"
-     sodipodi:rx="7.61"
-     sodipodi:cy="19.5"
-     sodipodi:cx="47.4"
-     id="path5169"
-     style="color:#000000;fill:url(#linearGradient4254);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-     sodipodi:type="arc" />
   <g
      transform="matrix(1.13,0,0,1.13,69,-42.1)"
      id="g5087" />
@@ -2048,7 +2087,7 @@
     </g>
   </g>
   <path
-     transform="matrix(1.41,0,0,1.41,-51.1,-14.5)"
+     transform="matrix(1.41,0,0,1.41,30.6,-73.5)"
      d="M 55,19.5 A 7.61,7.61 0 1 1 39.8,19.5 7.61,7.61 0 1 1 55,19.5 z"
      sodipodi:ry="7.61"
      sodipodi:rx="7.61"
@@ -2090,5 +2129,39 @@
          d="M 97.4,-15.1 91.4,-30.2 C 91.4,-30.2 90,-32.3 91.4,-32.6 92.9,-33.1 94.2,-33.3 94.2,-31.9 94.2,-30.4 93.8,-29.3 93,-29.9 92.2,-30.4 93,-31.3 93,-31.3"
          style="color:#000000;fill:none;stroke:#5f4c3c;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
+  </g>
+  <path
+     transform="matrix(1.41,0,0,1.41,26,-45.2)"
+     d="M 55,19.5 A 7.61,7.61 0 1 1 39.8,19.5 7.61,7.61 0 1 1 55,19.5 z"
+     sodipodi:ry="7.61"
+     sodipodi:rx="7.61"
+     sodipodi:cy="19.5"
+     sodipodi:cx="47.4"
+     id="path5169-48"
+     style="color:#000000;fill:url(#linearGradient3333);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+     sodipodi:type="arc" />
+  <g
+     id="g4158">
+    <path
+       sodipodi:type="arc"
+       style="color:#000000;fill:url(#linearGradient3367);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="path5169-48-5"
+       sodipodi:cx="47.4"
+       sodipodi:cy="19.5"
+       sodipodi:rx="7.61"
+       sodipodi:ry="7.61"
+       d="M 55,19.5 A 7.61,7.61 0 1 1 39.8,19.5 7.61,7.61 0 1 1 55,19.5 z"
+       transform="matrix(1.41,0,0,1.41,-50.3,-8.95)" />
+    <text
+       sodipodi:linespacing="125%"
+       id="text3386"
+       y="25.799999"
+       x="10.95"
+       style="font-size:20px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#a7a7a7;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans Bold"
+       xml:space="preserve"><tspan
+         y="25.799999"
+         x="10.95"
+         id="tspan3388"
+         sodipodi:role="line">=</tspan></text>
   </g>
 </svg>
