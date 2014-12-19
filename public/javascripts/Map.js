@@ -522,7 +522,7 @@ Diplomacy.prototype.toJSON = function() { //save only truly required fields
 Diplomacy.prototype.diploBetween = function(idWizard1, idWizard2) {
 	var diplomacy=Diplomacy.SELF; //diplomacy with targeted place
 	if (idWizard1!=idWizard2) {
-		if (otherPlace.owner==0) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD;
+		if ( (idWizard1==0) || (idWizard2==0) ) diplomacy=Diplomacy.NEUTRAL_NO_WIZARD;
 		else {
 			diplomacy=Math.min(this.supports[idWizard1][idWizard2], this.supports[idWizard2][idWizard1]);
 		}

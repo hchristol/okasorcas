@@ -178,7 +178,6 @@ Tactic.prototype.orderRefresh = function(ctx, ctxOrdersStrength, map) {
 	this.doOrders(null, function(order) { //redraw each order of tactics
 		order.displayOrder(ctx);
 	});
-
 	
 	//display warning on places where current wizard has more than 2 units, and may lose one of it
 	if (CURRENT_WIZARD!=null) for( var i=0; i<map.land.places.length; i++) {
