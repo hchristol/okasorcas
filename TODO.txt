@@ -1,2 +1,3 @@
 - delete units in admin (reset map)
-- md file with tutorial
+- multiple simulations
+

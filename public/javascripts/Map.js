@@ -558,8 +558,8 @@ Incomes.prototype.stocks;
 Incomes.prototype.incomes;
 
 /** default values **/
-Incomes.INITIAL_STOCK = 200;
-Incomes.INITIAL_INCOMES = 0;
+Incomes.INITIAL_STOCK = 100;
+Incomes.INITIAL_INCOMES = 100;
 Incomes.MAX_STOCK = 1000;
 
 /** calculates new incomes values, depending on units on map*/
