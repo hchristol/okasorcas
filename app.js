@@ -627,6 +627,8 @@ app.post('/:game/adminchangeparam',
 			if (isNaN(turnDuration) ) { res.send("turnDuration : invalid number value : " + req.body.turnDuration, 200);	 return; }
 			var turnLastDate = Date.parse(req.body.turnLastDate.replace(/"/g, "")); //delete " if present (bug jade ?)
 			if (isNaN(turnLastDate) ) { res.send("turnLastDate : invalid date value : " + req.body.turnLastDate, 200);	 return; }
+			
+			unitsReset=false; if (req.body.unitsReset=='true') unitsReset=true;
 			diploReset=false; if (req.body.diploReset=='true') diploReset=true;
 			
 			//load map
@@ -643,13 +645,23 @@ app.post('/:game/adminchangeparam',
 				//ai
 				if (req.body.aiEnabled=="true") map.aiEnabled=true;
 				else map.aiEnabled=false;
+				
+				//units reset ?
+				if (unitsReset) { //remove all units on map
+					for (i=0; i<map.land.places.length; i++) {
+						place=map.land.places[i];
+						map.people.removeUnitsIn(place);
+						place.owner=0;
+					}
+				}
+				
 				//diplomacy reset ?
 				if (diploReset) map.diplomacy=new okas.Diplomacy();
 				
 				//save modified map
 				redis.client.set(ficname, JSON.stringify(map), function(err) { 
 					if(err) { console.log(err); res.send("ERROR in save map : " + err); }
-					res.send("OK ! Parameters updated : turnDuration=" + turnDuration + "  ;  turnLastDate=" + req.body.turnLastDate + " ; aiEnabled=" + req.body.aiEnabled + " ; diploReset=" + req.body.diploReset);
+					res.send("OK ! Parameters updated : turnDuration=" + turnDuration + "  ;  turnLastDate=" + req.body.turnLastDate + " ; aiEnabled=" + req.body.aiEnabled + " ; unitsReset=" + req.body.unitsReset + " ; diploReset=" + req.body.diploReset);
 				}); 
 				
 				

@@ -12,45 +12,47 @@ html
 		br
 		br
 		a#editMap(href="adminMapEdit"  )
-			span Editer la carte 
+			span Edit current map
 		br
 		br
 		a#editMap(href="adminMapEdit?newMap=yes"  )
-			span Editer une NOUVELLE carte 
+			span Edit a NEW map 
 		br
 		br
 		a(href="backup.zip")
-			span Sauvegarder ZIP de la partie courante
+			span Save ZIP of current map and game settings
 		br
 		br
 		br
 		span 
-			b Restaurer une sauvegarde dans cette partie (Danger !) :
+			b Restore backup in this game (Danger !) :
 		form#formadmin(action="restore", method="post", enctype="multipart/form-data", autocomplete="off")
 			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
 			input(type='file', accept='.zip', name='zipbackup')
-			input(type="submit", value="Envoyer la carte et ECRASER l'ancienne !", name="ok")
+			input(type="submit", value="Send map/game and ERASE old one !", name="ok")
 		br
 		br
 		span 
-			b Modifier les parametres de la partie :
+			b Change game settings :
 		form#adminchangeparam(action="/" + gameId + "/adminchangeparam", method="post")
 			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
-			p Duree du tour : 
+			p Turn duration (minute, 1440 for a day) : 
 				input(type='number', name='turnDuration', value=turnDuration )
-			p Date de derniere/prochaine resolution (year-month-day...) : 
+			p Date of last resolution (year-month-day...). Next turn will occur at this date plus next turn duration : 
 				input(type="text", name='turnLastDate', value=turnLastDate, size=30)
-			p Activer bots (mettre true pour les activer) : 
+			p Activate bots (beta test, set to true if you want to activate them) : 
 				input(type="text", name='aiEnabled', value=aiEnabled, size=30)
-			p Reinitialiser diplomatie (mettre true pour reinitialiser les statuts diplomatiques) : 
+			p Remove all units on map (set to true to erase) : 
+				input(type="text", name='unitsReset', value='false', size=30)
+			p Erase diplomaty (set to true to erase) : 
 				input(type="text", name='diploReset', value='false', size=30)
-			input(type="submit", value="Valider modification parametres", name="ok")
+			input(type="submit", value="Validate settings", name="ok")
 		br
 		br
 		span 
-			b Liste des joueurs (pour envoi mail et consultation) :
+			b Players list (read only, useful to send mail) :
 		each wizard, i in users
 			div
 				form(action="/" + gameId + "/changeUsers", method="post")
