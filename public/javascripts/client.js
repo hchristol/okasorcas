@@ -132,6 +132,16 @@ var init = function () {
 	itemValidate = AddMenuItem(menuParent, "<b>" + InfoMessages["MenuValidateOrders"] + "</b>" , "menu", function() {
 		MenuSelectItem(this,"menu", "selectedMenu");
 		
+		//this menu can be used to escape simulation mode if it has been enabled
+		if (SIMULATE_VIEW==2) {
+			SIMULATE_VIEW=0;
+			itemValidate.innerHTML=maskedItemValidateText; //return to normal validate menu
+			loadMap();	
+			return;			
+		}
+		
+		//ok, it's normal validation menu 
+		
 		//save json orders
 		var myTactic = null;
 		if (INPUT_ORDER.map.planning != null)  myTactic = INPUT_ORDER.map.planning.tacticOf(CURRENT_WIZARD);
@@ -167,6 +177,7 @@ var init = function () {
 	
 	//simulate orders
 	//after resolution
+	var maskedItemValidateText; //current masked text menu of validation when simulate mode is activated
 	var itemSimulate = AddMenuItem(menuParent, InfoMessages["MenuNextTurn"] , "menu", function() { 
 		MenuSelectItem(this,"menu", "selectedMenu"); 
 	
@@ -175,29 +186,18 @@ var init = function () {
 			SIMULATE_VIEW=0; //required for reloading orders
 			saveMapInCache();
 			SIMULATE_VIEW=2;	
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurnCancel"];	
-			loadMap();	
-			return;
+			
+			//desactivate validation, and set text to quit simulation mode instead of validate orders
+			maskedItemValidateText = itemValidate.innerHTML; //save in memory old text
+			itemValidate.innerHTML=InfoMessages["MenuNextTurnCancel"]; 
+	
 		}
 
-		//no more simulation available : back to actual map
-		if (SIMULATE_VIEW==2) {
-			SIMULATE_VIEW=0;
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurn"];
-			loadMap();	
-			return;			
-		}
+		//apply current order to the displayed map
+		loadMap();	
+		return;
 		
-	/*
-		//see movements
-		if (SIMULATE_VIEW==0) { 
-			saveMapInCache();
-			SIMULATE_VIEW=1;	
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurn"];	
-			loadMap();	
-			return;
-		}
-		
+	/* old option : to see attacks before they are solved
 		//see attacks 
 		if (SIMULATE_VIEW==1) {  
 			SIMULATE_VIEW=0; loadMap(false); //required for reloading orders
@@ -207,15 +207,6 @@ var init = function () {
 			loadMap();	
 			return;
 		}
-
-		//no more simulation available : back to actual map
-		if (SIMULATE_VIEW==2) {
-			SIMULATE_VIEW=0;
-			itemSimulate.innerHTML=InfoMessages["MenuNextTurnBeforeAttack"];
-			loadMap();	
-			return;			
-		}
-		
 	*/
 	
 	} );
