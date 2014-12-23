@@ -1933,9 +1933,12 @@ Unit.strengthOfType = function(typeUnit, terrain, typeOfFight) {
 		return Unit.strengthOfType(null, terrain, typeOfFight ) * 0.5 ; 
 	}
 	if (typeUnit == Unit.TREBUCHET ) {
-		if (terrain==Place.CITY) return 35;
 		if (terrain==Place.SEA) return 1;
-		return 30;
+		var coefTypeFight=1;
+		if (typeOfFight==Fighting.ATTACK) coefTypeFight=0.5 ;
+		if (terrain==Place.CITY) return 35 * coefTypeFight;
+		if (terrain==Place.FOREST) return 20 * coefTypeFight;
+		return 30 * coefTypeFight;
 	}
 	if (typeUnit == Unit.PEASANT ) {
 		if ( (typeOfFight==Fighting.ATTACK) || (typeOfFight==Fighting.DEFENSE) ) return Unit.strengthOfType(null, terrain, typeOfFight ) * 0.25 ; 
@@ -2134,7 +2137,7 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 						if ( (diplomacy==Diplomacy.WAR) || (diplomacy==Diplomacy.SUPPORT_NO) || (diplomacy==Diplomacy.NEUTRAL_NO_WIZARD)  )  if (oldPlace.units!=null) {
 							//if (anotherUnitTerrain==null) console.log( "debug Map.js BEFORE increasing number of non friendly units  stealthDuration= " + stealthDuration);
 							for (var u=0; u<oldPlace.units.length; u++) { //unit slow down when it encounter a increasing number of non friendly units 
-								stealthDuration+= 0.4 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
+								stealthDuration+= 0.75 * Unit.strengthOfType(oldPlace.units[u].type, oldPlace.terrain, Fighting.DEFENSE); 
 							}
 							//if (anotherUnitTerrain==null) console.log( "debug Map.js AFTER increasing number of non friendly units  stealthDuration= " + stealthDuration);
 						}
