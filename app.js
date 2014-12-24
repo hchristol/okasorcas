@@ -263,18 +263,29 @@ app.post('/:game/login',
 );
 //  passport.authenticate('local', { failureRedirect: '/login/' + req.params.game , failureFlash: true}),
 //res.redirect('/' + myGame + '/client');
-  
+ 
+//redirect to admin minimal rescue mode when admin file are corrupted, due to invalid json upload 
+adminRescueMode = function(req, res) {
+	res.render('admin', { title: '!!!!8 ADMIN!!!! RESCUE MODE !!!! CORRUPTED admin file !!!! RESTORE a valid json admin file !!!' + req.params.game , wizard : 0, gameId : req.params.game, users: defaultWizardUser, turnDuration:-1000, turnLastDate:-1000, aiEnabled:''});
+}
+ 
 //client main page (map)
 app.get('/:game/client', //client.index);
 	function(req, res) {
 
 	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
-		var wizardToUser =  JSON.parse( reply ) ;
+		var wizardToUser;
+		try {
+			wizardToUser =  JSON.parse( reply );
+		}
+		catch(err) { adminRescueMode(req,res); return;	} //corrupted admin file ! enable emergency minimal restore admin 
 		
-		if (! req.isAuthenticated() ) 
+		
+		if ( !req.isAuthenticated() )  
 			res.render('client', { title: '!!!!8!!!!  guest - ' + req.params.game , wizard: -1 });
 		else  {
+		
 			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
 			
 			console.log("player " + req.user.username + " is logged as wizard " + idWizard );	
@@ -284,14 +295,20 @@ app.get('/:game/client', //client.index);
 				//authenticated administrator
 				
 				//push passwords and email of global users to the rendered page
-				for (var i=0; i<wizardToUser.length; i++) {
-					var globaluser=findByUsernameInArray(users, wizardToUser[i].username);
-					wizardToUser[i].password=globaluser.password; 
-					wizardToUser[i].email=globaluser.email; 
-				}
+				try {
+					for (var i=0; i<wizardToUser.length; i++) {
+						var globaluser=findByUsernameInArray(users, wizardToUser[i].username);
+						wizardToUser[i].password=globaluser.password; 
+						wizardToUser[i].email=globaluser.email; 
+					}
+				} catch(err) { adminRescueMode(req,res); return;	} //corrupted admin file ! enable emergency minimal restore admin 
+				
 				//add wizard name
 				var okas= require('./public/javascripts/Map.js');
-				for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
+				
+				try {
+					for ( var i=0; i<okas.People.WizardName.length; i++) wizardToUser[i].wizardname=okas.People.WizardName[i];
+				} catch(err) { adminRescueMode(req,res); return;	} //corrupted admin file ! enable emergency minimal restore admin 
 		
 				//read current map to display its parameters
 				redis.client.get( map.jsonfilepath(req.params.game, 0), function(err,reply) {
@@ -315,17 +332,18 @@ app.get('/:game/client', //client.index);
 });
 //map editing
 app.get('/:game/adminMapEdit', function(req, res) {
-
-	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
-		var wizardToUser =  JSON.parse( reply );
+	redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
+
+		wizardToUser =  JSON.parse( reply );
 		
 		if (! req.isAuthenticated() ) 
 			{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
 		else  {
-			console.log("adminMapEdit : connexion de : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
 			
-			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;
+			console.log("adminMapEdit : connection of : " + req.user.username + " ; wizardToUser " + wizardToUser.length );	
+			
 			//authenticated admin
 			if (idWizard==0) 
 				//authenticated player
@@ -464,15 +482,22 @@ app.post('/:game/restore',
 		redis.client.get(req.params.game + ".admin.json", function(err, reply) { //read link between authenticated users and their wizard
 	
 			//allowed ?
-			var wizardToUser =  JSON.parse( reply );
+			var wizardToUser;
+			var emergencyRestore=false;
+			try {
+				wizardToUser =  JSON.parse( reply );
+			}
+			catch(err) { //corrupted admin file ! enable emergency minimal restore admin 
+				emergencyRestore=true;
+			}			
 			
-			
-			if (! req.isAuthenticated() ) 
-				{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
+			if (!emergencyRestore) {
+				if (! req.isAuthenticated() ) 
+					{ res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return;  } 
 
-			var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
-			if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
-			
+				var idWizard = findByUsernameInArray(wizardToUser, req.user.username).id;		
+				if (idWizard!=0) { res.writeHead(200, {'Content-Type': 'text/plain' }); res.end( "Not allowed !" ); return; }	
+			}
 			
 			//data transferred ?
 			if ( req.files.zipbackup.size <= 0 ) {
@@ -488,8 +513,6 @@ app.post('/:game/restore',
 				var zip = new require('node-zip')(data, {base64: false, checkCRC32: true});
 		
 				//restore each file
-				
-				
 				var file_count=0; //to inform that uploading is ok
 				var okas= require('./public/javascripts/Map.js'); 
 				var file_count_complete=4+okas.People.WizardName.length;
