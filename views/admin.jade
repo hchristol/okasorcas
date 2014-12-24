@@ -38,7 +38,7 @@ html
 		form#adminchangeparam(action="/" + gameId + "/adminchangeparam", method="post")
 			input(type="hidden", id="wizardId", value= wizard, name='wizardId')
 			input(type="hidden", id="gameId", value= gameId, name='gameId')
-			p Turn duration (minute, 1440 for a day) : 
+			p Turn duration (minute, 1440 for a day, -2 to have nextturn being forced with ?forced url,  -1 to automaticaly nextturn) : 
 				input(type='number', name='turnDuration', value=turnDuration )
 			p Date of last resolution (year-month-day...). Next turn will occur at this date plus next turn duration : 
 				input(type="text", name='turnLastDate', value=turnLastDate, size=30)

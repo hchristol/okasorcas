@@ -107,8 +107,9 @@ Solve current turn
 nextturn = function (game, map, orders, forceNextTurn) {
 	var message = 'Next turn OK' ;
 	
+	
 	//is it time to solve ?
-	if ( (map.turnDuration!=-1) && ( !forceNextTurn ) ) { //automated next turn and forced next turn disabled
+	if ( (map.turnDuration>0) ) { //automated next turn and forced next turn disabled
 		if (map.isItTimeForNextAutomatedTurn() == false) {
 			message = "map.turnDuration=" + map.turnDuration + " / "  + "No next turn, it's too soon !";
 			console.log( message);
@@ -116,6 +117,11 @@ nextturn = function (game, map, orders, forceNextTurn) {
 		}
 	}
 	
+	if ( (map.turnDuration==-2) && ( !forceNextTurn )  ) {
+		message = "map.turnDuration=" + map.turnDuration + " / "  + "No next turn : it has to be forced (url...?forced) !";
+		console.log( message);
+		return message;	
+	}
 	
 	
 	//saveMap(map, "map" + leftPad(map.turnNumber, 4) + ".json"); //save map before solving its orders, as an archive file
@@ -126,7 +132,7 @@ nextturn = function (game, map, orders, forceNextTurn) {
 	map.terminateOrders();
 	
 	//incremente date of next turn until it becomes too soon for next turn
-	if (map.turnDuration!=-1) while(map.isItTimeForNextAutomatedTurn()) map.turnLastDate = new Date(map.turnLastDate.getTime() + (map.turnDuration * 60000) ) ;
+	if (map.turnDuration>0) while(map.isItTimeForNextAutomatedTurn()) map.turnLastDate = new Date(map.turnLastDate.getTime() + (map.turnDuration * 60000) ) ;
 	
 	saveToJson(game, map, "map.json"); //saved as new current map
 	
