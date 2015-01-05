@@ -676,6 +676,7 @@ app.post('/:game/adminchangeparam',
 						map.people.removeUnitsIn(place);
 						place.owner=0;
 					}
+					map.history=null; //no units, no history
 				}
 				
 				//diplomacy reset ?
