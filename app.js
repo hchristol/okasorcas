@@ -677,6 +677,9 @@ app.post('/:game/adminchangeparam',
 						place.owner=0;
 					}
 					map.history=null; //no units, no history
+					map.spells=new okas.LearnedSpells(); //reset spells
+					map.incomes = new okas.Incomes(); //reset incomes
+					map.incomes.updateIncomes(map);
 				}
 				
 				//diplomacy reset ?
