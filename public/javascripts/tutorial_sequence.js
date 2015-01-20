@@ -44,8 +44,11 @@ var tutorialNextTimer = function() {
 	//recruiting
 	if ( TUTO_MAP_COUNT == 1 ) {
 		nextMessage( "2ème TOUR : voici la carte\ndu lendemain\n\nEnnemis en vue !");
+		nextMessage( "Mon mage doit choisir son action");
+		nextClick(581,226); 
+		nextMessage( "A chaque tour, il peut soit recruter,\n soit se déplacer,\nsoit lancer un sort");
 		nextMessage( "Je vais recruter\nde nouvelles armées");
-		nextClick(581,226); nextMenu(InfoMessages["MenuRecruit"]); 
+		nextMenu(InfoMessages["MenuRecruit"]); 
 		nextMessage( "Les ronds m'indiquent où je peux recruter :\nsur les territoires proches de mon mage\n\nJe peux recruter jusqu'à\n4 UNITES à la fois");
 		nextClick(528,190); nextClick(513,238); 
 		
