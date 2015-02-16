@@ -785,11 +785,11 @@ LearnedSpells.strength = function(terrain) {
 	var baseStrength=Unit.strengthOfType(null, Place.PLAIN, Fighting.ATTACK );
 	if (terrain==Place.PLAIN) return Math.round(baseStrength * 1.2);
 	if (terrain==Place.FOREST) return Math.round(baseStrength * 2);
-	if (terrain==Place.SEA) return Math.round(baseStrength * 3);
-	if (terrain==Place.MOUNTAIN) return Math.round(baseStrength * 4);
-	if (terrain==Place.DESERT) return Math.round(baseStrength * 3);
+	if (terrain==Place.SEA) return Math.round(baseStrength * 3.1);
+	if (terrain==Place.MOUNTAIN) return Math.round(baseStrength * 3);
+	if (terrain==Place.DESERT) return Math.round(baseStrength * 2.8);
 	if (terrain==Place.CITY) return Math.round(baseStrength * 1.1);
-	if (terrain==Place.VOLCANO) return Math.round(baseStrength * 3);
+	if (terrain==Place.VOLCANO) return Math.round(baseStrength * 3.2);
 	if (terrain==Place.HILL) return Math.round(baseStrength * 1.5);
 	return Math.round(baseStrength * 1);	
 }
