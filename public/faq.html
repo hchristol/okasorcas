@@ -1,17 +1,40 @@
-﻿<html>
-    <head>
-		 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>FAQ</title>
+﻿<!DOCTYPE html>
+	<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=0.5, user-scalable=yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>L8S FAQ</title><link rel="stylesheet" href="/stylesheets/login.css">
     </head>
     <body>
-        <h1>FAQ sur le jeu</h1>
-		<h2>Est-ce que mon magicien peut se déplacer et recruter pendant le même tour ?</h2>
-		Non. Un seul ordre est possible à la fois. Cela rend les armées encore plus précieuses : perdre des armées signifie perdre du temps.
-		<h2>Je ne comprends ce qui s'est passé au tour précédent. Comment en savoir plus ?</h2>
-		Sélectionner le menu 'tour précédent' : vous verrez la carte du tour d'avant, avec les déplacements et les forces de chacun affichées lors des combats.
-		<h2>Comment connaître les sorts appris par un mage ?</h2>
+        <h1><image src="/images/color0.png"></image> FAQ sur le jeu <image src="/images/color0.png"/></h1>
+		
+		<h2>Interface du jeu</h2>
+		<h3>Je ne vois pas le menu du jeu sur mon téléphone</h3>
+		Sur les périphérique mobiles, le menu du jeu est replié pour ne pas masquer la carte. Appuyer sur le bouton <input type='button' value='+'/> qui apparait en bas à droite pour accéder au menu.
+		<h3>Comment connaître les sorts <image src="/images/tower.png"/>appris par un mage ?</h3>
 		Cliquer sur le mage dans la carte et sélectionner le menu 'sorts connus' : les lieux sur lesquels un sort est appris seront affichés.
-		<h2>Je n'ai pas joué au tour précédent mais mon mage a quand même passé des ordres !</h2>
-		Si l'option IA est activée sur la partie, le serveur joue pour les mages qui n'ont pas passés d'ordre. Pour le meilleur ou pour le pire !
+		<h3>C'est quoi ces ronds de couleur <image src="/images/wizardDiplo-1.png"/> <image src="/images/wizardDiplo1.png"/> <image src="/images/wizardDiplo2.png"/> qui apparaissent sous les mages ?</h3>
+		Ca affiche le statut diplomatique de chaque mage : neutre=rond jaune ; guerre=rond rouge; paix=rond vert.
+		Pour une info complète sur la diplomatie, cliquer sur le menu 'Diplomatie entre mage'.
+		<h3>Le menu du mage n'apparait pas lorsque je clique sur mon mage</h3>
+		Bug récurrent, désolé. Pour le moment, on le contourne en cliquant plusieurs fois sur le mage, ou en sélectionnant une autre unité sur la carte.		
+		<br>
+		<h3>Je ne comprends ce qui s'est passé au tour précédent. Comment en savoir plus ?</h3>
+		Sélectionner le menu 'tour précédent' : vous verrez la carte du tour d'avant, avec les déplacements et les forces de chacun affichés lors des combats.
+		<h3>Peut-on simuler plusieurs tours de jeu ?</h3>
+		Oui : il suffit de cliquer plusieurs fois sur le menu 'Simuler la bataille !' ; entre chaque simulation, il suffit de saisir ses ordres.
+		Pour revenir au ordres courant, cliquer sur le menu 'Réafficher ordres actuels'
+		<h3>Je n'ai pas joué au tour précédent mais mon mage a quand même passé des ordres !</h3>
+		Le serveur joue pour les mages qui n'ont pas passés d'ordre : en effet, si les 8 mages ne sont pas actifs, le jeu est déséquilibré. 
+		
+		<h2>Règles du jeu</h2>
+		<h3>Je me suis réincarné et je suis déjà mort <image src="/images/reincarnation.png"/><image src="/images/diplo-1.png"/></h3>
+		Si on se réincarne au même endroit qu'un autre, les deux mages, de forces égales, meurent. Mieux vaut se réincarner un peu à l'écart des endroits trop convoités.
+		<h3>Est-ce que mon magicien peut se déplacer et recruter pendant le même tour ?</h3>
+		Non. Un seul ordre est possible à la fois. Cela rend les armées encore plus précieuses : perdre des armées signifie perdre du temps.
+		<h3>Les territoires possédés ne servent-ils qu'à gagner de l'argent <image src="/images/crystal.png"/> ?</h3>
+		Pas seulement : on se déplace plus rapidement sur les territoires que l'on possède. 
+		<h3>Je ne peux pas bloquer un ennemi car il passe au travers de mes armées !</h3>
+		Non, car une unité hostile qui traverse mes armées épuise sa force bien plus rapidement qu'une unité traversant un territoire vide. 
+		<h3>Je n'arrive pas à capturer les territoires d'un joueur allié <image src="/images/diplo2.png"/></h3>
+		Normal : lorsqu'on traverse un territoire allié, on n'en prend pas possession. En contrepartie, l'unité traversant un territoire allié s'épuise beaucoup moins vite, exactement comme si elle traversait son propre territoire.
     </body>
 </html>
