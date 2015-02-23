@@ -234,7 +234,7 @@ Land.prototype.draw = function(layer){
 			textSize = lb[0].length * fontSize / 3 ;
 			//add some spaces to extend text
 			spacesToAdd=Math.round(Math.log(curveSize/textSize)) ;
-			console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize + "  spacesToAdd =" +  spacesToAdd);
+			//console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize + "  spacesToAdd =" +  spacesToAdd);
 			for( var ispace = 1; ispace <= spacesToAdd; ispace++ ) {
 				lb[0]=lb[0].split('').join(' '); 
 			}
@@ -242,7 +242,7 @@ Land.prototype.draw = function(layer){
 			//and increase text size to adust on curve
 			if (curveSize > textSize )  
 				fontSize = 11 + (curveSize - textSize)/25;
-			console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize);
+			//console.log("curveSize=" + curveSize + "  textSize=" + textSize + "  fontSize=" + fontSize);
 			
 			if (lb[3]==0) {  //halo
 			

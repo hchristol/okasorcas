@@ -8,7 +8,8 @@
 		
 		<h2>Interface du jeu</h2>
 		<h3>Je ne vois pas le menu du jeu sur mon téléphone</h3>
-		Sur les périphérique mobiles, le menu du jeu est replié pour ne pas masquer la carte. Appuyer sur le bouton <input type='button' value='+'/> qui apparait en bas à droite pour accéder au menu.
+		Sur les périphérique mobiles, le menu du jeu est replié pour ne pas masquer la carte. Il positionner le téléphone en mode paysage. 
+		Appuyer sur le bouton <input type='button' value='+'/> qui apparait en bas à droite pour accéder au menu.
 		<h3>Comment connaître les sorts <image src="/images/tower.png"/>appris par un mage ?</h3>
 		Cliquer sur le mage dans la carte et sélectionner le menu 'sorts connus' : les lieux sur lesquels un sort est appris seront affichés.
 		<h3>C'est quoi ces ronds de couleur <image src="/images/wizardDiplo-1.png"/> <image src="/images/wizardDiplo1.png"/> <image src="/images/wizardDiplo2.png"/> qui apparaissent sous les mages ?</h3>
@@ -23,9 +24,15 @@
 		Oui : il suffit de cliquer plusieurs fois sur le menu 'Simuler la bataille !' ; entre chaque simulation, il suffit de saisir ses ordres.
 		Pour revenir au ordres courant, cliquer sur le menu 'Réafficher ordres actuels'
 		<h3>Je n'ai pas joué au tour précédent mais mon mage a quand même passé des ordres !</h3>
-		Le serveur joue pour les mages qui n'ont pas passés d'ordre : en effet, si les 8 mages ne sont pas actifs, le jeu est déséquilibré. 
+		Le serveur joue pour les mages qui n'ont pas passé d'ordres : en effet, si les 8 mages ne sont pas actifs, le jeu est déséquilibré. 
 		
 		<h2>Règles du jeu</h2>
+		<h3>Qu'est ce qui fixe la force d'une unité ?</h3>
+		<ul>
+			<li> Le type du terrain sur lequel se déroule le combat </li>
+			<li> Le rôle de l'unité dans le combat : attaquant (se déplaçant vers l'unité), défenseur (immobile), ou soutien (territoire adjacent) </li>
+			<li> La fatigue de l'unité : plus l'unité s'est déplacé, plus elle a traversé de territoires hostiles, plus elle a croisé d'unités ennemies, et plus sa force s'épuise. </li>
+		</ul>
 		<h3>Je me suis réincarné et je suis déjà mort <image src="/images/reincarnation.png"/><image src="/images/diplo-1.png"/></h3>
 		Si on se réincarne au même endroit qu'un autre, les deux mages, de forces égales, meurent. Mieux vaut se réincarner un peu à l'écart des endroits trop convoités.
 		<h3>Est-ce que mon magicien peut se déplacer et recruter pendant le même tour ?</h3>

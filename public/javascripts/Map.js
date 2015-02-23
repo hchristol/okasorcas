@@ -1178,6 +1178,8 @@ Land.prototype.size = function() {
 **/
 Land.prototype.graphInitByDistance = function(removeCrossingNeighbors){
 
+	console.log("Map.js : graphInitByDistance" );
+	
 	this.neighbors= new Array();
 	for(var i=0; i<this.places.length;i++) {
 		var countNeighbor = 0;
@@ -1187,21 +1189,27 @@ Land.prototype.graphInitByDistance = function(removeCrossingNeighbors){
 		
 			if (i==j) continue; //not neighbor of itself !
 			
+			var dist_ij=this.places[i].position.distance(this.places[j].position);
+			//warning if too close place
+			if ( dist_ij <=  Place.NEIGHBOR_MAX_INTER_DISTANCE * 0.4 ) {
+				console.log("Places " + i + " and " + j + " are too close !! dist_ij = " + dist_ij );
+			}
+			
 			var neighborOk=false; 
 			
-			if ( this.places[i].position.distance(this.places[j].position) <= Place.NEIGHBOR_MAX_INTER_DISTANCE ) {
+			if ( dist_ij <= Place.NEIGHBOR_MAX_INTER_DISTANCE ) {
 				neighborOk=true;
 			} 
 			else { 
 			
 				//for sea terrain, allow greater distance for neighbors (and even more if both are seas)
 				if ( ( this.places[i].terrain == Place.SEA ) || ( this.places[j].terrain == Place.SEA )  ) {
-					if ( this.places[i].position.distance(this.places[j].position) <=  Place.NEIGHBOR_MAX_INTER_DISTANCE * 1.5 ) {
+					if ( dist_ij <=  Place.NEIGHBOR_MAX_INTER_DISTANCE * 1.5 ) {
 						neighborOk=true;
 					}
 				}
 				if ( ( this.places[i].terrain == Place.SEA ) && ( this.places[j].terrain == Place.SEA )  ) {
-					if ( this.places[i].position.distance(this.places[j].position) <=  Place.NEIGHBOR_MAX_INTER_DISTANCE * 3 ) {
+					if ( dist_ij <=  Place.NEIGHBOR_MAX_INTER_DISTANCE * 3 ) {
 						neighborOk=true;
 					}
 				}
