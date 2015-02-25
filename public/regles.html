@@ -15,7 +15,7 @@
 		<h2>Elements du jeu</h2>
 		Chaque joueur possède :
 		<ul>
-			<li>Un mage <image src="/images/unit60.png"/>  </li>
+			<li>Un mage, qui est l'unité initiale du joueur sur la carte.<image src="/images/unit60.png"/>  </li>
 			<li>Des territoires, représentant les terres conquises par le mage</li>
 			<li>Des unités, représentant les armées du mages <image src="/images/unit1.png"/> <image src="/images/unit2.png"/> <image src="/images/unit3.png"/> ...   Il y a un <b>maximum de deux unités par territoire</b></li>
 			<li>Des cristaux, représentant la richesse du mage <image src="/images/crystal.png"/>. Les revenus du mage dépendent du nombre de territoires possédés, ses dépenses augmentent avec le nombre d'armées possédées</li>
@@ -25,9 +25,10 @@
 		</ul>
 		
 		<h2>Début de partie</h2>
-		Au départ, chaque mage doit apparaitre sur un territoire de son choix. Il faut passer un ordre de réincarnation : 
-		on n'a le droit qu'à un ordre de réincarnation à la fois. 
-		Si deux mages se réincarnent au même endroit, ils meurent tous les deux.
+		Au départ, la carte est vide de toute unité : chaque mage peut choisir d'apparaitre sur un territoire de son choix. Il faut pour cela passer un ordre de réincarnation.
+		<br><br>
+		Le mage n'a le droit qu'à un ordre de réincarnation à la fois. 
+		Si deux mages se réincarnent au même endroit, ils meurent tous les deux. Il faut dans ce cas repasser un ordre de réincarnation. 
 		
 		<h2>Ordres possibles</h2>
 		Une fois le magicien réincarné, il peut effectuer les ordres suivants :
@@ -36,7 +37,9 @@
 			<li><b>Recruter </b>des unités : le mage peut recruter <b>jusqu'à 4 unités</b>, dans la mesure de ses moyens</li>
 			<li><b>Lancer un sortilège</b> : un sortilège permet soit de se déplacer, soit d'attaquer à distance</li>
 		</ul>		
-		Les unités du mage peuvent effectuer un seul type d'ordre : le déplacement
+		Les unités du mage peuvent effectuer un seul type d'ordre : le déplacement.
+		Le mage ne peut pas valider des ordres qui impliqueraient que de ses territoires se retrouvent avec plus de deux unités.
+		
 		
 		<h2>Recrues</h2>
 		Le mage peut recruter sur les territoires adjacents à son territoire, ou sur son propre territoire.
@@ -51,15 +54,35 @@
 		D'autres facteurs contribuent à l'épuisement de l'unité :
 		<ul>
 			<li>Traverser des territoires ennemis plutôt qu'à soi-même épuise l'unité.</li>
-			<li>Plus les territoires traversés contiennent d'armées ennemis fortes et plus l'unité s'épuise : c'est la capacité de blocage. 
-			Attention : que l'unité ennemie se déplace ou pas pendant le tour ne change rien à sa capacité de bloquage. A l'inverse, une unité en mouvement n'a aucune capacité de blocage sur son territoire de destination.</li>
+			<li>Plus les territoires traversés contiennent d'armées ennemis fortes et plus l'unité s'épuise : c'est la <b>capacité de blocage</b>. 
+			Attention : que l'unité ennemie se déplace ou pas pendant le tour ne change rien à sa capacité de bloquage ; seule compte sa position initiale sur la carte. A l'inverse, une unité en mouvement n'a aucune capacité de blocage sur son territoire de destination.</li>
 		</ul>	
 		
 		<h2>Combats</h2>
+		Il y a un combat lorsque, suite à leur différents déplacements, des unités appartenant à des mages différents se retrouvent sur le même territoire.
+		Lorsque c'est le cas, c'est le camp qui a la plus grande force qui remporte la bataille. 
+		<br><br>
+		On calcule la force de chaque camp en faisant la somme des forces des différentes unités impliquées dans le combat et appartenant au mage impliqué dans le conflit :
+		<ul>
+			<li>Force des unités en <b>attaque</b> : ce sont les unités en mouvement qui finissent leur déplacement sur le territoire en conflit.
+			<li>Force des unités en <b>défense</b> : ce sont les unités immobiles qui se trouvent sur le territoire en conflit.
+			<li>Force des unités en <b>soutien</b> : ce sont les unités qui se trouvent sur les territoires <b>adjacents</b>au conflit. Ces unités peuvent appartenir à des alliés du mage impliqué dans le conflit, dès lors que ces alliés ne sont pas eux-même partie prenante dans ce conflit (auquel cas ils ont leur propre camp). 
+		</ul>
+		La distinction entre force en attaque, défense et soutien est importante car une même unité peut avoir des forces différente (voir le tableau des terrains et unités). Un pillard sera par exemple nettement plus fort en attaque qu'en défense, un paysan sera nul en attaque et défense mais sera bon en soutien (approvisionnement).
+	
+		<h2>Conquête des territoires non défendus</h2>
+	
+		<h2>Terrains et unités du jeu</h2>
+		<b>Revenus</b> : chaque terrain possédé rapporte plus ou moins de cristaux. <br>
+		<b>Durée indicative d'un déplacement</b>Chaque terrain est <i>a priori</i> plus ou moins propice aux déplacements. La durée indiquée, par exemple pour 3 jours, signifie qu'en un tour (soit 30 jours fictifs), et sauf spécificité de l'unité, une unité sera complètement épuisée après avoir traversé 10 territoires de ce type de terrain (pour un terrain de taille moyenne).
+		<br>
+		Chaque unité est recrutée sur un type de terrain particulier.
+<table border="1"><tr><th>Terrain</th><th>Revenus</th><th>Durée indicative d'un déplacement <br> (1 tour = 1 mois virtuel)</th><th>Unité recrutée<br>Coût, forces et faiblesses</th><th>Attaque magique <br> lancée par le mage</th></tr><tr><td>Mer<img src="./images/terrain0.png"></td><td>12 cristaux/tour</td><td>3 jours</td><td>Corsaire <img src="images/unit0.png"> 35 cristaux/tour<br>Fort et rapide sur mer. Faible et lent ailleurs.</td><td>Distante <br> Force : 31<br>550  de portée</td></tr><tr><td>Désert<img src="./images/terrain1.png"></td><td>8 cristaux/tour</td><td>2 jours</td><td>Pillard <img src="images/unit1.png"> 45 cristaux/tour<br>Force en attaque augmentée, force en soutien diminuée.</td><td>Distante <br> Force : 28<br>350  de portée</td></tr><tr><td>Montagne<img src="./images/terrain2.png"></td><td>10 cristaux/tour</td><td>6 jours</td><td>Nain <img src="images/unit2.png"> 45 cristaux/tour<br>Rapide et fort sur les montagnes et volcans.</td><td>Distante <br> Force : 30<br>500  de portée</td></tr><tr><td>Forêt<img src="./images/terrain3.png"></td><td>12 cristaux/tour</td><td>3 jours</td><td>Elfe <img src="images/unit3.png"> 45 cristaux/tour<br>Rapide en forêt. Force augmentée en défense et en soutien.</td><td>Mouvement <br> Force : 20<br>300  de portée</td></tr><tr><td>Plaine<img src="./images/terrain4.png"></td><td>16 cristaux/tour</td><td>2 jours</td><td>Cavalier <img src="images/unit4.png"> 45 cristaux/tour<br>Rapidité augmentée partout, sauf sur mer. Force en attaque augmentée sur plaine et désert.</td><td>Mouvement <br> Force : 12<br>200  de portée</td></tr><tr><td>Cité<img src="./images/terrain5.png"></td><td>30 cristaux/tour</td><td>2 jours</td><td>Trébuchet <img src="images/unit5.png"> 55 cristaux/tour<br>Fort en défense et soutien. Encore meilleur sur les Cités. Faible en forêt et inefficace sur mer. Très lent.</td><td>Mouvement <br> Force : 11<br>600  de portée</td></tr><tr><td>Volcan<img src="./images/terrain6.png"></td><td>8 cristaux/tour</td><td>7 jours</td><td>Dragon <img src="images/unit6.png"> 395 cristaux/tour<br>Unité volante, rapide et forte partout. Inefficace cependant en soutien.</td><td>Distante <br> Force : 32<br>500  de portée</td></tr><tr><td>Colline<img src="./images/terrain7.png"></td><td>14 cristaux/tour</td><td>4 jours</td><td>Paysan <img src="images/unit7.png"> 35 cristaux/tour<br>Unité peu onéreuse, faible en attaque et défense, mais utile en soutien. Un peu lente.</td><td>Mouvement <br> Force : 15<br>250  de portée</td></tr></table >
+
+		<h2>Mort d'un mage</h2>
+		Le mage peut se réincarner
 		
-		
-		
-		
+		<h2>Ruine d'un mage</h2>
 	
     </body>
 </html>
