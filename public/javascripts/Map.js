@@ -2089,6 +2089,8 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 	
 	if ( (order==null) || (order.parameters.places==null) || (order.parameters.places.length==0) ) {
 		if (typeOfFight==null) typeOfFight = Fighting.DEFENSE;
+		//debug : seems that every recruit are set here
+		//console.log("debug Unit.prototype.strength Fighting.DEFENSE;");
 		if (anotherUnitTerrain == null) 
 			strength=Unit.strengthOfType(this.type, this.place.terrain, typeOfFight); 
 		else strength=Unit.strengthOfType(this.type, anotherUnitTerrain, typeOfFight ); 
@@ -2098,6 +2100,7 @@ Unit.prototype.strength = function(map, order, anotherUnitTerrain, typeOfFight )
 		
 		//RECRUIT : strength 
 		if (order.type==Act.RECRUIT) {
+			//debug : never reached ? console.log("debug Unit.prototype.strength RECRUIT Fighting.ATTACK;");
 			strength=Unit.strengthOfType(this.type, anotherUnitTerrain, Fighting.ATTACK);
 		}
 		
