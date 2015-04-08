@@ -357,6 +357,14 @@ ClientOrders.prototype.selectPlace = function( place ) {
 			return; 		
 		}
 		
+		//max recruit already reached ? End of order (fix 2015-04-08)
+		if (this.currentOrder.parameters.places.length>= Act.MAX_RECRUIT_PER_TURN ) {
+			ClientOrders.CURRENT_ORDER_CAN_BE_CANCELED=true;
+			this.resetOrder(); //ready for another order	
+			return;
+		}
+		
+		
 		this.currentOrder.parameters.places.push(place); //add  place 
 		
 
@@ -372,7 +380,6 @@ ClientOrders.prototype.selectPlace = function( place ) {
 		if (this.currentOrder.parameters.places.length>= Act.MAX_RECRUIT_PER_TURN ) {
 			ClientOrders.CURRENT_ORDER_CAN_BE_CANCELED=true;
 			this.resetOrder(); //ready for another order	
-			
 		}
 	
 		//show the money earned by wizard :
