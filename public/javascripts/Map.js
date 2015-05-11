@@ -1,4 +1,4 @@
-﻿
+
 
 /**
 * Map! of the game. 
@@ -1941,12 +1941,13 @@ Unit.strengthOfType = function(typeUnit, terrain, typeOfFight) {
 		return Unit.strengthOfType(null, terrain, typeOfFight ) * 0.5 ; 
 	}
 	if (typeUnit == Unit.TREBUCHET ) {
-		if (terrain==Place.SEA) return 1;
+		if ( (terrain==Place.SEA) && (typeOfFight==Fighting.ATTACK) ) return 1; 
 		var coefTypeFight=1;
 		if (typeOfFight==Fighting.ATTACK) coefTypeFight=0.5 ;
 		if (terrain==Place.CITY) return 35 * coefTypeFight;
-		if (terrain==Place.FOREST) return 20 * coefTypeFight;
-		return 30 * coefTypeFight;
+		if ( (terrain==Place.FOREST) ||  (terrain==Place.SEA) ) return 20 * coefTypeFight;
+        if (terrain==Place.MOUNTAIN) return 15 * coefTypeFight;
+		return 25 * coefTypeFight;
 	}
 	if (typeUnit == Unit.PEASANT ) {
 		if ( (typeOfFight==Fighting.ATTACK) || (typeOfFight==Fighting.DEFENSE) ) return Unit.strengthOfType(null, terrain, typeOfFight ) * 0.25 ; 

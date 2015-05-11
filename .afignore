@@ -1,0 +1,4 @@
+# ignored directory when update app
+# games/test/
+# design/
+.git/
