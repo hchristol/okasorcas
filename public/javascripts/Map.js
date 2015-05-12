@@ -1959,7 +1959,10 @@ Unit.strengthOfType = function(typeUnit, terrain, typeOfFight) {
 	}
 	
 	//special magic unit strength
-	if (typeUnit == Unit.MAGIC_ATTACK ) return LearnedSpells.strength(terrain);
+	if (typeUnit == Unit.MAGIC_ATTACK ) {
+        if (typeOfFight==Fighting.SUPPORT) return LearnedSpells.strength(terrain) * 0.5 ;
+        return LearnedSpells.strength(terrain);
+    }
 	
 	//default strength factor : depend only of terrain and type of attack
 	if (terrain==Place.PLAIN) return 10;
