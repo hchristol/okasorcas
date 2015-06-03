@@ -1942,10 +1942,12 @@ Unit.strengthOfType = function(typeUnit, terrain, typeOfFight) {
 	}
 	if (typeUnit == Unit.TREBUCHET ) {
 		if ( (terrain==Place.SEA) && (typeOfFight==Fighting.ATTACK) ) return 1; 
+        if ( (terrain==Place.SEA) && (typeOfFight==Fighting.DEFENSE) ) return 3; 
+        if ( (terrain==Place.SEA) && (typeOfFight==Fighting.SUPPORT) ) return 10; 
 		var coefTypeFight=1;
 		if (typeOfFight==Fighting.ATTACK) coefTypeFight=0.5 ;
 		if (terrain==Place.CITY) return 35 * coefTypeFight;
-		if ( (terrain==Place.FOREST) ||  (terrain==Place.SEA) ) return 20 * coefTypeFight;
+		if ( terrain==Place.FOREST ) return 20 * coefTypeFight;
         if (terrain==Place.MOUNTAIN) return 15 * coefTypeFight;
 		return 25 * coefTypeFight;
 	}
