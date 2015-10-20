@@ -1,7 +1,7 @@
 # Okasorcas
 Okasorcas is a turn by turn / day by day strategic game 
 
-![Okasorcas](/public/images/map_sample.PNG)
+![Okasorcas](/public/images/map_sample.png)
 
 See tutorial (in french) [here](http://okasorcas.eu01.aws.af.cm/tutorial)
 
