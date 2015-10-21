@@ -1,4 +1,4 @@
-﻿/**
+/**
 Create orders for IA (bots) players
 okas : namespace for Map, Land, etc... (node compatibility)
 **/
@@ -94,8 +94,16 @@ Bots.prototype.getOrders= function( idWizard ) {
 		var unit=this.map.people.units[i];
 		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
 			
-			if (bodygards<this.map.spells.count(unit.owner)/2 ) { //the more the wizard have spell, the more he require protection
-				order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); //destination : place around targeted place by wizard
+			if (bodygards< (1 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
+                if ( (unit.type == this.okas.Unit.DRAGON) || (unit.type == this.okas.Unit.PLUNDERER ) )
+                    order = this.randomDestination( unit, targetPlace); //dragon and plunderer are not quite good on support
+				else //destination : place around targeted place by wizard, good if unit are quite good on support 
+                    if (unit.type == this.okas.Unit.PEASANT) //unit better on support
+                        order = this.randomDestination( unit, this.randomPlace(targetPlace, false) ); 
+                    else //unit quite as good in support or defense
+                        order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); 
+                
+                
 				bodygards++;
 			} else { //enough unit beside wizard : let's explore the world !
 				
