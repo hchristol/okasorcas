@@ -1,4 +1,4 @@
-﻿
+
 var fs = require('fs');
 //client shared lib
 var okas= require('./../public/javascripts/Map.js');
@@ -85,7 +85,7 @@ exports.proceedNextTurn = function(game, forceNextTurn, res) {
 					//bot enter its orders	
 					var tactic = ia.getOrders(iOrder);
 					init.orders.acts = init.orders.acts.concat( tactic.acts );
-					console.log("nombre ordres du bot " + iOrder + " = " + tactic.acts.length);		
+					//console.log("nombre ordres du bot " + iOrder + " = " + tactic.acts.length);		
 				
 				}
 				

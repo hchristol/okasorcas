@@ -94,7 +94,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 		var unit=this.map.people.units[i];
 		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
 			
-			if (bodygards< (2 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
+			if (bodygards< (1 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
                 if ( (unit.type == this.okas.Unit.DRAGON) || (unit.type == this.okas.Unit.PLUNDERER ) )
                     order = this.randomDestination( unit, targetPlace); //dragon and plunderer are not quite good on support
 				else //destination : place around targeted place by wizard, good if unit are quite good on support 
@@ -103,13 +103,16 @@ Bots.prototype.getOrders= function( idWizard ) {
                     else //unit quite as good in support or defense
                         order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); 
                 
-                
-                if (targetPlace.terrain == this.okas.Place.SEA) { //sea are special placse where only fleets are strong
-                    if (unit.type == this.okas.Unit.CORSAIR) bodygards++;
-                    else bodygards+=0.5; //others than fleet are of some poor protection
-                } else {
-                    if (unit.type == this.okas.Unit.CORSAIR) bodygards+=0.5; //on earth fleet are useless
-                    else bodygards++;                    
+                if (order!=null) {
+                    if (order.destination().id == targetPlace.id) { //unit can be a bodyguard
+                        if (targetPlace.terrain == this.okas.Place.SEA) { //sea are special placse where only fleets are strong
+                            if (unit.type == this.okas.Unit.CORSAIR) bodygards++;
+                            else bodygards+=0.5; //others than fleet are of some poor protection
+                        } else {
+                            if (unit.type == this.okas.Unit.CORSAIR) bodygards+=0.5; //on earth fleet are useless
+                            else bodygards++;                    
+                        }
+                    }
                 }
             
 			} else { //enough unit beside wizard : let's explore the world !
@@ -126,6 +129,8 @@ Bots.prototype.getOrders= function( idWizard ) {
 			
 		}
 	}
+    
+    console.log("Bots of wizard " + idWizard + " : bodygards = " + bodygards );
 	
 	//diplomatic support ?
 	for (var idWizard2=1; idWizard2<this.okas.People.WIZARD_COUNT; idWizard2++) {
