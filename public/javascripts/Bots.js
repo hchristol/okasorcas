@@ -94,7 +94,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 		var unit=this.map.people.units[i];
 		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
 			
-			if (bodygards< (1 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
+			if (bodygards< (2 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
                 if ( (unit.type == this.okas.Unit.DRAGON) || (unit.type == this.okas.Unit.PLUNDERER ) )
                     order = this.randomDestination( unit, targetPlace); //dragon and plunderer are not quite good on support
 				else //destination : place around targeted place by wizard, good if unit are quite good on support 
@@ -104,10 +104,17 @@ Bots.prototype.getOrders= function( idWizard ) {
                         order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); 
                 
                 
-				bodygards++;
+                if (targetPlace.terrain == this.okas.Place.SEA) { //sea are special placse where only fleets are strong
+                    if (unit.type == this.okas.Unit.CORSAIR) bodygards++;
+                    else bodygards+=0.5; //others than fleet are of some poor protection
+                } else {
+                    if (unit.type == this.okas.Unit.CORSAIR) bodygards+=0.5; //on earth fleet are useless
+                    else bodygards++;                    
+                }
+            
 			} else { //enough unit beside wizard : let's explore the world !
 				
-				order = this.randomDestination( unit, this.nearestPlaceForIncomes(unit.place, unit.owner) ); 
+				order = this.randomDestination( unit, this.nearestPlaceForIncomes(unit.place, unit.owner, unit.type) ); 
 			}
 			
 			if (order!=null) {
@@ -213,9 +220,11 @@ Bots.prototype.nearestTower = function( placeFrom, idWizard ) {
 }
 
 /** return the nearest empty place good to increase incomes **/
-Bots.prototype.nearestPlaceForIncomes = function( placeFrom, idWizard ) {
+Bots.prototype.nearestPlaceForIncomes = function( placeFrom, idWizard, unitType ) {
 	var placeToGo=null;
 	var distMin=null;
+    var isOnPreferredTerrain=false;
+    var newIsOnPreferredTerrain=false;
 	for (var i=0; i<this.map.land.places.length; i++) {
 		var place=this.map.land.places[i];
 		
@@ -223,12 +232,24 @@ Bots.prototype.nearestPlaceForIncomes = function( placeFrom, idWizard ) {
 		if (place.owner==idWizard) continue; //already owned
 		if (place.units!=null)  if (place.units.length>0) continue; //crowded place
 				
+        //typeRecruitedOn
+        
+        //am I where I like to be ?
+        newIsOnPreferredTerrain=(this.okas.Unit.typeRecruitedOn(place.terrain)==unitType);
+        
 		if (placeToGo==null) { //first place found 
 			placeToGo=place; 
 			distMin=placeFrom.position.distance(placeToGo.position); 
+            isOnPreferredTerrain=newIsOnPreferredTerrain; 
 			continue; 
 		}
-		if (placeFrom.position.distance(place.position)<distMin) { //nearer place
+        
+		if ( //get more importance on place that are preffered by unit
+                (isOnPreferredTerrain && newIsOnPreferredTerrain && (placeFrom.position.distance(place.position)<distMin) ) 
+            ||  (!isOnPreferredTerrain && newIsOnPreferredTerrain && (placeFrom.position.distance(place.position)<distMin*2) ) 
+            ||  (isOnPreferredTerrain && !newIsOnPreferredTerrain && (placeFrom.position.distance(place.position)<distMin/2) ) 
+           ) 
+        { //nearer place
 			placeToGo=place; 
 			distMin=placeFrom.position.distance(placeToGo.position); 
 			continue;
