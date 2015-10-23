@@ -740,6 +740,7 @@ LearnedSpells.prototype.placesWithLearnedSpell = function ( idWizard, land ) {
 /** return an array containing the number of spells known for a given type of terrain index **/
 LearnedSpells.prototype.typeOfSpellKnownForTerrain = function(idWizard,land) {
 	var countTerrain=new Array();
+    if (this.spells[idWizard]==null) return countTerrain;
 	for (var i=0; i<this.spells[idWizard].length;i++) {
 		var terrain = land.places[ this.spells[idWizard][i] ].terrain ;
 		if (countTerrain[terrain]==null) countTerrain[terrain]=1;

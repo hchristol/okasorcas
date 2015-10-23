@@ -51,9 +51,15 @@ Bots.prototype.getOrders= function( idWizard ) {
 			order.parameters.places=new Array();
 			
 			var tryRecruitCount=0;
+            var placesRecruitedOn=new Array(); //avoid recruiting on same places
 			while ( (incomesAfter>=0)  && (order.parameters.places.length<this.okas.Act.MAX_RECRUIT_PER_TURN ) && (tryRecruitCount<20) ) {
 				tryRecruitCount++;
+                
 				var place = this.randomPlace(wizard.place, true);
+                //recruit on same place : avoided unless hazard
+                while( ( placesRecruitedOn.indexOf(place.id) >=0) || (Math.random()<0.04) ) place = this.randomPlace(wizard.place, true);
+                placesRecruitedOn.push(place.id);
+                
 				var typeOfRecruit=this.okas.Unit.typeRecruitedOn(place.terrain); //place to recruit
 				incomesAfter-=this.okas.Unit.costOfType(typeOfRecruit) - ( stocksAfter * Math.random() * .12 ) ; //if many stock of money, take more risk for recruiting
 				if ( (incomesAfter>=0) && (place.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) ) { 
@@ -64,6 +70,32 @@ Bots.prototype.getOrders= function( idWizard ) {
 			if (order.parameters.places.length>0) tactic.addOrder(order);
 		} 
 
+        //throw spells if no recruiting
+        if (order==null) {
+            spells = this.map.spells;
+            typeOfSpellKnownForTerrain=spells.typeOfSpellKnownForTerrain(this.map.land);
+            
+            //wizard could move by spell toward the targeted place ?
+            if (this.okas.LearnedSpells.isSpellAMovement(targetPlace.terrain) && (typeOfSpellKnownForTerrain[targetPlace.terrain]>0) ) { 
+                
+                placeToThrow=spells.placesToThrowSpell(idWizard, wizard.place, this.map.land );
+                for (var i=0; i<placeToThrow.length; i++) {
+                    if (placeToThrow[i].id == targetPlace.id) {
+                        //let's go !
+                        var order = new this.okas.Act(unit.owner, this.okas.Act.SPELL_THROW) ;
+                        order.parameters.unit=wizard;
+                        order.parameters.places=new Array();
+                        order.parameters.places.push(unit.targetPlace);                        
+                        
+                        console.log("Bot Wizard " + idWizard + "is throwing a MOVEMent SPELL !" )
+                    }
+                }
+            } 
+            
+                
+            //TODO : throwing distant spell
+        }
+        
 		//movement if nothing else to do
 		if (order==null) {
 			order = this.randomDestination( wizard, targetPlace);
@@ -130,7 +162,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 		}
 	}
     
-    console.log("Bots of wizard " + idWizard + " : bodygards = " + bodygards );
+    //console.log("Bots of wizard " + idWizard + " : bodygards = " + bodygards );
 	
 	//diplomatic support ?
 	for (var idWizard2=1; idWizard2<this.okas.People.WIZARD_COUNT; idWizard2++) {
@@ -312,7 +344,7 @@ Bots.prototype.randomDestination = function( unit, targetPlace, overpopulate ) {
 	
 	}}
 
-	//don't move on too crowded own place
+	//don't move on too cro wded own place
 	var tooCrowded=false;
 	var destination = order.destination();
 	if (destination!=null) if (order.destination()==unit.owner) {

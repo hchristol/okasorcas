@@ -1,3 +1,5 @@
+- Bots : issue endless loop (maybe in recruit loop ?)
+- Bots : test throwing movemnet spell
 - delete orders in admin mode
 
 
