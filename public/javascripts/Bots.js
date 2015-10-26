@@ -57,7 +57,11 @@ Bots.prototype.getOrders= function( idWizard ) {
                 
 				var place = this.randomPlace(wizard.place, true);
                 //recruit on same place : avoided unless hazard
-                while( ( placesRecruitedOn.indexOf(place.id) >=0) || (Math.random()<0.04) ) place = this.randomPlace(wizard.place, true);
+                var tryPlaceToRecruitSearch=0; //to avoid endless loop
+                while ( ( tryPlaceToRecruitSearch < 20 ) && ( ( placesRecruitedOn.indexOf(place.id) >=0) || (Math.random()<0.04) ) ) {
+                    place = this.randomPlace(wizard.place, true);
+                    tryPlaceToRecruitSearch++;
+                }
                 placesRecruitedOn.push(place.id);
                 
 				var typeOfRecruit=this.okas.Unit.typeRecruitedOn(place.terrain); //place to recruit
@@ -87,7 +91,7 @@ Bots.prototype.getOrders= function( idWizard ) {
                         order.parameters.places=new Array();
                         order.parameters.places.push(unit.targetPlace);                        
                         
-                        console.log("Bot Wizard " + idWizard + "is throwing a MOVEMent SPELL !" )
+                        console.log("SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + "is throwing a MOVEMent SPELL !" )
                     }
                 }
             } 
