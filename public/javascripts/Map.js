@@ -285,7 +285,7 @@ Map.prototype.addOrdersTactic = function( tactic ) {
 	hackers = new Array();
 	for (idWizard=1; idWizard<People.WIZARD_COUNT; idWizard++)
 		if (this.land.placesTooCrowdedFor(idWizard).length>0) {
-			console.log("ALERT !!! wizard " + idWizard + " (" + People.WizardName[idWizard] + ") PUT too much UNITS ! HE's a hacker !");
+			//console.log("ALERT !!! wizard " + idWizard + " (" + People.WizardName[idWizard] + ") PUT too much UNITS ! HE's a hacker !");
 			
 			hackers.push(idWizard);
 		}
@@ -671,7 +671,7 @@ function LearnedSpells(json) {
 		//read json
 		this.spells=json.spells;	
 		
-	} else { //new incomes
+	} else { //new object
 		
 		this.spells=new Array();
 		for (var i=0; i<People.WIZARD_COUNT; i++) this.spells[i]=new Array();

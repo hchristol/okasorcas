@@ -23,19 +23,63 @@ Bots.prototype.getOrders= function( idWizard ) {
 	var targetPlace=null;
 	var order = null;
 	
-	if (wizard!=null) { //undead wizard
-
+    //Choose a place to go : targetPlace
+    if (wizard!=null) { //undead wizard
 		targetPlace = this.nearestTower(wizard.place, idWizard); //search tower
-		if (targetPlace==null) targetPlace = this.randomPlace(); 
-		
-		/* deprecated
-		//learn spell if tower
-		if (wizard.place.tower!=null) if ( this.map.spells.hasLearn(wizard.owner, wizard.place) == false ) {
-			order = new this.okas.Act(idWizard, this.okas.Act.SPELL_LEARN) ;
-			order.parameters.unit=wizard;			
-			tactic.addOrder(order);		
+		if (targetPlace==null) targetPlace = this.randomPlace();  
+    }
+    else { //dead wizard
+		//search an empty towered place to go (or a neighbour of a towered place)
+		var tryCount=0;
+		var targetPlace=this.randomPlace(this.nearestTower(this.randomPlace(null,true), idWizard ),true);
+		while(  (!targetPlace.isEmpty()) && (tryCount<5) ) { tryCount++; targetPlace=this.randomPlace(this.nearestTower(this.randomPlace(null,true), idWizard ),true); }        
+    }
+        
+    
+	//movements of units that ARE NOT the wizard
+	var bodygards=0; //number of units that go with wizard
+	for (var i=0; i<this.map.people.units.length; i++) {
+		var unit=this.map.people.units[i];
+		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
+			
+			if (bodygards< (1 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
+                if ( (unit.type == this.okas.Unit.DRAGON) || (unit.type == this.okas.Unit.PLUNDERER ) )
+                    order = this.randomDestination( unit, targetPlace); //dragon and plunderer are not quite good on support
+				else //destination : place around targeted place by wizard, good if unit are quite good on support 
+                    if (unit.type == this.okas.Unit.PEASANT) //unit better on support
+                        order = this.randomDestination( unit, this.randomPlace(targetPlace, false) ); 
+                    else //unit quite as good in support or defense
+                        order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); 
+                
+                if (order!=null) {
+                    if (order.destination().id == targetPlace.id) { //unit can be a bodyguard
+                        if (targetPlace.terrain == this.okas.Place.SEA) { //sea are special placse where only fleets are strong
+                            if (unit.type == this.okas.Unit.CORSAIR) bodygards++;
+                            else bodygards+=0.5; //others than fleet are of some poor protection
+                        } else {
+                            if (unit.type == this.okas.Unit.CORSAIR) bodygards+=0.5; //on earth fleet are useless
+                            else bodygards++;                    
+                        }
+                    }
+                }
+            
+			} else { //enough unit beside wizard : let's explore the world !
+				
+				order = this.randomDestination( unit, this.nearestPlaceForIncomes(unit.place, unit.owner, unit.type) ); 
+			}
+			
+			if (order!=null) {
+				var destination = order.destination();
+				if (destination!=null)
+					if (destination.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) //enough place here to move
+						tactic.addOrder(order);		
+			}
+			
 		}
-		*/
+	}
+        
+    //orders of wizard (after moving other unit coz can check if there's enough bodygard on targeted place)
+	if (wizard!=null) { //undead wizard
 		
 		//recruit if possible
 		var stocksAfter=this.map.incomes.futureStock(idWizard,1);
@@ -77,21 +121,24 @@ Bots.prototype.getOrders= function( idWizard ) {
         //throw spells if no recruiting
         if (order==null) {
             spells = this.map.spells;
-            typeOfSpellKnownForTerrain=spells.typeOfSpellKnownForTerrain(this.map.land);
+            typeOfSpellKnownForTerrain=spells.typeOfSpellKnownForTerrain(idWizard, this.map.land);
             
             //wizard could move by spell toward the targeted place ?
             if (this.okas.LearnedSpells.isSpellAMovement(targetPlace.terrain) && (typeOfSpellKnownForTerrain[targetPlace.terrain]>0) ) { 
+                
                 
                 placeToThrow=spells.placesToThrowSpell(idWizard, wizard.place, this.map.land );
                 for (var i=0; i<placeToThrow.length; i++) {
                     if (placeToThrow[i].id == targetPlace.id) {
                         //let's go !
-                        var order = new this.okas.Act(unit.owner, this.okas.Act.SPELL_THROW) ;
+                        var order = new this.okas.Act(idWizard, this.okas.Act.SPELL_THROW) ;
                         order.parameters.unit=wizard;
                         order.parameters.places=new Array();
-                        order.parameters.places.push(unit.targetPlace);                        
+                        order.parameters.places.push(targetPlace); 
+                        order.parameters.startGraphicPosition = wizard.place.position;  //to draw arrow from spell launcher
                         
-                        console.log("SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + "is throwing a MOVEMent SPELL !" )
+                        tactic.addOrder(order);
+                        console.log("       SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + " is throwing a MOVEMent SPELL !" );
                     }
                 }
             } 
@@ -109,10 +156,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 	} else { 
 		//dead wizard ? reincarnation !
 
-		//search an empty towered place to go (or a neighbour of a towered place)
-		var tryCount=0;
-		var targetPlace=this.randomPlace(this.nearestTower(this.randomPlace(null,true), idWizard ),true);
-		while(  (!targetPlace.isEmpty()) && (tryCount<5) ) { tryCount++; targetPlace=this.randomPlace(this.nearestTower(this.randomPlace(null,true), idWizard ),true); }
+
 
 		order = new this.okas.Act(idWizard, this.okas.Act.REINCARNATION) ;
 		order.parameters.place=targetPlace;
@@ -124,47 +168,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 	
 	if (targetPlace==null) targetPlace = this.randomPlace(); //dead wizard
 	
-	//movement of other units of wizard
-	var bodygards=0; //number of units that go with wizard
-	for (var i=0; i<this.map.people.units.length; i++) {
-		var unit=this.map.people.units[i];
-		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
-			
-			if (bodygards< (1 + this.map.spells.count(unit.owner)/2 ) ) { //the more the wizard have spell, the more he requires protection
-                if ( (unit.type == this.okas.Unit.DRAGON) || (unit.type == this.okas.Unit.PLUNDERER ) )
-                    order = this.randomDestination( unit, targetPlace); //dragon and plunderer are not quite good on support
-				else //destination : place around targeted place by wizard, good if unit are quite good on support 
-                    if (unit.type == this.okas.Unit.PEASANT) //unit better on support
-                        order = this.randomDestination( unit, this.randomPlace(targetPlace, false) ); 
-                    else //unit quite as good in support or defense
-                        order = this.randomDestination( unit, this.randomPlace(targetPlace, true) ); 
-                
-                if (order!=null) {
-                    if (order.destination().id == targetPlace.id) { //unit can be a bodyguard
-                        if (targetPlace.terrain == this.okas.Place.SEA) { //sea are special placse where only fleets are strong
-                            if (unit.type == this.okas.Unit.CORSAIR) bodygards++;
-                            else bodygards+=0.5; //others than fleet are of some poor protection
-                        } else {
-                            if (unit.type == this.okas.Unit.CORSAIR) bodygards+=0.5; //on earth fleet are useless
-                            else bodygards++;                    
-                        }
-                    }
-                }
-            
-			} else { //enough unit beside wizard : let's explore the world !
-				
-				order = this.randomDestination( unit, this.nearestPlaceForIncomes(unit.place, unit.owner, unit.type) ); 
-			}
-			
-			if (order!=null) {
-				var destination = order.destination();
-				if (destination!=null)
-					if (destination.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) //enough place here to move
-						tactic.addOrder(order);		
-			}
-			
-		}
-	}
+
     
     //console.log("Bots of wizard " + idWizard + " : bodygards = " + bodygards );
 	

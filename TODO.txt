@@ -1,4 +1,4 @@
-- Bots : test throwing movemnet spell
+- Bots : replace test line 90 by a test with bodygards number
 - delete orders in admin mode
 
 
