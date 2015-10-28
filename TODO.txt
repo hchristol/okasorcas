@@ -1,4 +1,5 @@
-- Bots : replace test line 90 by a test with bodygards number
+- Bots : testing other targeted places
 - delete orders in admin mode
 
 
+ 

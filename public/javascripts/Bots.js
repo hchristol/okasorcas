@@ -19,7 +19,7 @@ Bots.prototype.getOrders= function( idWizard ) {
 	var wizard = this.map.people.wizards[idWizard];
 	//wizard order : recruit or movement ?
 	
-	//where bot want to go : 
+	//where wizard bot want to go : 
 	var targetPlace=null;
 	var order = null;
 	
@@ -38,6 +38,7 @@ Bots.prototype.getOrders= function( idWizard ) {
     
 	//movements of units that ARE NOT the wizard
 	var bodygards=0; //number of units that go with wizard
+    var destinationsStrengths=new Object(); //destinations of different units, with their strength (index : id place). Used to know where is the safest place for wizard
 	for (var i=0; i<this.map.people.units.length; i++) {
 		var unit=this.map.people.units[i];
 		if ( (unit.owner==idWizard) && ( unit.type != this.okas.Unit.WIZARD ) ) {
@@ -70,15 +71,22 @@ Bots.prototype.getOrders= function( idWizard ) {
 			
 			if (order!=null) {
 				var destination = order.destination();
-				if (destination!=null)
-					if (destination.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) //enough place here to move
+				if (destination!=null) 
+					if (destination.unitsOf(idWizard).length < this.okas.People.MAX_UNIT_PER_PLACE ) { //enough place here to move
 						tactic.addOrder(order);		
+                        //add the destination strenght
+                        if (destinationsStrengths[order.destination().id] == null);
+                            destinationsStrengths[order.destination().id] =0;
+                        destinationsStrengths[order.destination().id] += this.okas.Unit.strengthOfType(unit.type,destination.terrain)
+                    }
+                
 			}
 			
 		}
 	}
         
     //orders of wizard (after moving other unit coz can check if there's enough bodygard on targeted place)
+    order = null; //reinit current order
 	if (wizard!=null) { //undead wizard
 		
 		//recruit if possible
@@ -86,9 +94,9 @@ Bots.prototype.getOrders= function( idWizard ) {
 		if (this.map.incomes.futureStock(idWizard,4) < stocksAfter ) stocksAfter = this.map.incomes.futureStock(idWizard,4); //long term trend
 		
 		var incomesAfter=this.map.incomes.incomes[idWizard];
-//&& ( stocksAfter > Math.random() * this.okas.Incomes.MAX_STOCK / 5 )
-		if ( (order==null)  && ( incomesAfter > 0) && (this.numberOfAllyUnitsAround( wizard.place ) < Math.random() * 7 ) ) { //enough money, and enough places to recruit !
 
+		//if ( (order==null)  && ( incomesAfter > 0) && (this.numberOfAllyUnitsAround( wizard.place ) < Math.random() * 7 ) ) { //enough money, and enough places to recruit !
+		if ( (order==null)  && ( incomesAfter > 0) && (bodygards < 2) ) { //enough money, and too few bodygards !
 			//recruit
 			order = new this.okas.Act(idWizard, this.okas.Act.RECRUIT) ;
 			order.parameters.unit=wizard;
@@ -116,7 +124,30 @@ Bots.prototype.getOrders= function( idWizard ) {
 			}
 			
 			if (order.parameters.places.length>0) tactic.addOrder(order);
-		} 
+		}
+        
+        if (bodygards < 1.7 + Math.random() * 1.4)  { //change targetPlace for a safest place if not enough bodygards
+            
+            //search the strongest place
+            otherTarget=null;
+            var sMax=0;
+            for (var d in destinationsStrengths) { //each destination
+                if (destinationsStrengths.hasOwnProperty(d)) {
+                    s=destinationsStrengths[d];
+                    if (s>sMax) { //best place found : where strength is higher
+                        otherTarget = this.map.land.places[d];
+                        sMax=s;
+                    }
+                }
+            }
+            
+            //validate this place (must be not to far from wizard), and take a random place near this one
+            if ( (otherTarget!=null) && ( otherTarget.position.distance(wizard.place.position) < this.okas.Place.SIZE * (3 + Math.random() * 1.5)  ) ) {
+                targetPlace=this.randomPlace(otherTarget, true); //random place all around this place (to avoid too much unit on the same place)
+                console.log("       TARGET PLACE CHANGED !!!!!! Bot Wizard " + idWizard  );
+            }
+            
+        }
 
         //throw spells if no recruiting
         if (order==null) {
@@ -155,9 +186,6 @@ Bots.prototype.getOrders= function( idWizard ) {
 		
 	} else { 
 		//dead wizard ? reincarnation !
-
-
-
 		order = new this.okas.Act(idWizard, this.okas.Act.REINCARNATION) ;
 		order.parameters.place=targetPlace;
 
