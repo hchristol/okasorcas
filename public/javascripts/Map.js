@@ -1714,6 +1714,7 @@ People.prototype.disseminateRandomly = function(land) {
 	if forceCrowdedPlace = true, ignore such a constraint.
 */
 People.prototype.addUnit= function(unit,place, forceCrowdedPlace)  {
+    if (place==null) return;
 	if (place.units==null) place.units=new Array();
 	
 	if (forceCrowdedPlace!= true) if (place.units.length >= People.MAX_UNIT_PER_PLACE) return People.PLACE_TOO_CROWDED; 
@@ -2309,7 +2310,10 @@ Act.prototype.toJSON = function() { //abreviate field and filter non required at
 		if ( this.parameters.places != null ) { 
 			jsonParameters.p=new Array();
 			for (var i=0; i<this.parameters.places.length; i++) {
-				jsonParameters.p.push( this.parameters.places[i].id );
+                
+                if (this.parameters.places[i]==null) { console.log("Act Movement without place !"); }
+                else jsonParameters.p.push( this.parameters.places[i].id );
+                
 			}
 		}
 		//position of the first arrow (graphic purpose)

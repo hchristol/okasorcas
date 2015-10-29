@@ -1,4 +1,4 @@
-- Bots : testing other targeted places
+- Bots : testing 
 - delete orders in admin mode
 
 

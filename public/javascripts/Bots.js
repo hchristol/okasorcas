@@ -124,19 +124,22 @@ Bots.prototype.getOrders= function( idWizard ) {
 			}
 			
 			if (order.parameters.places.length>0) tactic.addOrder(order);
+            else order=null; //nothing to recruit : will try another type of order
 		}
         
-        if (bodygards < 1.7 + Math.random() * 1.4)  { //change targetPlace for a safest place if not enough bodygards
+        if (bodygards < 1 + Math.random() * 1.4)  { //change targetPlace for a safest place if not enough bodygards
             
             //search the strongest place
             otherTarget=null;
             var sMax=0;
             for (var d in destinationsStrengths) { //each destination
                 if (destinationsStrengths.hasOwnProperty(d)) {
-                    s=destinationsStrengths[d];
-                    if (s>sMax) { //best place found : where strength is higher
-                        otherTarget = this.map.land.places[d];
-                        sMax=s;
+                    if (d!=wizard.place.id) { //wizard should not move on its on position
+                        s=destinationsStrengths[d];
+                        if (s>sMax) { //best place found : where strength is higher
+                            otherTarget = this.map.land.places[d];
+                            sMax=s;
+                        }
                     }
                 }
             }
@@ -144,7 +147,7 @@ Bots.prototype.getOrders= function( idWizard ) {
             //validate this place (must be not to far from wizard), and take a random place near this one
             if ( (otherTarget!=null) && ( otherTarget.position.distance(wizard.place.position) < this.okas.Place.SIZE * (3 + Math.random() * 1.5)  ) ) {
                 targetPlace=this.randomPlace(otherTarget, true); //random place all around this place (to avoid too much unit on the same place)
-                console.log("       TARGET PLACE CHANGED !!!!!! Bot Wizard " + idWizard  );
+                //console.log("       TARGET PLACE CHANGED !!!!!! Bot Wizard " + idWizard  );
             }
             
         }
@@ -153,29 +156,53 @@ Bots.prototype.getOrders= function( idWizard ) {
         if (order==null) {
             spells = this.map.spells;
             typeOfSpellKnownForTerrain=spells.typeOfSpellKnownForTerrain(idWizard, this.map.land);
+            placeToThrow=spells.placesToThrowSpell(idWizard, wizard.place, this.map.land );
             
             //wizard could move by spell toward the targeted place ?
             if (this.okas.LearnedSpells.isSpellAMovement(targetPlace.terrain) && (typeOfSpellKnownForTerrain[targetPlace.terrain]>0) ) { 
                 
-                
-                placeToThrow=spells.placesToThrowSpell(idWizard, wizard.place, this.map.land );
                 for (var i=0; i<placeToThrow.length; i++) {
                     if (placeToThrow[i].id == targetPlace.id) {
                         //let's go !
-                        var order = new this.okas.Act(idWizard, this.okas.Act.SPELL_THROW) ;
+                        order = new this.okas.Act(idWizard, this.okas.Act.SPELL_THROW) ;
                         order.parameters.unit=wizard;
                         order.parameters.places=new Array();
                         order.parameters.places.push(targetPlace); 
                         order.parameters.startGraphicPosition = wizard.place.position;  //to draw arrow from spell launcher
                         
                         tactic.addOrder(order);
-                        console.log("       SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + " is throwing a MOVEMent SPELL !" );
+                        //console.log("       SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + " is throwing a MOVEMent SPELL !" );
                     }
                 }
+                
             } 
             
+              
+            //throwing distant spell
+            if ( (order==null) && (Math.random()<0.99) ) {
+                var place=this.randomPlace(targetPlace, true); //where to throw
+                //console.log("try throwing distant spell Bot Wizard " + idWizard + " on place.id=" + place.id);
                 
-            //TODO : throwing distant spell
+                if (!this.okas.LearnedSpells.isSpellAMovement(place.terrain) && (typeOfSpellKnownForTerrain[place.terrain]>0) ) { 
+                    
+                    for (var i=0; i<placeToThrow.length; i++) {
+                        if (placeToThrow[i].id == place.id) {
+                            //let's go !
+                            order = new this.okas.Act(idWizard, this.okas.Act.SPELL_THROW) ;
+                            order.parameters.unit=wizard;
+                            order.parameters.places=new Array();
+                            order.parameters.places.push(place); 
+                            order.parameters.startGraphicPosition = wizard.place.position;  //to draw arrow from spell launcher
+
+                            tactic.addOrder(order);
+                            //console.log("       SPELL SPELL SPELL !!!!!! Bot Wizard " + idWizard + " is throwing a DISTANT SPELL !" );
+                        }
+                    }                   
+                    
+                }
+            }
+            
+            
         }
         
 		//movement if nothing else to do
