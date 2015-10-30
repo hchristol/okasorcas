@@ -179,7 +179,7 @@ Bots.prototype.getOrders= function( idWizard ) {
             
               
             //throwing distant spell
-            if ( (order==null) && (Math.random()<0.99) ) {
+            if ( (order==null) && (Math.random()<0.05) ) {
                 var place=this.randomPlace(targetPlace, true); //where to throw
                 //console.log("try throwing distant spell Bot Wizard " + idWizard + " on place.id=" + place.id);
                 
