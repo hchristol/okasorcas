@@ -2345,7 +2345,7 @@ Act.prototype.toJSON = function() { //abreviate field and filter non required at
 		if ( this.parameters.places != null ) { 
 			jsonParameters.p=new Array();
 			for (var i=0; i<this.parameters.places.length; i++) {
-				jsonParameters.p.push( this.parameters.places[i].id );
+				if ( this.parameters.places[i] !=null ) jsonParameters.p.push( this.parameters.places[i].id );
 			}
 		}
 		
