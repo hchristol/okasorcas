@@ -37,7 +37,7 @@ Choose a directory for your persistant data, for instance home directory :
 
 start redis server
 
-    docker run -d --rm --name redisokasorcas --network okasorcas  -v /home/okasorcas/database:/data redis:latest
+    docker run -d --rm --name redisokasorcas --network okasorcas  -v /home/okasorcas/database:/data redis redis-server --appendonly yes
 
 If you want another name for your redis container, edit redis.js in routes folder to change default host :
 
@@ -51,7 +51,7 @@ start node container with okasorcas :
 if you want to update or install  some npm package :
 
 docker run -it  --rm --name okasorcas --network okasorcas -v "$PWD":/home//okasorcas -w /home/okasorcas node:10  npm update
-docker run -it  --rm --name okasorcas --network okasorcas -v "$PWD":/home/okasorcas -w /home/okasorcas node:10  npm install passport, passport-local, connect-flash, redis, express, connect, mkdirp, node-zip
+docker run -it  --rm --name okasorcas --network okasorcas -v "$PWD":/home/okasorcas -w /home/okasorcas node:10  npm install passport  passport-local connect-flash redis express connect mkdirp node-zip
 
 # Passwords :
 - go to http://myserver/partie1/login
