@@ -29,7 +29,9 @@ exports.readimage = function(req, res){
 		if (reply == null) { 
 			res.setHeader('Content-Type', 'text/plain');
 			res.send("No image file for game \n" + req.params.game, 200);
+			return;
 		}
+
 		res.writeHead(200, {'Content-Type': 'image/jpg' });	
 		res.end( new Buffer(reply, 'base64') ); //convert image string into binary
 	});
